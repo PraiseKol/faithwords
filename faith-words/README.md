@@ -25,12 +25,12 @@ Open http://localhost:8080 (add `?debug` to the URL to expose `window.fwDebug` f
 - Admin panel at `#/admin` (PIN in `js/config.js`, default `faith`): preview any puzzle, edit clues/emoji, add new words, export/import content JSON.
   The PIN is only a screen lock for the offline build — use the `is_admin` role in Supabase for real protection.
 
-## Turn on accounts, cloud save & leaderboard (Supabase)
-1. Create a free project at supabase.com. Run `supabase/schema.sql` in the SQL editor.
-2. Authentication → enable Email provider.
-3. Put the Project URL and anon key in `js/env.js`.
-4. Reload: the Me tab now offers Sign in / Sign up, cloud save and the leaderboard. Guests keep playing offline.
-   (Live player-vs-player matches use the `matches` table; the client side for that is the next phase.)
+## Accounts, cloud save & leaderboard (Supabase) — already connected
+This project is wired to the Supabase project **Faith Words** (`js/env.js`). The database (`supabase/schema.sql`) is applied: a `profiles` table with row-level security, an automatic profile on sign-up, and a leaderboard function.
+- Me tab → Sign in / Sign up. Points, level, coins, streaks and purchases sync to the cloud; guests still play offline.
+- By default Supabase asks new players to confirm their email. To skip that while testing: Supabase dashboard → Authentication → Providers → Email → turn off "Confirm email".
+- Live player-vs-player matches and a database-backed word bank are the next phase (`supabase/schema-phase2.sql`, not applied).
+- Note: progress is saved by the app itself, so a technical user could edit their own points. Before a public launch, move scoring to a server-side function.
 
 ## Android / iOS (Capacitor)
     npm run cap:init          # once; use appId com.faithwords.app
