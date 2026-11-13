@@ -1,0 +1,14 @@
+{
+  "name": "faith-words",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Faith Words — a Bible crossword duel game",
+  "scripts": {
+    "start": "npx serve . -l 8080",
+    "test:gen": "node scripts/test-gen.mjs",
+    "test:engine": "node scripts/test-engine.mjs",
+    "cap:init": "npm i @capacitor/core @capacitor/cli @capacitor/android @capacitor/ios && npx cap init",
+    "cap:sync": "node scripts/make-www.mjs && npx cap sync"
+  }
+}
