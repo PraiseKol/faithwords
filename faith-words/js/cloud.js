@@ -25,7 +25,10 @@ export async function initCloud() {
 export async function signUp(email, password, name) {
   const { data, error } = await client.auth.signUp({ email, password, options: { data: { name } } });
   if (error) throw error;
-  user = data.user; if (name) store.d.name = name; store.save(); await push(); return user;
+  user = data.user;
+  if (!data.session) { user = null; return { confirm: true }; } // project requires email confirmation
+  if (name) store.d.name = name;
+  store.save(); await push(); return { user };
 }
 export async function signIn(email, password) {
   const { data, error } = await client.auth.signInWithPassword({ email, password });
@@ -49,6 +52,6 @@ export async function pull() {
 }
 export async function leaderboard() {
   if (!client) return [];
-  const { data } = await client.from('profiles').select('name, xp, level, wins').order('xp', { ascending: false }).limit(25);
+  const { data } = await client.rpc('get_leaderboard');
   return data || [];
 }

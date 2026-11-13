@@ -151,7 +151,7 @@ function authModal() {
   const email = h('input', { type: 'email', placeholder: 'Email', autocomplete: 'email' });
   const pass = h('input', { type: 'password', placeholder: 'Password (6+ characters)', autocomplete: 'current-password' });
   const msg = h('small', { class: 'err' });
-  const go = (fn) => async () => { try { msg.textContent = ''; await fn(); m.close(); toast('Signed in'); render(); } catch (e) { msg.textContent = e.message || 'Something went wrong'; } };
+  const go = (fn) => async () => { try { msg.textContent = ''; const r = await fn(); m.close(); toast(r?.confirm ? 'Check your email to confirm your account, then sign in' : 'Signed in', r?.confirm ? 4500 : 1800); render(); } catch (e) { msg.textContent = e.message || 'Something went wrong'; } };
   const m = modal(h('div', { class: 'auth' }, h('h3', {}, 'Faith Words account'), email, pass, msg,
     h('button', { class: 'btn', onclick: go(() => signIn(email.value, pass.value)) }, 'Sign in'),
     h('button', { class: 'btn ghost', onclick: go(() => signUp(email.value, pass.value, store.d.name)) }, 'Create account')), { cls: 'sheet' });
