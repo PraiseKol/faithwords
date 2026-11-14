@@ -2,6 +2,8 @@
 // Deterministic: the same seed + bank always gives the same puzzle.
 export const W = 7;
 export const H = 10;
+const TARGET = 50;  // stop searching once a grid has this many letter cells
+const POLISH = 400;  // ruin-and-recreate rounds
 
 export function mulberry32(a) {
   return function () {
@@ -106,13 +108,25 @@ export function generatePuzzle(bank, { seed, focusTag = null, tries = 40 } = {})
     }
   };
 
+  const emptyState = () => ({
+    T: new Uint8Array(W * H), CH: new Uint8Array(W * H),
+    cA: new Int8Array(W * H).fill(-1), cD: new Int8Array(W * H).fill(-1),
+    words: [], used: new Set(), letters: [],
+  });
+  // free-standing words that touch the grid only by the adjacency rules, then crossings again
+  const fill = (st, gap) => {
+    for (let n = 0; n < gap; n++) {
+      const ans = pick(allPhase.answers);
+      if (st.used.has(ans)) continue;
+      const dir = rnd() < 0.5 ? 'a' : 'd';
+      tryPlace(st, ans, dir, Math.floor(rnd() * H), Math.floor(rnd() * W), false);
+    }
+    runPhase(st, allPhase, 3000);
+  };
+
   let best = null;
   for (let t = 0; t < tries; t++) {
-    const st = {
-      T: new Uint8Array(W * H), CH: new Uint8Array(W * H),
-      cA: new Int8Array(W * H).fill(-1), cD: new Int8Array(W * H).fill(-1),
-      words: [], used: new Set(), letters: [],
-    };
+    const st = emptyState();
     const firstPool = (focusPhase || allPhase).answers.filter((a) => a.length >= 4 && a.length <= 6);
     let ok = false;
     for (let i = 0; i < 50 && !ok; i++) {
@@ -122,16 +136,22 @@ export function generatePuzzle(bank, { seed, focusTag = null, tries = 40 } = {})
     if (!ok) continue;
     if (focusPhase) runPhase(st, focusPhase, 3000);
     runPhase(st, allPhase, 6000);
-    // gap filler: free-standing words that touch the grid only by adjacency rules
-    for (let n = 0; n < 5000; n++) {
-      const ans = pick(allPhase.answers);
-      if (st.used.has(ans)) continue;
-      const dir = rnd() < 0.5 ? 'a' : 'd';
-      tryPlace(st, ans, dir, Math.floor(rnd() * H), Math.floor(rnd() * W), false);
-    }
-    runPhase(st, allPhase, 3000);
+    fill(st, 5000);
     if (!best || st.letters.length > best.letters.length) best = st;
-    if (best.letters.length >= 46) break;
+    if (best.letters.length >= TARGET) break;
+  }
+
+  // ruin & recreate: drop a few words, rebuild the rest, refill; keep it if it is no worse
+  for (let it = 0; it < POLISH && best.letters.length < TARGET; it++) {
+    const keep = best.words.slice();
+    const drop = 1 + Math.floor(rnd() * 3);
+    for (let d = 0; d < drop && keep.length > 3; d++) keep.splice(Math.floor(rnd() * keep.length), 1);
+    const st = emptyState();
+    let ok = true;
+    for (const w of keep) if (!tryPlace(st, w.ans, w.dir, w.r, w.c, false)) { ok = false; break; }
+    if (!ok) continue;
+    fill(st, 2500);
+    if (st.letters.length >= best.letters.length) best = st;
   }
 
   // ---- build the puzzle object

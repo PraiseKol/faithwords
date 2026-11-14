@@ -2,6 +2,8 @@
 // NOTE: the PIN only hides the screen in this offline build. When Supabase is connected, protect
 // admin writes with a Supabase role (see README) — never trust a client-side PIN for real security.
 import { h, toast } from './ui.js';
+import { A, currentUser, cloudEnabled } from './cloud.js';
+import { remote, setRemoteContent } from './puzzles.js';
 import { BANK } from './bank.js';
 import { CONFIG, EVENTS, EVENT_PUZZLES } from './config.js';
 import { store, todayStr } from './store.js';
@@ -25,6 +27,10 @@ export function renderAdmin() {
       tab === 'puzzles' ? puzzlesTab(draw) : tab === 'bank' ? bankTab(draw) : dataTab(draw));
   };
   draw();
+  // signed-in admins (profiles.is_admin) skip the PIN
+  if (sessionStorage.getItem('fw.admin') !== '1' && currentUser()) {
+    A.isAdmin().then((ok) => { if (ok) { sessionStorage.setItem('fw.admin', '1'); sessionStorage.setItem('fw.admin.db', '1'); draw(); } }).catch(() => {});
+  }
   return root;
 }
 
@@ -104,6 +110,18 @@ function dataTab(draw) {
       const blob = new Blob([JSON.stringify({ clueOverrides: store.d.clueOverrides, customBank: store.d.customBank }, null, 2)], { type: 'application/json' });
       const a = h('a', { href: URL.createObjectURL(blob), download: 'faith-words-content.json' }); a.click();
     } }, 'Export content'), file,
+    cloudEnabled() ? h('div', { class: 'card' }, h('b', {}, 'Publish to all players'),
+      h('small', { class: 'muted' }, sessionStorage.getItem('fw.admin.db') === '1'
+        ? 'Sends your clue edits and custom words to every player. Players get them next time they open the app.'
+        : 'Only accounts marked as admin in Supabase can publish. Sign in with an admin account first.'),
+      h('button', { class: 'btn', disabled: sessionStorage.getItem('fw.admin.db') !== '1', onclick: async () => {
+        try {
+          const content = { clueOverrides: { ...remote.clueOverrides, ...store.d.clueOverrides }, customBank: [...remote.customBank, ...store.d.customBank] };
+          await A.publishContent(content); setRemoteContent(content);
+          store.d.clueOverrides = {}; store.d.customBank = []; store.save();
+          toast('Published to all players'); draw();
+        } catch (e) { toast('Publish failed: ' + (e.message || 'not allowed')); }
+      } }, 'Publish now')) : null,
     h('hr'), h('b', {}, 'Player data (this device)'),
     h('button', { class: 'btn danger', onclick: () => { if (confirm('Reset ALL progress on this device?')) { store.reset(); toast('Reset'); location.hash = '#/'; } } }, 'Reset my progress'));
 }

@@ -501,6 +501,78 @@ ARMY|Salvation __|cur
 LAUSANNE|Global evangelism congress|cur
 ALPHA|Course exploring Christianity|cur
 GIDEONS|Bibles-in-hotels group|cur
+ASA|Good king of Judah|ot,ppl
+ABA|Aramaic word for father|nt,thm
+ARM|Strong __ of the Lord|thm
+AIR|Prince of the power of the __|nt,thm
+AGE|Ancient of days has no __|thm
+AWE|Reverent wonder|thm
+BED|Lame man took up his __|nt,obj
+BUD|Aaron's rod did this|ot,obj
+CAN|I __ do all things through Christ|nt,thm
+DAN|Tribe of Samson|ot,ppl
+DAY|Seventh __ of rest|ot,thm
+EAR|He who has an __ let him hear|nt,thm
+EAT|Take, __ this is my body|nt,thm
+EYE|Lamp of the body|nt,obj
+FAR|Prodigal went to a __ country|nt,thm
+FEW|Laborers are __|nt,thm
+FOE|Love your __|nt,thm
+GAD|Jacob's seventh son|ot,ppl
+HIM|Worship __ in spirit|thm
+HOE|Farm tool of old|obj
+ICE|Job's waters were hid as with __|ot,obj
+ILL|Opposite of well|thm
+IRA|One of David's mighty men|ot,ppl
+LAW|Moses gave the __|ot,thm
+LIE|Satan is the father of it|nt,thm
+MAN|Created in God's image|thm
+NOD|Land east of Eden|ot,plc
+NUN|Joshua's father|ot,ppl
+OWN|Ye are not your __|nt,thm
+PEN|Writer's tool|obj
+PIT|Joseph was thrown in one|ot,obj
+RAM|Caught in the thicket|ot,obj
+RAT|Unclean animal|ot,obj
+SOW|Plant seed|thm
+TAX|Caesar's due|nt,thm
+TIN|Metal in Moses' time|ot,obj
+URN|Vessel for manna|ot,obj
+VOW|Hannah made one|ot,thm
+WAY|I am the __, the truth, the life|nt,thm
+WEB|Spider's trap|obj
+WOE|Cry of the prophets|ot,thm
+YEA|Let your __ be yea|nt,thm
+ZOAR|City Lot fled to|ot,plc
+AARON|Moses' brother|ot,ppl
+ABRAM|Abraham's first name|ot,ppl
+ANGEL|Messenger from heaven|thm
+APOSTLE|Sent one|nt,thm
+ASHER|Jacob's eighth son|ot,ppl
+BREAD|Daily need in the prayer|nt,obj
+BIBLE|Holy Scripture|thm
+CROWN|Of thorns|nt,obj,east
+DRESS|Wedding garment|obj
+EARTH|Meek shall inherit it|nt,thm
+FAITH|Substance of things hoped for|thm
+HEART|Seat of the affections|thm
+IDOL|False god|ot,obj
+JAMES|Brother of John|nt,ppl
+JUDAH|Lion's tribe|ot,ppl
+LIGHT|World's __ in Christ|nt,thm,xmas
+MERCY|Blessed are the merciful, they obtain __|nt,thm
+OLIVE|Dove brought a branch|ot,obj
+PEACE|Prince of __|thm,xmas
+PRAISE|Lift up in worship|thm,psalm
+SAINT|Holy one|thm
+SHEEP|Good Shepherd's flock|nt,obj
+TEMPLE|House of the Lord|thm
+TITUS|Letter to Paul's helper|nt,bk
+TRUTH|Sets you free|nt,thm
+TRUST|Lean not on own understanding|thm
+ROMANS|Epistle after Acts|bk,nt
+LOAF|Five barley ones fed thousands|nt,obj
+ORE|Metal bearing rock|obj
 `;
 
 export const EVENT_TAGS = ['xmas', 'east', 'pent', 'hero', 'psalm'];
