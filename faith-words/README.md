@@ -29,8 +29,10 @@ Open http://localhost:8080 (add `?debug` to the URL to expose `window.fwDebug` f
 This project is wired to the Supabase project **Faith Words** (`js/env.js`). The database (`supabase/schema.sql`) is applied: a `profiles` table with row-level security, an automatic profile on sign-up, and a leaderboard function.
 - Me tab → Sign in / Sign up. Points, level, coins, streaks and purchases sync to the cloud; guests still play offline.
 - By default Supabase asks new players to confirm their email. To skip that while testing: Supabase dashboard → Authentication → Providers → Email → turn off "Confirm email".
-- Live player-vs-player matches and a database-backed word bank are the next phase (`supabase/schema-phase2.sql`, not applied).
-- Note: progress is saved by the app itself, so a technical user could edit their own points. Before a public launch, move scoring to a server-side function.
+- **Live online matches** (Me → sign in, then Home → Play online): matchmaking pairs two signed-in players (`matchmake` function); the player whose turn it is saves the board, the other app polls every ~1.3 s. If nobody is found in ~14 s you get a bot. An opponent idle for 90 s can be claimed as a win. You can rejoin an unfinished match from Home.
+- **Shared content**: Admin → "Publish to all players" saves your clue edits and extra words to the `app_content` table; every app loads them on start. Only accounts with `profiles.is_admin = true` can publish (set it in the Supabase table editor after you sign up).
+- **Anti-cheat (partial)**: a database trigger caps how fast XP, coins, wins and games can grow. Scoring is still computed in the app, so before a big public launch move it to a server-side function.
+- Theme (light / dark / auto), vibration and sound are in Me → Settings; a first-run how-to explains the rules.
 
 ## Android / iOS (Capacitor)
     npm run cap:init          # once; use appId com.faithwords.app
@@ -43,3 +45,4 @@ Store submissions also need icons/splash screens, a privacy policy, and a Google
 ## Tests
     node scripts/test-gen.mjs      # generator density/speed
     node scripts/test-engine.mjs   # plays 25 full simulated games
+    node scripts/test-online.mjs   # two clients syncing a live match (15 games)

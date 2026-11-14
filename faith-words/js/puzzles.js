@@ -18,19 +18,26 @@ export function specEvent(id, idx) {
 }
 
 const cache = new Map();
+// content published by admins to every player (loaded from Supabase at start-up)
+export const remote = { clueOverrides: {}, customBank: [] };
+export function setRemoteContent(c) {
+  remote.clueOverrides = c?.clueOverrides || {}; remote.customBank = c?.customBank || [];
+  cache.clear();
+}
+const allCustom = () => remote.customBank.concat(store.d.customBank);
 export function getPuzzle(spec) {
-  const key = spec.seed + '|' + (spec.useCustom ? store.d.customBank.length : 0);
+  const key = spec.seed + '|' + (spec.useCustom ? allCustom().length : 0);
   let p = cache.get(key);
   if (!p) {
     let bank = BANK;
-    if (spec.useCustom && store.d.customBank.length) {
-      bank = BANK.concat(store.d.customBank.map((e, i) => ({ id: 10000 + i, a: e.a, c: e.c, e: e.e || '', tags: e.tags || [] })));
+    if (spec.useCustom && allCustom().length) {
+      bank = BANK.concat(allCustom().map((e, i) => ({ id: 10000 + i, a: e.a, c: e.c, e: e.e || '', tags: e.tags || [] })));
     }
     p = generatePuzzle(bank, { seed: spec.seed, focusTag: spec.focusTag || null });
     cache.set(key, p);
   }
   // apply admin clue edits (clue text only — never changes the grid)
-  const ov = store.d.clueOverrides;
+  const ov = { ...remote.clueOverrides, ...store.d.clueOverrides };
   return { ...p, words: p.words.map((w) => (ov[w.entry] ? { ...w, clue: ov[w.entry].c ?? w.clue, emoji: ov[w.entry].e ?? w.emoji } : w)) };
 }
 

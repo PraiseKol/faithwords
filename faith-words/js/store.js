@@ -13,7 +13,8 @@ const fresh = () => ({
   checkin: { last: null, streak: 0 }, winStreak: 0, bestWinStreak: 0,
   stats: { games: 0, wins: 0, losses: 0, draws: 0, bestScore: 0, totalWords: 0 },
   mainNext: 1, daily: {}, events: {}, active: null,
-  settings: { sound: true, unlockEvents: false },
+  settings: { sound: true, haptics: true, theme: 'system', unlockEvents: false },
+  onboarded: false, activeOnline: null,
   clueOverrides: {}, customBank: [], dirty: 0,
 });
 
