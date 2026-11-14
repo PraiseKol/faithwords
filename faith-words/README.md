@@ -29,9 +29,9 @@ Open http://localhost:8080 (add `?debug` to the URL to expose `window.fwDebug` f
 This project is wired to the Supabase project **Faith Words** (`js/env.js`). The database (`supabase/schema.sql`) is applied: a `profiles` table with row-level security, an automatic profile on sign-up, and a leaderboard function.
 - Me tab → Sign in / Sign up. Points, level, coins, streaks and purchases sync to the cloud; guests still play offline.
 - By default Supabase asks new players to confirm their email. To skip that while testing: Supabase dashboard → Authentication → Providers → Email → turn off "Confirm email".
-- **Live online matches** (Me → sign in, then Home → Play online): matchmaking pairs two signed-in players (`matchmake` function); the player whose turn it is saves the board, the other app polls every ~1.3 s. If nobody is found in ~14 s you get a bot. An opponent idle for 90 s can be claimed as a win. You can rejoin an unfinished match from Home.
+- **Live online matches** (Me → sign in, then Home → Play online): matchmaking pairs two signed-in players (`matchmake` function); the player whose turn it is saves the board, the other app gets it instantly through Supabase Realtime (with a slow poll as a safety net). If nobody is found in ~14 s you get a bot. An opponent idle for 90 s can be claimed as a win. You can rejoin an unfinished match from Home.
 - **Shared content**: Admin → "Publish to all players" saves your clue edits and extra words to the `app_content` table; every app loads them on start. Only accounts with `profiles.is_admin = true` can publish (set it in the Supabase table editor after you sign up).
-- **Anti-cheat (partial)**: a database trigger caps how fast XP, coins, wins and games can grow. Scoring is still computed in the app, so before a big public launch move it to a server-side function.
+- **Server-side scoring**: the app records every action in a move log. The `fw-api` Edge Function (`supabase/functions/fw-api`) replays the log with the same rules code (`js/serverlogic.js`, `js/replay.js`) and itself awards XP, coins, streaks and puzzle progress; players cannot write those columns (only `name` and `save`). It also checks turn order, max 5 tiles per turn, plausible timing, a 40-matches-per-hour limit, and charges hints/words/swaps from the log. Live matches are guarded by a database trigger (only the player whose turn it is can add moves; the log is append-only). Updating the function: commit, then deploy `index.ts` with the new commit SHA in its import. Remaining limit: against the bot a determined cheater could still script legal moves in real time; online matches are symmetric.
 - Theme (light / dark / auto), vibration and sound are in Me → Settings; a first-run how-to explains the rules.
 
 ## Android / iOS (Capacitor)
@@ -45,4 +45,5 @@ Store submissions also need icons/splash screens, a privacy policy, and a Google
 ## Tests
     node scripts/test-gen.mjs      # generator density/speed
     node scripts/test-engine.mjs   # plays 25 full simulated games
+    node scripts/test-server.mjs   # server replay + cheating attempts
     node scripts/test-online.mjs   # two clients syncing a live match (15 games)

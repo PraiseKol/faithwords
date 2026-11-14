@@ -15,7 +15,7 @@ export async function initCloud() {
   store.inGame = () => location.hash.startsWith('#/game');
   window.addEventListener('hashchange', () => { if (!store.inGame() && deferred) { store.applyServer(deferred); deferred = null; } });
   window.addEventListener('online', () => flush());
-  if (mock()) return true;
+  if (mock()) { await syncProgress(); return true; }
   if (!cloudEnabled()) return false;
   try {
     const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm');
