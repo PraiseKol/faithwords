@@ -8,6 +8,7 @@ import { store } from './store.js';
 import { sfx } from './audio.js';
 import { A, currentUser } from './cloud.js';
 import { findMatch, waitForOpponent, makeWriter, applyRemoteState } from './online.js';
+import { absLog } from './replay.js';
 import { showHowTo } from './howto.js';
 
 let G = null; // current game
@@ -87,32 +88,47 @@ function sync(extra) {
   const O = G.online; O.pending++;
   return O.write(G.st, extra).finally(() => { O.pending--; });
 }
+// Live updates: Supabase Realtime pushes the opponent's move the moment it is saved; a slow poll
+// is the safety net (and the fast fallback if the realtime connection is not available).
 function startPolling() {
   const O = G.online; if (!O || O.timer) return;
-  O.timer = setInterval(pollOnline, 1300);
+  O.stopped = false; O.live = false;
+  O.sub = A.subscribeMatch(O.id, (row) => handleRow(row), (ok) => { O.live = ok; });
+  const tick = async () => {
+    if (O.stopped) return;
+    await pollOnline();
+    if (!O.stopped) O.timer = setTimeout(tick, O.live ? 6000 : 1300);
+  };
+  O.timer = setTimeout(tick, 1300);
+}
+function stopOnline() {
+  const O = G?.online; if (!O) return;
+  O.stopped = true; clearTimeout(O.timer); O.timer = null;
+  try { O.sub?.stop(); } catch { /* already closed */ } O.sub = null;
 }
 async function pollOnline() {
   const O = G?.online;
   if (!O || G.finished || O.busy || O.pending > 0) return;
   O.busy = true;
-  try {
-    const row = await A.fetchMatch(O.id);
-    if (!row || O.pending > 0 || G.finished) return;
-    if (row.updated_at === O.stamp) return checkIdle();
-    O.stamp = row.updated_at; O.lastActive = Date.now(); O.idle = false;
-    const done = row.status === 'done';
-    if (G.st.turn === 'you' && !done) return; // I am the one writing
-    const before = G.st.board.map((b) => b.ch);
-    applyRemoteState(G.st, row.state, O.role);
-    let any = false;
-    G.st.board.forEach((b, k) => { if (b.ch && !before[k]) { G.last = { cell: k }; G.floats.push({ cell: k, text: '', cls: 'opp' }); any = true; } });
-    if (any) { sfx('opp'); hap(8); }
-    paint();
-    if (done || G.st.over) {
-      const me = O.role === 'p1' ? 1 : 2;
-      finish(row.winner ? (row.winner === me ? 'claim' : 'concede') : undefined);
-    }
-  } catch (e) { /* offline blip: try again next tick */ } finally { O.busy = false; }
+  try { handleRow(await A.fetchMatch(O.id)); } catch (e) { /* offline blip: try again next tick */ } finally { O.busy = false; }
+}
+function handleRow(row) {
+  const O = G?.online;
+  if (!O || !row || O.pending > 0 || G.finished) return;
+  if (row.updated_at === O.stamp) return checkIdle();
+  O.stamp = row.updated_at; O.lastActive = Date.now(); O.idle = false;
+  const done = row.status === 'done';
+  if (G.st.turn === 'you' && !done) return; // I am the one writing
+  const before = G.st.board.map((b) => b.ch);
+  applyRemoteState(G.st, row.state, O.role);
+  let any = false;
+  G.st.board.forEach((b, k) => { if (b.ch && !before[k]) { G.last = { cell: k }; G.floats.push({ cell: k, text: '', cls: 'opp' }); any = true; } });
+  if (any) { sfx('opp'); hap(8); }
+  paint();
+  if (done || G.st.over) {
+    const me = O.role === 'p1' ? 1 : 2;
+    finish(row.winner ? (row.winner === me ? 'claim' : 'concede') : undefined);
+  }
 }
 function checkIdle() {
   const O = G.online;
@@ -122,8 +138,8 @@ function checkIdle() {
 // ---------- saving
 function persist() {
   if (G.online) { sync(); return; }
-  const { board, scores, turn, placed, rackAtStart, racks, quota, passes, botLevel } = G.st;
-  store.d.active = { spec: G.spec, botName: G.botName, st: { board, scores, turn, placed, rackAtStart, racks, quota, passes, botLevel } };
+  const { board, scores, turn, placed, rackAtStart, racks, quota, passes, botLevel, log } = G.st;
+  store.d.active = { spec: G.spec, botName: G.botName, st: { board, scores, turn, placed, rackAtStart, racks, quota, passes, botLevel, log } };
   store.save();
 }
 
@@ -135,7 +151,7 @@ export function renderGame(root) {
   if (G.online) startPolling();
   else if (G.st.turn === 'opp' && !G.busy && !G.st.over) runBot();
 }
-export function leaveGame() { if (G?.online?.timer) { clearInterval(G.online.timer); G.online.timer = null; } }
+export function leaveGame() { stopOnline(); }
 
 function paint() {
   const { st, spec } = G;
@@ -389,6 +405,7 @@ function spendOrPrompt(kind) {
 }
 function useHint() {
   if (!spendOrPrompt('hint')) return;
+  E.logMove(G.st, 'you', 'h'); persist();
   G.hintUntil = Date.now() + 5000;
   paint(); setTimeout(() => G && paint(), 5100);
 }
@@ -415,7 +432,7 @@ function swapPopup() {
   };
   const doSwap = (pass) => {
     if (!pass && !spendOrPrompt('swap')) return;
-    E.swap(G.st, 'you', [...picked].map((i) => G.st.racks.you[i]));
+    E.swap(G.st, 'you', [...picked].map((i) => G.st.racks.you[i]), !pass);
     m.close(); persist();
     if (pass) confirmTurn(); else paint();
   };
@@ -448,12 +465,13 @@ function claimWin() {
 // ---------- result
 function finish(mode) {
   if (G.finished) return; G.finished = true;
-  if (G.online) { clearInterval(G.online.timer); G.online.timer = null; store.d.activeOnline = null; }
+  if (G.online) { stopOnline(); store.d.activeOnline = null; }
   const { spec, st } = G;
   let you = st.scores.you, opp = st.scores.opp;
   if (mode === 'concede') opp = Math.max(opp, you + 1);
   if (mode === 'claim') you = Math.max(you, opp + 1);
-  const r = store.recordResult({ spec, score: you, oppScore: opp });
+  const role = G.online?.role === 'p2' ? 1 : 0;
+  const r = store.recordResult({ spec, score: you, oppScore: opp, log: absLog(st.log, role), role, matchId: G.online?.id || null, mode: mode || null });
   sfx(r.won ? 'win' : 'lose'); if (r.won) { confetti(); hap([30, 50, 30, 50, 80]); }
   const title = r.won ? 'Victory!' : r.draw ? 'Draw' : 'Good game';
   const verse = r.won ? '“Well done, good and faithful servant.” — Matthew 25:21' : r.draw ? '“Iron sharpens iron.” — Proverbs 27:17' : '“Do not grow weary in doing good.” — Galatians 6:9';

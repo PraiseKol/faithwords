@@ -2,20 +2,16 @@
 // cloud.js mirrors it to Supabase when the player is signed in.
 import { CONFIG } from './config.js';
 import { levelFromXp } from './engine.js';
+import * as P from './progress.js';
 
 const KEY = 'fw.v1';
 export const todayStr = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-const dayDiff = (a, b) => Math.round((new Date(a + 'T00:00:00') - new Date(b + 'T00:00:00')) / 86400000);
 
 const fresh = () => ({
-  name: 'Believer', xp: 0, coins: CONFIG.startCoins,
-  inv: { hint: CONFIG.startHints, word: CONFIG.startWords },
-  checkin: { last: null, streak: 0 }, winStreak: 0, bestWinStreak: 0,
-  stats: { games: 0, wins: 0, losses: 0, draws: 0, bestScore: 0, totalWords: 0 },
-  mainNext: 1, daily: {}, events: {}, active: null,
+  name: 'Believer', ...P.freshProgress(), active: null,
   settings: { sound: true, haptics: true, theme: 'system', unlockEvents: false },
   onboarded: false, activeOnline: null,
-  clueOverrides: {}, customBank: [], dirty: 0,
+  clueOverrides: {}, customBank: [], dirty: 0, pendingOps: [],
 });
 
 let data;
@@ -37,67 +33,35 @@ export const store = {
   reset() { data = fresh(); this.save(); },
   level() { return levelFromXp(data.xp); },
 
-  // ---- daily check-in: coins = base * (1 + step*(day-1)), day capped
-  checkinInfo() {
-    const t = todayStr(), c = data.checkin;
-    const claimed = c.last === t;
-    let day;
-    if (claimed) day = c.streak;
-    else if (c.last && dayDiff(t, c.last) === 1) day = c.streak + 1;
-    else day = 1;
-    const reward = (n) => Math.round(CONFIG.checkin.base * (1 + CONFIG.checkin.step * (Math.min(n, CONFIG.checkin.maxDay) - 1)));
-    return { claimed, day, reward, today: reward(day) };
-  },
+  // ---- progress rules live in progress.js (shared with the server). Signed-in players: every change
+  // is applied here instantly, then confirmed by the server, whose answer wins (see cloud.js).
+  hook: null, // set by cloud.js: { op(name, payload) }
+  serverState() { const o = {}; P.SERVER_KEYS.forEach((k) => (o[k] = data[k])); return o; },
+  applyServer(g) { P.SERVER_KEYS.forEach((k) => { if (g[k] !== undefined) data[k] = g[k]; }); this.save(); },
+  queueOp(op) { if (!this.hook?.active()) return; data.pendingOps.push(op); this.save(); this.hook.flush(); },
+
+  checkinInfo() { return P.checkinInfo(data, todayStr()); },
   claimCheckin() {
-    const i = this.checkinInfo();
-    if (i.claimed) return 0;
-    data.coins += i.today;
-    data.checkin = { last: todayStr(), streak: i.day };
-    this.save();
-    return i.today;
+    const n = P.claimCheckin(data, todayStr());
+    if (n) { this.queueOp({ op: 'checkin', today: todayStr() }); this.save(); }
+    return n;
   },
-
-  winMultiplier(streak) { return Math.min(CONFIG.win.maxMult, 1 + CONFIG.win.step * (streak - 1)); },
-
-  spend(kind) { // 'hint' | 'word' | 'swap' -> true if paid (item or coins)
-    if (kind !== 'swap' && data.inv[kind] > 0) { data.inv[kind]--; this.save(); return true; }
-    const p = CONFIG.price[kind];
-    if (data.coins >= p) { data.coins -= p; this.save(); return true; }
-    return false;
+  winMultiplier: P.winMultiplier,
+  spend(kind) { // power-ups used in a match are charged by the server from the match log; locally it is instant
+    const ok = P.spend(data, kind); if (ok) this.save(); return ok;
   },
   buy(kind) {
-    const p = CONFIG.price[kind];
-    if (data.coins < p) return false;
-    data.coins -= p; data.inv[kind]++; this.save(); return true;
+    const ok = P.buy(data, kind);
+    if (ok) { this.queueOp({ op: 'buy', kind }); this.save(); }
+    return ok;
   },
 
-  /** Called once when a match ends. Returns a summary for the result screen. */
-  recordResult({ spec, score, oppScore }) {
-    const before = this.level();
-    const won = score > oppScore, draw = score === oppScore;
-    const s = data.stats;
-    s.games++; s.bestScore = Math.max(s.bestScore, score);
-    let winBonus = 0, dailyBonus = 0, coins = 0, mult = 1;
-    if (won) {
-      s.wins++; data.winStreak++; data.bestWinStreak = Math.max(data.bestWinStreak, data.winStreak);
-      winBonus = CONFIG.winXpBonus;
-      if (spec.kind === 'daily') dailyBonus = CONFIG.dailyXpBonus;
-      mult = this.winMultiplier(data.winStreak);
-      coins = Math.round(CONFIG.win.base * mult);
-    } else if (draw) s.draws++;
-    else { s.losses++; data.winStreak = 0; }
-    const xpGain = score + winBonus + dailyBonus;
-    data.xp += xpGain; data.coins += coins;
-    // progress
-    if (spec.kind === 'main') data.mainNext = Math.max(data.mainNext, spec.n + 1);
-    if (spec.kind === 'daily') data.daily[spec.date] = { score, won };
-    if (spec.kind === 'event') {
-      data.events[spec.id] = Math.max(data.events[spec.id] || 0, spec.idx + 1);
-      if (won) { coins += CONFIG.eventCoinReward; data.coins += CONFIG.eventCoinReward; }
-    }
+  /** Called once when a match ends. log/role/matchId let the server re-check the result. */
+  recordResult({ spec, score, oppScore, log = [], role = 0, matchId = null, mode = null }) {
+    const r = P.applyResult(data, { spec, score, oppScore });
     data.active = null;
+    this.queueOp({ op: 'result', spec, log, role, matchId, mode, today: todayStr() });
     this.save();
-    const after = this.level();
-    return { won, draw, score, oppScore, winBonus, dailyBonus, xpGain, coins, mult, streak: data.winStreak, before, after, leveledUp: after.level > before.level, eventCoins: spec.kind === 'event' && won ? CONFIG.eventCoinReward : 0 };
+    return r;
   },
 };

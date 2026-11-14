@@ -3,8 +3,10 @@
 import { A, currentUser } from './cloud.js';
 import { newGame } from './engine.js';
 import { getPuzzle } from './puzzles.js';
+import { absLog, relLog } from './replay.js';
 
 const other = (r) => (r === 'p1' ? 'p2' : 'p1');
+const idx = (r) => (r === 'p1' ? 0 : 1);
 const side = (who, role) => (who === 'you' ? role : who === 'opp' ? other(role) : who); // given/rev stay as is
 const back = (by, role) => (by === role ? 'you' : by === other(role) ? 'opp' : by);
 
@@ -16,6 +18,7 @@ export function toRemote(st, role) {
     racks: { [role]: st.racks.you, [other(role)]: st.racks.opp },
     turn: st.turn === 'you' ? role : other(role),
     placed: st.placed, rackAtStart: st.rackAtStart, passes: st.passes, over: st.over,
+    log: absLog(st.log, idx(role)),
   };
 }
 /** Shared state -> local state for the given player. */
@@ -25,6 +28,7 @@ export function applyRemoteState(st, remote, role) {
   st.racks = { you: remote.racks[role], opp: remote.racks[other(role)] };
   st.turn = remote.turn === role ? 'you' : 'opp';
   st.placed = remote.placed; st.rackAtStart = remote.rackAtStart; st.passes = remote.passes; st.over = !!remote.over;
+  st.log = relLog(remote.log || [], idx(role));
   return st;
 }
 

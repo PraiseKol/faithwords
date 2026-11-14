@@ -10,11 +10,15 @@ export function newGame(puzzle, { botLevel = 1 } = {}) {
     puzzle, board, cellWords, botLevel,
     scores: { you: 0, opp: 0 }, turn: 'you', placed: 0, rackAtStart: 0,
     racks: { you: [], opp: [] }, over: false, quota: 0, passes: 0,
+    log: [], // every action: [who, type, arg, time] — the server replays this to verify results
   };
   refill(st, 'you'); refill(st, 'opp');
   st.rackAtStart = st.racks.you.length;
   return st;
 }
+
+/** type: p place(cell) · e end turn · r reveal word(id) · s paid swap · x free swap · h hint */
+export const logMove = (st, who, t, k = 0) => { st.log.push([who, t, k, Date.now()]); };
 
 export const wordCells = (w) => {
   const out = [];
@@ -65,6 +69,7 @@ export function place(st, who, letter, cell) {
   const c = st.puzzle.cells[cell];
   if (c.t !== 'l' || st.board[cell].ch || c.ch !== letter) return { ok: false, wrong: true };
   st.board[cell] = { ch: letter, by: who };
+  logMove(st, who, 'p', cell);
   st.racks[who].splice(ri, 1);
   st.placed++;
   let points = 1;
@@ -82,6 +87,7 @@ export function place(st, who, letter, cell) {
 /** Power-up: fill a whole word for free (no points). */
 export function revealWord(st, who, wordId) {
   const w = st.puzzle.words[wordId];
+  logMove(st, who, 'r', wordId);
   let n = 0;
   wordCells(w).forEach((k) => { if (!st.board[k].ch) { st.board[k] = { ch: st.puzzle.cells[k].ch, by: 'rev' }; n++; } });
   trimRacks(st);
@@ -89,7 +95,8 @@ export function revealWord(st, who, wordId) {
   return n;
 }
 
-export function swap(st, who, letters) {
+export function swap(st, who, letters, paid = true) {
+  logMove(st, who, paid ? 's' : 'x');
   letters.forEach((l) => { const i = st.racks[who].indexOf(l); if (i >= 0) st.racks[who].splice(i, 1); });
   refill(st, who, letters);
 }
@@ -97,6 +104,7 @@ export function swap(st, who, letters) {
 /** End the current turn. Returns {bonus} */
 export function endTurn(st) {
   const who = st.turn;
+  logMove(st, who, 'e');
   let bonus = 0;
   if (st.placed >= CONFIG.tilesPerRack && st.rackAtStart >= CONFIG.tilesPerRack) {
     bonus = CONFIG.allTilesBonus;
@@ -137,10 +145,6 @@ export function botStep(st) {
   return options[Math.floor(Math.random() * options.length)];
 }
 
-export function levelFromXp(xp) {
-  let level = 1, need = CONFIG.xpForLevel(1), rest = xp;
-  while (rest >= need) { rest -= need; level++; need = CONFIG.xpForLevel(level); }
-  return { level, into: rest, need };
-}
+export { levelFromXp } from './progress.js';
 
 export function serialize(st) { return JSON.stringify({ ...st, puzzle: undefined, seed: st.puzzle.seed }); }
