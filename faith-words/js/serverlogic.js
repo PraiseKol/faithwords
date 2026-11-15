@@ -2,7 +2,7 @@
 // Pure (no network, no storage) so it is tested in Node and runs unchanged inside the Edge Function.
 import * as P from './progress.js';
 import { CONFIG, EVENTS, EVENT_PUZZLES } from './config.js';
-import { specMain, specDaily, specEvent, buildPuzzle } from './spec.js';
+import { specMain, specDaily, specEvent, buildPuzzle, validOnlineSeed } from './spec.js';
 import { replay } from './replay.js';
 
 export class HttpError extends Error { constructor(status, msg) { super(msg); this.status = status; } }
@@ -64,7 +64,7 @@ export async function handleOp(game, op, ctx) {
     idx = row.p1 === ctx.uid ? 0 : row.p2 === ctx.uid ? 1 : bad(403, 'not your match');
     if (row.status === 'playing' || row.status === 'waiting') bad(425, 'match not finished yet');
     if (row.status !== 'done') bad(409, 'match was cancelled');
-    if (!/^online-/.test(row.spec?.seed || '')) bad(400, 'bad match');
+    if (!validOnlineSeed(row.spec?.seed || '')) bad(400, 'bad match');
     spec = { kind: 'online', seed: row.spec.seed, label: 'Online match' };
     log = row.state?.log; winner = row.winner ?? null;
     wallMs = Date.parse(row.updated_at) - Date.parse(row.created_at);
@@ -72,8 +72,7 @@ export async function handleOp(game, op, ctx) {
     spec = canonicalSpec(g, op.spec, now);
     log = op.log; mode = op.mode === 'concede' ? 'concede' : null;
   }
-  const custom = spec.useCustom ? await ctx.loadCustom() : [];
-  const puzzle = buildPuzzle(spec, custom);
+  const puzzle = buildPuzzle(spec);
   const rep = replay(puzzle, log);
   if (!rep.ok) bad(422, 'match did not replay: ' + rep.err);
   if (!op.matchId && idx !== 0) bad(400, 'bad seat');

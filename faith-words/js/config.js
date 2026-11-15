@@ -1,7 +1,6 @@
 // Tunable game economy & rules — edit freely.
 export const CONFIG = {
   tilesPerRack: 5,
-  strikesPerTurn: 3,             // wrong placements allowed per turn; the last one ends the turn
   allTilesBonus: 5,              // +5 when all 5 tiles are used in one round
   givenLetters: 4,
   startCoins: 50, startHints: 3, startWords: 1,

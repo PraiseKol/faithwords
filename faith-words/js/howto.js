@@ -3,9 +3,9 @@ import { h, modal, crossSvg, icon, coin } from './ui.js';
 import { CONFIG } from './config.js';
 
 const slides = () => [
-  { art: '🧩', title: 'Fill the crossword', body: 'Blue cells hold clues: words, fill-in-the-blanks or pictures. The little arrow shows which way the answer runs. Tap a clue to zoom it.' },
-  { art: '🔤', title: 'Place your 5 tiles', body: 'Drag a tile onto the cell where it belongs, or tap the tile and then the cell. Press Done to end your turn. Three wrong guesses end the turn.' },
-  { art: '⭐', title: 'Score points', body: `Every correct tile is 1 point. The tile that finishes a word is worth 1 plus the length of the word. Use all 5 tiles in one turn for +${CONFIG.allTilesBonus} bonus. Highest score wins.` },
+  { art: '🧩', title: 'Fill the crossword', body: 'Blue cells hold clues: words, fill-in-the-blanks or pictures. The little arrow shows which way the answer runs. Tap a clue to zoom in and read it — that never fills anything in.' },
+  { art: '🔤', title: 'Place your 5 tiles', body: 'Drag a tile onto any square (or tap the tile, then the square). Nothing is checked yet. When you are ready, press Submit: right tiles score and stay, wrong tiles cost 1 point each and come back to your rack.' },
+  { art: '⭐', title: 'Score points', body: `Every correct tile is 1 point, every wrong one −1. The tile that finishes a word is worth 1 plus the length of the word. Use all 5 tiles in one turn for +${CONFIG.allTilesBonus} bonus. Highest score wins.` },
   { art: '🪙', title: 'Win coins, level up', body: `All your points add up as you climb levels. Check in daily and win games in a row for bonus coins, then spend them on Hints (${CONFIG.price.hint}) and Word reveals (${CONFIG.price.word}).` },
 ];
 

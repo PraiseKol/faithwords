@@ -7,9 +7,8 @@ import { remote, setRemoteContent } from './puzzles.js';
 import { BANK } from './bank.js';
 import { CONFIG, EVENTS, EVENT_PUZZLES } from './config.js';
 import { store, todayStr } from './store.js';
-import { getPuzzle, specMain, specDaily, specEvent, CUSTOM_FROM_PUZZLE } from './puzzles.js';
+import { getPuzzle, specMain, specDaily, specEvent } from './puzzles.js';
 import { startGame } from './game.js';
-import { W, H } from './generator.js';
 
 let tab = 'puzzles';
 let pz = { kind: 'main', n: 1, date: todayStr(), ev: 'hero', idx: 0 };
@@ -56,7 +55,7 @@ function puzzlesTab(draw) {
     h('input', { type: 'number', min: 0, max: EVENT_PUZZLES - 1, value: pz.idx, onchange: (e) => { pz.idx = e.target.value; draw(); } }));
   const spec = specFromState();
   const p = getPuzzle(spec);
-  const grid = h('div', { class: 'a-grid', style: { gridTemplateColumns: `repeat(${W}, 1fr)` } }, p.cells.map((c) =>
+  const grid = h('div', { class: 'a-grid', style: { gridTemplateColumns: `repeat(${p.W}, 1fr)` } }, p.cells.map((c) =>
     h('div', { class: 'a-cell ' + c.t }, c.t === 'l' ? c.ch : c.t === 'c' ? '▪' : '')));
   const rows = p.words.map((w) => {
     const clue = h('input', { value: w.clue, placeholder: w.emoji ? '(picture clue)' : '', onchange: (e) => { setOv(w.entry, { c: e.target.value }); toast('Saved'); } });
@@ -64,7 +63,7 @@ function puzzlesTab(draw) {
     return h('div', { class: 'a-word' }, h('b', {}, w.ans), h('small', {}, `${w.dir === 'a' ? '→' : '↓'} ${w.len}`), clue, emo);
   });
   return h('div', {}, h('div', { class: 'a-ctl' }, kindSel, ctl, h('button', { class: 'btn sm', onclick: () => startGame(spec) }, 'Play it')),
-    h('small', { class: 'muted' }, `${spec.label} · ${p.words.length} words · ${p.letterCount} letters. Edits change the clue text only — the grid never changes.`),
+    h('small', { class: 'muted' }, `${spec.label} · ${p.W}×${p.H} · ${p.words.length} words · ${p.letterCount} letters. Edits change the clue text only — the grid never changes.`),
     grid, h('div', { class: 'a-words' }, rows));
 }
 function setOv(entry, patch) { store.d.clueOverrides[entry] = { ...(store.d.clueOverrides[entry] || {}), ...patch }; store.save(); }
@@ -88,13 +87,13 @@ function bankTab(draw) {
     if (!/^[A-Z]{3,9}$/.test(ans)) return toast('Answer must be 3–9 letters A–Z');
     if (!c.value && !e.value) return toast('Add a clue or an emoji');
     store.d.customBank.push({ a: ans, c: c.value, e: e.value, tags: t.value.split(',').map((x) => x.trim()).filter(Boolean) });
-    store.save(); toast(`Added ${ans}. Used from main puzzle ${CUSTOM_FROM_PUZZLE}`); draw();
+    store.save(); toast(`Saved ${ans} for the next puzzle batch`); draw();
   };
   const custom = store.d.customBank.map((x, i) => h('div', { class: 'a-word' }, h('b', {}, x.a), h('small', {}, (x.tags || []).join(',')), h('span', { class: 'muted' }, x.c || x.e),
     h('button', { class: 'link', onclick: () => { store.d.customBank.splice(i, 1); store.save(); draw(); } }, 'Delete')));
   return h('div', {},
-    h('div', { class: 'card' }, h('b', {}, 'Add a word'), a, c, e, t, h('button', { class: 'btn sm', onclick: add }, 'Add')),
-    custom.length ? h('div', { class: 'card' }, h('b', {}, `Your custom words (${custom.length})`), custom) : null,
+    h('div', { class: 'card' }, h('b', {}, 'Suggest a word'), h('small', { class: 'muted' }, 'Existing puzzles are fixed so every player gets the same grid. Suggested words go into the next generated batch.'), a, c, e, t, h('button', { class: 'btn sm', onclick: add }, 'Add')),
+    custom.length ? h('div', { class: 'card' }, h('b', {}, `Suggested words (${custom.length})`), custom) : null,
     search, h('small', { class: 'muted' }, `${list.length} entries · page ${bankPage + 1}/${pages}`),
     h('div', { class: 'a-words' }, rows),
     h('div', { class: 'btn-row' }, h('button', { class: 'btn ghost sm', disabled: bankPage === 0, onclick: () => { bankPage--; draw(); } }, 'Prev'), h('button', { class: 'btn ghost sm', disabled: bankPage >= pages - 1, onclick: () => { bankPage++; draw(); } }, 'Next')));

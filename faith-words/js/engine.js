@@ -1,6 +1,5 @@
 // Pure game rules: board, racks, scoring, bot. No DOM here (so it can be tested in Node).
 import { CONFIG } from './config.js';
-import { W, H } from './generator.js';
 
 export function newGame(puzzle, { botLevel = 1 } = {}) {
   const board = puzzle.cells.map((c) => ({ ch: c.t === 'l' && c.given ? c.ch : null, by: c.t === 'l' && c.given ? 'given' : null }));
@@ -17,14 +16,10 @@ export function newGame(puzzle, { botLevel = 1 } = {}) {
   return st;
 }
 
-/** type: p place(cell) · e end turn · r reveal word(id) · s paid swap · x free swap · h hint */
+/** type: p right tile(cell) · w wrong tiles(count) · e end turn · r reveal word(id) · s paid swap · x free swap · h hint */
 export const logMove = (st, who, t, k = 0) => { st.log.push([who, t, k, Date.now()]); };
 
-export const wordCells = (w) => {
-  const out = [];
-  for (let i = 0; i < w.len; i++) out.push((w.r + (w.dir === 'd' ? i : 0)) * W + w.c + (w.dir === 'a' ? i : 0));
-  return out;
-};
+export const wordCells = (w) => w.cells;
 export const isLetterCell = (st, k) => st.puzzle.cells[k].t === 'l';
 export const solution = (st, k) => st.puzzle.cells[k].ch;
 
@@ -80,8 +75,23 @@ export function place(st, who, letter, cell) {
   });
   st.scores[who] += points;
   trimRacks(st);
-  if (emptyCount(st) === 0) st.over = true;
   return { ok: true, points, completed };
+}
+
+/** The player's Submit: every tile they dropped on the board is checked now. Right ones score, wrong ones
+ *  cost 1 point each and go back to the rack. items: [{letter, cell}]. */
+export function submit(st, who, items) {
+  if (st.over || st.turn !== who) return { ok: false };
+  const right = [], wrong = [], completed = [];
+  let points = 0;
+  for (const it of items) {
+    const c = st.puzzle.cells[it.cell];
+    const fits = c && c.t === 'l' && !st.board[it.cell].ch && c.ch === it.letter;
+    const r = fits ? place(st, who, it.letter, it.cell) : { ok: false };
+    if (r.ok) { right.push({ ...it, points: r.points }); points += r.points; completed.push(...r.completed); } else wrong.push(it);
+  }
+  if (wrong.length) { logMove(st, who, 'w', wrong.length); st.scores[who] = Math.max(0, st.scores[who] - wrong.length); }
+  return { ok: true, right, wrong, points, penalty: wrong.length, completed };
 }
 
 /** Power-up: fill a whole word for free (no points). */

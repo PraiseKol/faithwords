@@ -1,6 +1,6 @@
 // Server-side scoring: replay a played match and compare, then try to cheat.
 import assert from 'node:assert';
-import { newGame, place, endTurn, botStep, targets } from '../js/engine.js';
+import { newGame, place, submit, endTurn, botStep, targets } from '../js/engine.js';
 import { getPuzzle } from '../js/puzzles.js';
 import { specMain } from '../js/spec.js';
 import { absLog } from '../js/replay.js';
@@ -14,12 +14,16 @@ function play(spec, botLevel = 3) {
   let guard = 0;
   while (!st.over && guard++ < 400) {
     if (st.turn === 'you') {
-      for (const l of [...st.racks.you]) { const t = targets(st, l); if (t.length) place(st, 'you', l, t[0]); if (st.over) break; }
-      if (!st.over) endTurn(st);
+      const used = new Set(), items = [];
+      for (const l of st.racks.you) { const t = targets(st, l).find((k) => !used.has(k)); if (t != null) { used.add(t); items.push({ letter: l, cell: t }); } }
+      if (items.length > 1 && Math.random() < 0.4) items.push({ letter: items[0].letter, cell: st.puzzle.cells.findIndex((c, k) => c.t === 'l' && !st.board[k].ch && !used.has(k) && c.ch !== items[0].letter) }); // a wrong guess
+      if (items.length > 5) items.length = 5;
+      submit(st, 'you', items);
+      endTurn(st);
     } else {
       st.quota = st.quota || 1; let s;
-      while ((s = botStep(st))) { place(st, 'opp', s.letter, s.cell); if (st.over) break; }
-      if (!st.over) endTurn(st);
+      while ((s = botStep(st))) place(st, 'opp', s.letter, s.cell);
+      endTurn(st);
     }
   }
   Date.now = realNow;
@@ -75,7 +79,7 @@ const imp = (await handleOp(null, { op: 'sync', local: { xp: 999999, coins: 9999
 assert.ok(imp.xp <= 1500 && imp.coins <= 400 && imp.mainNext <= 30);
 
 // 4. a live match between two accounts, read from the match row
-const ospec = { kind: 'online', seed: 'online-test1' };
+const ospec = { kind: 'online', seed: 'online-5' };
 const os = newGame(getPuzzle(ospec), { botLevel: 1 });
 // play both seats as 'you'-style players with p1/p2 abs logs
 let clock = 1e12; const realNow = Date.now; Date.now = () => (clock += 900);
@@ -83,8 +87,10 @@ const alog = [];
 let guard = 0;
 while (!os.over && guard++ < 400) {
   const who = os.turn;
-  for (const l of [...os.racks[who]]) { const tg = targets(os, l); if (tg.length) place(os, who, l, tg[0]); if (os.over) break; }
-  if (!os.over) endTurn(os);
+  const used = new Set(), items = [];
+  for (const l of os.racks[who]) { const t = targets(os, l).find((k) => !used.has(k)); if (t != null) { used.add(t); items.push({ letter: l, cell: t }); } }
+  submit(os, who, items);
+  endTurn(os);
 }
 Date.now = realNow;
 const abs = absLog(os.log, 0);
