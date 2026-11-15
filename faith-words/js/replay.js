@@ -2,13 +2,8 @@
 // with the real rules and returns the scores — nothing the phone says about points is trusted.
 // Log entries: [who, type, arg, ms]  who = 0 (first player) | 1 (second player)
 import { CONFIG } from './config.js';
-import { W } from './generator.js';
 
-const wordCellsOf = (w) => {
-  const out = [];
-  for (let i = 0; i < w.len; i++) out.push((w.r + (w.dir === 'd' ? i : 0)) * W + w.c + (w.dir === 'a' ? i : 0));
-  return out;
-};
+const wordCellsOf = (w) => w.cells;
 
 export function replay(puzzle, log) {
   const cells = puzzle.cells;
@@ -19,7 +14,7 @@ export function replay(puzzle, log) {
   const out = { ok: true, err: null, scores: [0, 0], over: false, power: [{ h: 0, r: 0, s: 0 }, { h: 0, r: 0, s: 0 }], placed: [0, 0], turns: 0, spanMs: 0 };
   const fail = (m) => { out.ok = false; out.err = m; return out; };
   if (!Array.isArray(log) || log.length > 600) return fail('bad log');
-  let turn = 0, placed = 0, passes = 0, lastTs = null, firstTs = null;
+  let turn = 0, placed = 0, wrongs = 0, passes = 0, lastTs = null, firstTs = null;
   for (const e of log) {
     if (!Array.isArray(e) || e.length < 4) return fail('bad entry');
     const [w, t, k, ts] = e;
@@ -30,7 +25,7 @@ export function replay(puzzle, log) {
     if (t === 'p') {
       if (!Number.isInteger(k) || k < 0 || k >= cells.length) return fail('bad cell');
       if (cells[k].t !== 'l' || have[k]) return fail('cell not open');
-      if (++placed > CONFIG.tilesPerRack) return fail('too many tiles in a turn');
+      if (++placed + wrongs > CONFIG.tilesPerRack) return fail('too many tiles in a turn');
       have[k] = true; empty--; out.placed[w]++;
       let pts = 1;
       for (const id of cellWords[k] || []) {
@@ -38,12 +33,14 @@ export function replay(puzzle, log) {
         if (wordCellsOf(ww).every((c) => have[c])) pts += ww.len;
       }
       out.scores[w] += pts;
-      if (empty === 0) out.over = true;
+    } else if (t === 'w') {
+      if (!Number.isInteger(k) || k < 1 || placed + wrongs + k > CONFIG.tilesPerRack) return fail('bad wrong count');
+      wrongs += k; out.scores[w] = Math.max(0, out.scores[w] - k);
     } else if (t === 'e') {
       if (placed >= CONFIG.tilesPerRack) out.scores[w] += CONFIG.allTilesBonus;
       passes = placed === 0 ? passes + 1 : 0;
       if (empty === 0 || passes >= 6) out.over = true;
-      turn = 1 - turn; placed = 0; out.turns++;
+      turn = 1 - turn; placed = 0; wrongs = 0; out.turns++;
     } else if (t === 'r') {
       const ww = puzzle.words[k];
       if (!ww) return fail('bad word');

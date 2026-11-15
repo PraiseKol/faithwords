@@ -20,8 +20,9 @@ Open http://localhost:8080 (add `?debug` to the URL to expose `window.fwDebug` f
 - All numbers live in `js/config.js`.
 
 ## Content
-- `js/bank.js` — ~500 Bible / church words with clues (`ANSWER|clue|tags|emoji`). Edit and extend it.
-- Puzzles are generated from a seed (`js/generator.js`): endless main puzzles, one per calendar day, and 6 puzzles per event (Heroes of Faith, Psalms & Praise, Christmas, Easter, Pentecost).
+- `js/bank.js` — ~1,600 Bible / church / Christian-life entries (`ANSWER|clue|tags|emoji`). **Append-only**: the puzzle pack refers to entries by position, so add new lines at the end and never reorder or delete.
+- `js/pack.js` — every puzzle, generated once offline by `node tools/make-pack.mjs` (about 4 minutes): 240 main levels, daily puzzles 2026-08-15 → 2027-02-28, 6 per event, 60 for live matches. Grid sizes vary (7×9, 8×9, 7×8, 8×8, 7×10), every square is a clue or a letter (no gaps), and every player on every device gets exactly the same puzzle. Levels past 240 repeat the set; to add more, raise the numbers in `tools/make-pack.mjs` and regenerate (then redeploy `fw-api`).
+- Gameplay: tapping a clue only zooms it. Drop tiles on any squares, then press **Submit**: right tiles score and stay, each wrong tile costs 1 point (never below 0) and returns to the rack.
 - Admin panel at `#/admin` (PIN in `js/config.js`, default `faith`): preview any puzzle, edit clues/emoji, add new words, export/import content JSON.
   The PIN is only a screen lock for the offline build — use the `is_admin` role in Supabase for real protection.
 
@@ -43,7 +44,7 @@ This project is wired to the Supabase project **Faith Words** (`js/env.js`). The
 Store submissions also need icons/splash screens, a privacy policy, and a Google Play / Apple Developer account.
 
 ## Tests
-    node scripts/test-gen.mjs      # generator density/speed
+    node scripts/test-pack.mjs     # every puzzle: no empty squares, all dates covered, sizes vary
     node scripts/test-engine.mjs   # plays 25 full simulated games
     node scripts/test-server.mjs   # server replay + cheating attempts
     node scripts/test-online.mjs   # two clients syncing a live match (15 games)

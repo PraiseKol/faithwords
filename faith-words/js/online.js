@@ -3,6 +3,7 @@
 import { A, currentUser } from './cloud.js';
 import { newGame } from './engine.js';
 import { getPuzzle } from './puzzles.js';
+import { randomOnlineSeed } from './spec.js';
 import { absLog, relLog } from './replay.js';
 
 const other = (r) => (r === 'p1' ? 'p2' : 'p1');
@@ -33,7 +34,7 @@ export function applyRemoteState(st, remote, role) {
 }
 
 export function onlineSpec() {
-  return { kind: 'online', seed: 'online-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), label: 'Online match' };
+  return { kind: 'online', seed: randomOnlineSeed(), label: 'Online match' };
 }
 
 /** Enter the queue. Returns {row, role, st, spec} (row.status may be 'waiting' when you are first in). */
