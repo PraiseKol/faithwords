@@ -56,7 +56,7 @@ function puzzlesTab(draw) {
   const spec = specFromState();
   const p = getPuzzle(spec);
   const grid = h('div', { class: 'a-grid', style: { gridTemplateColumns: `repeat(${p.W}, 1fr)` } }, p.cells.map((c) =>
-    h('div', { class: 'a-cell ' + c.t }, c.t === 'l' ? c.ch : c.t === 'c' ? '▪' : '')));
+    h('div', { class: 'a-cell ' + c.t }, c.t === 'l' ? c.ch : c.t === 'c' ? '▪' : c.t === 'o' ? '✝' : '')));
   const rows = p.words.map((w) => {
     const clue = h('input', { value: w.clue, placeholder: w.emoji ? '(picture clue)' : '', onchange: (e) => { setOv(w.entry, { c: e.target.value }); toast('Saved'); } });
     const emo = h('input', { class: 'emo-in', value: w.emoji || '', onchange: (e) => { setOv(w.entry, { e: e.target.value }); toast('Saved'); } });

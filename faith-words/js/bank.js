@@ -1596,6 +1596,1882 @@ BREAKFAST|Jesus cooked fish on the shore|nt,thm,east
 ASCEND|Go up to heaven|nt,thm,east
 LENT|Season of fasting before Easter|cur,thm,east
 LILIES|Easter flowers|cur,obj,east
+ABNER|Saul's army commander|ot,ppl
+ADONIJAH|David's son who claimed the throne|ot,ppl
+AMASA|Commander killed by Joab|ot,ppl
+ARAUNAH|Sold David a threshing floor|ot,ppl
+ARIEL|Name for Jerusalem|ot,plc
+BEZALEL|Craftsman of the tabernacle|ot,ppl
+BILDAD|Job's friend from Shuah|ot,ppl
+BLASTUS|Herod's chamberlain|nt,ppl
+CHLOE|Woman whose household reported to Paul|nt,ppl
+DIANA|Goddess of the Ephesians|nt,ppl
+ELIHU|Young friend who spoke to Job|ot,ppl
+ENDOR|Where Saul visited a medium|ot,plc
+EPHRAIM|Joseph's younger son|ot,ppl
+GOMER|Hosea's wife|ot,ppl
+IRIJAH|Sentry who arrested Jeremiah|ot,ppl
+ITHAMAR|Aaron's youngest son|ot,ppl
+JULIUS|Centurion who escorted Paul|nt,ppl
+KENITE|Tribe of Jael|ot,ppl
+KISH|Saul's father|ot,ppl
+MAHLON|Ruth's first husband|ot,ppl
+MANOAH|Samson's father|ot,ppl
+MICAIAH|Prophet who told Ahab the truth|ot,ppl
+MOLECH|Idol of child sacrifice|ot,ppl
+OG|King of Bashan|ot,ppl
+PHARES|Son of Judah and Tamar|ot,ppl
+TROPHIMUS|Ephesian friend of Paul|nt,ppl
+ANAK|Ancestor of giants|ot,ppl
+ASHUR|Son of Shem|ot,ppl
+BELA|One of the five cities|ot,plc
+BIRSHA|King of Gomorrah|ot,ppl
+BUZ|Nahor's son|ot,ppl
+COS|Island visited by Paul|nt,plc
+DEDAN|Son of Raamah|ot,ppl
+ENON|Place near Salim where John baptized|nt,plc
+ER|Judah's wicked firstborn|ot,ppl
+ESHCOL|Valley of the huge cluster|ot,plc
+HAMATH|Northern border city|ot,plc
+HITTITE|Uriah's people|ot,ppl
+IDUMEA|Land of Herod's family|nt,plc
+IKONIUM|City of Paul's first journey|nt,plc
+ISSACHAR|Tribe of the strong donkey|ot,ppl
+JABESH|City Saul rescued|ot,plc
+JAPHETH|Noah's youngest son|ot,ppl
+JEBUS|Early name of Jerusalem|ot,plc
+JEZREEL|Valley of Naboth's vineyard|ot,plc
+MAHANAIM|Place where Jacob met angels|ot,plc
+MARAH|Bitter water|ot,plc
+MEDIA|Land with the Persians|ot,plc
+MIZPAH|Watchtower place of Laban and Jacob|ot,plc
+OPHIR|Land of fine gold|ot,plc
+PATARA|Port on Paul's last voyage|nt,plc
+PHRYGIA|Region of Asia Minor|nt,plc
+TARSHISH|Where Jonah wanted to flee|ot,plc
+TIBERIAS|City on the Sea of Galilee|nt,plc
+UZ|Land of Job|ot,plc
+ABHOR|Hate what is evil|thm
+ABOUND|Overflow with hope|thm
+ABYSS|Bottomless pit|thm
+ACCORD|One __ in prayer|thm
+AFAR|From __ off Peter followed|thm
+AFFLICT|Cause suffering to|thm
+ALOES|Spice brought with myrrh|obj
+AMBER|Glowing color in Ezekiel's vision|obj
+ANCIENT|Of old|thm
+ANOINT|Pour oil on|thm
+APPLE|Of God's eye|obj
+ARCH|Chief angel prefix|thm
+ASSEMBLE|Gather together|thm
+ASTRAY|Like sheep gone __|thm
+AWAKE|Wake up, sleeper|thm
+BALM|Healing ointment of Gilead|obj
+BASKET|Paul escaped in one|obj
+BATHE|Wash|thm
+BEHOLD|Look!|thm
+BESEECH|Plead earnestly|thm
+BETRAY|Hand over as Judas did|east
+BIND|Tie up|thm
+BITTER|Like the waters of Marah|thm
+BLAME|Find fault|thm
+BLEED|Shed blood|thm
+BLOOM|Flower|thm
+BOLDLY|With courage|thm
+BONDAGE|Slavery|thm
+BORROW|Take on loan|thm
+BOUGH|Tree branch|obj
+BOUND|Tied up|thm
+BRIGHT|Shining|thm
+BURDEN|Heavy load|thm
+CAGE|Holds birds|obj
+CALM|Jesus stilled the storm into a great __|thm
+CARPENTER|Joseph's trade|nt
+CAST|Throw|thm
+CELL|Where Paul and Silas sang|obj
+CHEER|Be of good __|thm
+CHERISH|Hold dear|thm
+CHOOSE|Select this day whom you will serve|thm
+CLEANSE|Wash away sin|thm
+CLEAR|Plain|thm
+CLOTH|Fabric|obj
+COMFORT|Console|thm
+COMMAND|Order|thm
+COMPASS|Surround|thm
+CONFESS|Admit sins|thm
+CONQUER|More than conquerors|thm
+COUNSEL|Advice|thm
+COURAGE|Be strong and of good __|thm
+COVER|Hide|thm
+CRAFT|Skill|thm
+CREATE|Make from nothing|thm
+CRIED|Called out loudly|thm
+CRUSH|Bruise|thm
+DECREE|Royal command|thm
+DEED|Act|thm
+DELIGHT|Take __ in the Lord|psalm
+DENY|Refuse to acknowledge|east
+DESIRE|Longing|thm
+DINE|Eat|thm
+DIRGE|Funeral song|thm
+DITCH|Blind leading blind falls in|obj
+DIVIDE|Split|thm
+DOUBT|Thomas's trouble|thm
+DOVES|Sold in the temple|obj
+DRAGON|Great red one in Revelation|thm
+DREAD|Great fear|thm
+DRINK|Living water to __|thm
+DRUNK|Not sober|thm
+EARNEST|Sincere|thm
+ELECT|Chosen|thm
+ELM|Tree in Hosea|obj
+EMPTY|Void|thm
+ENDURE|Last|thm
+ENTER|Go in by the narrow gate|thm
+ENTREAT|Plead|thm
+ERROR|Mistake|thm
+ETERNAL|Everlasting|thm
+EXPECT|Look for|thm
+FAIL|Not succeed|thm
+FAINT|Weary|thm
+FALSE|Untrue prophet|thm
+FAMINE|Seven years of lack|ot
+FEAR|Be not afraid|thm
+FERVENT|Burning with zeal|thm
+FIERY|Like the furnace|thm
+FIRM|Steadfast|thm
+FLEE|Run away|thm
+FLOWER|Of the field|obj
+FOLLOW|Come after Me|thm
+FORSAKE|Abandon|thm
+FOUND|Lost sheep was __|thm
+FOUNTAIN|Spring of water|obj
+GARMENT|Robe|obj
+GATHER|Come together|thm
+GAZE|Look steadily|thm
+GENTLE|Mild|thm
+GLORIFY|Honor|thm
+GLUTTON|Overeater|thm
+GOLDEN|Calf made by Aaron|thm
+GRACIOUS|Merciful|thm
+GROAN|Creation does this|thm
+GROW|Increase|thm
+GUILT|Shame of sin|thm
+HAIR|Samson's strength|obj
+HALLOW|Make holy|thm
+HANG|Suspend|thm
+HASTE|Hurry|thm
+HATE|Opposite of love|thm
+HEARD|Listened|thm
+HEAVY|Weighted|thm
+HOLD|Grasp|thm
+HOLINESS|Being set apart|thm
+HONOR|Respect your father and mother|thm
+HORSE|Egyptian warrior's animal|obj
+HUNGER|Need of food|thm
+HUSBAND|Husband and wife|thm
+IMAGE|Likeness of God|thm
+INHERIT|Receive as an heir|thm
+INNOCENT|Not guilty|thm
+JACKAL|Wild desert dog|obj
+JEALOUS|God is a __ God|thm
+JEWEL|Precious stone|obj
+JOURNEY|Trip|thm
+JUSTICE|Roll down like waters|thm
+KEPT|Held|thm
+KINDLE|Light a fire|thm
+KNOW|Understand|thm
+LABOR|Work|thm
+LACK|Need|thm
+LAMBS|Feed my __|thm
+LEAN|Do not __ on your own understanding|thm
+LEAP|Jump for joy|thm
+LEND|Loan|thm
+LEPROSY|Disease cleansed by Jesus|nt
+LIFT|Raise|thm
+LOAVES|Five were fed to thousands|nt
+LOVELY|Pleasing|thm
+MAIDEN|Young woman|ppl
+MAKER|Creator|thm
+MARVEL|Wonder|thm
+MASTER|Teacher|thm
+MEET|Come together|thm
+MELT|Mountains __ like wax|thm
+MIGHTY|Strong|thm
+MINISTER|Servant|thm
+MOAN|Groan|thm
+MORTAL|Not eternal|thm
+MOSS|Soft plant|obj
+MOTHER|Honor your father and __|thm
+MOUTH|Speaks from heart's abundance|thm
+MURDER|Kill|thm
+MUTE|Unable to speak|thm
+MYRTLE|Tree for the desert|obj
+NARROW|Gate or way|thm
+NATION|People|thm
+NEEDLE|Camel's passage|obj
+NEIGHBOR|Love your __|thm
+NORTH|Direction|thm
+ORDAIN|Appoint|thm
+PALE|Horse of death|obj
+PATIENT|Waiting calmly|thm
+PAUSE|Selah|psalm
+PEARLS|Do not cast before swine|obj
+PERFECT|Complete|thm
+PERISH|Die|thm
+PIERCE|Puncture|east
+PIG|Prodigal's job|obj
+PITY|Compassion|thm
+PLEASE|Delight|thm
+PLENTY|Abundance|thm
+POOL|Bethesda's waters|obj
+POTTER|Clay shaper|obj
+PRECEPT|Command|thm
+PRUNE|Cut vines|thm
+PURSUE|Chase|thm
+QUICK|Fast|thm
+RANSOM|Price of release|thm
+REAL|True|thm
+REALM|Kingdom|thm
+REBUKE|Scold|thm
+RECEIVE|Accept|thm
+REMNANT|Small left over group|thm
+REMOVE|Take away|thm
+RENEW|Make new again|thm
+REPAY|Pay back|thm
+ROB|Steal|thm
+ROUND|Circular|thm
+RUBY|Red gem|obj
+RUST|Corrodes treasures on earth|obj
+SAIL|Move over water|thm
+SAINTS|Holy ones|thm
+SAKE|For His name's __|thm
+SANDAL|Footwear|obj
+SAY|Speak|thm
+SCRIBE|Writer of the law|thm
+SEASON|A time for everything|thm
+SEE|Look|thm
+SEEN|Observed|thm
+SERVANT|Slave|thm
+SHEARER|Silent lamb before him|obj
+SHED|Pour out|thm
+SHOWER|Rain|obj
+SHUT|Close|thm
+SICK|Ill|thm
+SIGHT|Vision|thm
+SILENT|Quiet|thm
+SINK|Go down|thm
+SIT|Be seated|thm
+SLAY|Kill|thm
+SLOW|Not fast|thm
+SMALL|Little|thm
+SOAR|Fly high|thm
+SOBER|Clear-minded|thm
+SOFT|Gentle answer turns away wrath|thm
+SOIL|Ground|obj
+SOLD|Joseph was __ into Egypt|ot
+SOON|Quickly|thm
+SORE|Wound|thm
+SPARROW|Small bird God watches|obj
+SPEAK|Talk|thm
+STIR|Move|thm
+STORE|Save up|thm
+STRENGTH|Power|thm
+STRIKE|Hit|thm
+STUMBLE|Trip|thm
+SUFFER|Endure pain|thm
+SUMMER|Warm season|thm
+TARE|Weed sown among the wheat|obj
+TEARS|Wiped away by God|thm
+TEMPT|Entice|thm
+THREAD|Cord|obj
+THUNDER|Sons of __|thm
+TIRED|Weary|thm
+TRAMPLE|Tread upon|thm
+TREMBLE|Shake|thm
+TRIUMPH|Victory|thm
+UNJUST|Not fair|thm
+UNTO|To|thm
+UPRIGHT|Righteous|thm
+VALUE|Worth|thm
+VICTORY|Win|thm
+VILLAGE|Small town|plc
+VINEYARD|Where laborers worked|obj
+VIRGIN|Mary|xmas
+VIRTUE|Goodness|thm
+WAGES|Of sin is death|thm
+WANDER|Roam|thm
+WARM|Not cold|thm
+WARN|Alert|thm
+WEAPON|Armament|obj
+WEARY|Tired|thm
+WEED|Unwanted plant|obj
+WEIGH|Measure heavy|thm
+WELCOME|Greet|thm
+WHISPER|Gentle voice to Elijah|thm
+WINTER|Cold season|thm
+WISDOM|Solomon's gift|thm
+WITHER|Dry up|thm
+WONDER|Marvel|thm
+WORTH|Value|thm
+YES|Affirm|thm
+THEE|Old word for "you" (object)|thm
+THOU|Old word for "you"|thm
+THY|Old word for "your"|thm
+THINE|"For ___ is the kingdom", yours|thm
+THEIR|Belonging to them|thm
+HATH|Old word for "has"|thm
+DOTH|Old word for "does"|thm
+SAITH|Old word for "says"|thm
+LEST|"__ ye fall", in case|thm
+NAY|No in the King James|thm
+VERILY|Truly, truly|thm
+WHOSO|Whoever|thm
+WHEREFORE|For what reason|thm
+HENCE|From here|thm
+THENCE|From there|thm
+HITHER|To this place|thm
+THITHER|To that place|thm
+WHITHER|Where to|thm
+ERE|Before, in old English|thm
+SHALT|"Thou __ not steal"|thm
+WILT|"Thou __ keep him in perfect peace"|thm
+WERT|Old form of "were"|thm
+HAST|Old form of "have"|thm
+DOST|Old form of "do"|thm
+CANST|Old form of "can"|thm
+WOT|Old word for "know"|thm
+FORTH|Out, as in "bring ___"|thm
+ALAS|Cry of sorrow|thm
+OFT|Often, old style|thm
+TARRY|Wait or stay a while|thm
+FAIN|Gladly|thm
+SPAKE|Old word for "spoke"|thm
+SLEW|Old word for "killed"|thm
+SMOTE|Struck|thm
+BROKE|Shattered|thm
+BIDDEN|Told to come|thm
+HEWN|Cut with an axe|thm
+HEWED|Chopped|thm
+GIRT|Belted|thm
+LOINS|Gird up your __|thm
+RAIMENT|Clothing|thm
+SMITTEN|Struck down|thm
+SLAIN|Killed|thm
+SOWN|Planted|thm
+REAPED|Gathered grain|thm
+BORNE|Carried|thm
+SHORN|Sheared|thm
+STRIVE|Struggle|thm
+STRAIT|Narrow, as in the gate|thm
+WAXED|Grew|thm
+WROUGHT|Worked or made|thm
+WROTE|Penned|thm
+WRIT|Written|thm
+YEARN|Long for|thm
+YOKED|Joined together|thm
+ALLELUIA|Praise the Lord!|psalm
+MAGNIFY|Make great|psalm
+BLESSING|Gift from God|thm
+BLESSINGS|Gifts from God|thm
+PRAYERS|Requests to God|thm
+HYMNS|Sacred songs|psalm
+PROPHETS|Messengers of God|thm
+APOSTLES|Sent ones|thm
+DISCIPLES|Followers of Christ|thm
+SAVIOUR|Redeemer|xmas
+REDEEMER|One who buys back|thm
+CREATOR|Maker of heaven and earth|thm
+ALMIGHTY|All-powerful|thm
+IMMANUEL|God with us|xmas
+JEHOVAH|Old name for the Lord|thm
+YAHWEH|Sacred name of God|thm
+ELOHIM|Hebrew word for God|thm
+ADONAI|Hebrew word for Lord|thm
+RABBONI|My Master|nt
+MASTERS|Lords|thm
+LORDS|Rulers|thm
+KINGDOM|Realm of heaven|thm
+QUEENS|Royal women|thm
+PRINCES|Royal sons|thm
+HERODIAN|Follower of Herod|nt
+SADDUCEE|Jewish sect that denied resurrection|nt
+PHARISEE|Jewish sect of strict law-keepers|nt
+SANHEDRIN|Jewish high council|nt
+LEGION|Demon name|nt
+SOLDIERS|Guards at the cross|east
+CROSSES|Calvary's three|east
+CRUCIFY|Nail to a cross|east
+BURIED|Laid in a tomb|east
+ASCENSION|Jesus going up|nt
+EPIPHANY|Magi's visit celebration|xmas
+LENTEN|Of the pre-Easter fast|east
+CHRISTMAS|Birth of Christ celebration|xmas
+HOLIDAY|Holy day|thm
+SABBATHS|Days of rest|thm
+DENARIUS|Roman coin|obj
+TALENTS|Parable coins|obj
+MITE|Widow's tiny coin|obj
+OMER|Measure of manna|obj
+HIN|Liquid measure|obj
+BATH|Hebrew liquid measure|obj
+HOMER|Large dry measure|obj
+SEAH|Measure of flour|obj
+LOG|Smallest liquid measure|obj
+SASH|Belt of cloth|obj
+TURBAN|Headwrap|obj
+MITRE|High priest's headdress|obj
+URIM|Priestly oracle stone|obj
+THUMMIM|Partner to Urim|obj
+CENSER|Incense holder|obj
+EWER|Water pitcher|obj
+CRUSE|Small jar|obj
+FLAGON|Wine vessel|obj
+CHALICE|Cup of communion|obj
+GOBLET|Fancy cup|obj
+PLATTER|John's head was served on one|obj
+CHARGER|Large plate|obj
+TRAY|Serving dish|obj
+KETTLE|Cooking pot|obj
+CAULDRON|Large pot|obj
+SKILLET|Pan|obj
+FORGE|Smith's fire|obj
+ANVIL|Smith's block|obj
+HAMMER|Smith's tool|obj
+ADZE|Carpenter's tool|obj
+PLUMB|Line on a wall in Amos|obj
+SICKLE|Harvest blade|obj
+SCYTHE|Long reaping blade|obj
+FLAIL|Grain-beating tool|obj
+SHOVEL|Digging tool|obj
+SPADE|Digging tool|obj
+TACKLE|Boat gear|obj
+HELM|Ship's steering|obj
+MAST|Ship's pole|obj
+DECK|Ship's floor|obj
+HULL|Ship's body|obj
+KEEL|Ship's base|obj
+PROW|Ship's front|obj
+STERN|Ship's back, where Jesus slept|obj
+QUIVER|Arrow holder|obj
+JAVELIN|Light spear|obj
+DAGGER|Short blade|obj
+SIEGE|Surround a city|thm
+TOWERS|Watch buildings|obj
+RAMPART|Defensive wall|obj
+MOAT|Ditch around a castle|obj
+CITADEL|Fortress|obj
+GATES|City entrances|obj
+BARS|Locks of iron|obj
+BOLT|Door lock|obj
+KEYS|Kingdom's __ given to Peter|obj
+LOCKS|Fasteners|obj
+LAMPS|Wise virgins' lights|obj
+LANTERN|Light carried by soldiers|obj
+CANDLES|Lights|obj
+WICK|Candle's thread|obj
+WOOLEN|Made of wool|obj
+SACKCLOTH|Mourning cloth|obj
+DUSTY|Covered in dirt|thm
+MUD|Clay made by Jesus for the blind man|obj
+BRICK|Egypt's slave product|obj
+BRICKS|Israel's burden in Egypt|obj
+GRAINS|Seeds of cereal|obj
+OATS|Cereal|obj
+RYE|Cereal grain|obj
+MILLET|Small grain|obj
+FIGS|Sweet fruit|obj
+DATES|Palm fruit|obj
+RAISIN|Dried grape|obj
+CAKES|Baked treats|obj
+LENTIL|Esau's stew bean|obj
+LENTILS|Esau's pottage|obj
+BEANS|Legumes|obj
+LEEKS|Egyptian vegetable|obj
+GARLIC|Egyptian bulb|obj
+ONION|Egyptian bulb|obj
+ONIONS|Egyptian bulbs|obj
+CUCUMBER|Egyptian vegetable|obj
+MELON|Egyptian fruit|obj
+MELONS|Egyptian fruits|obj
+CUMIN|Spice tithed by Pharisees|obj
+DILL|Spice tithed by Pharisees|obj
+RUE|Bitter herb|obj
+CORIANDER|Manna looked like its seed|obj
+SAFFRON|Spice in the Song of Songs|obj
+CINNAMON|Sweet spice|obj
+CASSIA|Spice in the anointing oil|obj
+CALAMUS|Fragrant reed|obj
+NARD|Costly perfume|obj
+SPIKENARD|Costly perfume Mary poured|east
+BALSAM|Aromatic gum|obj
+GALBANUM|Incense ingredient|obj
+ONYCHA|Incense ingredient|obj
+STACTE|Incense ingredient|obj
+A|1st letter of the alphabet|thm
+A|1st vowel in the alphabet|thm
+A|First letter of the name of the first man|thm
+A|First letter of the book that follows John|bk
+A|First letter of "Amen"|thm
+A|Letter before B|thm
+A|First letter of the Greek alphabet, Alpha|thm
+A|Last letter of the name of the man who succeeded Moses|ppl
+B|2nd letter of the alphabet|thm
+B|First letter of the town where Jesus was born|plc
+B|Letter after A|thm
+B|Letter that sounds like a honey maker|thm
+C|3rd letter of the alphabet|thm
+C|Roman numeral for one hundred|thm
+C|First letter of the place where Jesus turned water into wine, Cana|plc
+C|First letter of the name of the first murderer|ot,ppl
+C|Letter that sounds like the ocean|thm
+C|First letter of Christmas|xmas
+D|4th letter of the alphabet|thm
+D|Roman numeral for five hundred|thm
+D|First letter of the shepherd boy who killed Goliath|ppl
+D|First letter of the lion-den prophet|ppl
+D|Letter between C and E|thm
+E|5th letter of the alphabet|thm
+E|2nd vowel in the alphabet|thm
+E|First letter of the first woman's name|thm
+E|First letter of the first garden|plc
+E|Last letter of the Gospel by the physician, Luke|bk
+E|First letter of Easter|east
+F|6th letter of the alphabet|thm
+F|5th letter before K|thm
+F|First letter of "forty", the days of rain on the ark|thm
+F|First letter of "faith"|thm
+F|Letter between E and G|thm
+G|7th letter of the alphabet|thm
+G|First letter of the first book of the Bible|bk
+G|First letter of the garden where Jesus prayed before his arrest|plc
+G|Letter between F and H|thm
+H|8th letter of the alphabet|thm
+H|Last letter of "Hallelujah"|psalm
+H|First letter of the Greek "Hosanna"|thm
+H|First letter of "heaven"|thm
+H|Letter between G and I|thm
+I|3rd vowel in the alphabet|thm
+I|9th letter of the alphabet|thm
+I|Roman numeral for one|thm
+I|The letter that sounds like an eye|thm
+I|First letter of the nation God renamed Jacob's family|plc
+J|10th letter of the alphabet|thm
+J|First letter of the name of the disciple that betrayed Jesus|east
+J|First letter of the river where Jesus was baptized|plc
+J|First letter of the Savior's name|thm
+J|First letter of the holy city|plc
+K|11th letter of the alphabet|thm
+K|Last letter of the shortest Gospel, Mark|bk
+K|First letter of the book after Samuel|bk
+K|Letter after J|thm
+L|12th letter of the alphabet|thm
+L|Roman numeral for fifty|thm
+L|First letter of the physician who wrote Acts|ppl
+L|First letter of the season before Easter|east
+L|Letter between K and M|thm
+M|13th letter of the alphabet|thm
+M|Roman numeral for one thousand|thm
+M|Last letter of the town where Jesus was born|plc
+M|First letter of the man who parted the Red Sea|ppl
+M|First letter of the Gospel that opens the New Testament|bk
+N|14th letter of the alphabet|thm
+N|Last letter of "Amen"|thm
+N|Last letter of the last book of the Bible, Revelation|bk
+N|First letter of the man who built the ark|ppl
+N|Letter between M and O|thm
+O|4th vowel in the alphabet|thm
+O|15th letter of the alphabet|thm
+O|Last letter of the Greek alphabet, Omega|thm
+O|Second letter of the name of the ark builder|ppl
+O|First letter of the opening word of the Lord's Prayer, "Our"|thm
+P|16th letter of the alphabet|thm
+P|First letter of the apostle to the Gentiles|ppl
+P|First letter of the feast of Fifty days, Pentecost|pent
+P|First letter of the book of songs|bk
+Q|17th letter of the alphabet|thm
+Q|First letter of Sheba's royal title|thm
+R|18th letter of the alphabet|thm
+R|First letter of the last book of the Bible|bk
+R|First letter of the woman whose name is a Moabite book|ppl
+R|First letter of "risen"|east
+R|Letter before S|thm
+S|19th letter of the alphabet|thm
+S|Last letter of the name of the first disciple to be martyred, James|ppl
+S|Last letter of the name of the Savior, Jesus|thm
+S|First letter of the mountain of the law|plc
+S|First letter of the wisest king|ppl
+T|20th letter of the alphabet|thm
+T|Last letter of the name of the anointed one, Christ|thm
+T|First letter of Tau, the cross-shaped Greek letter|thm
+T|Last letter of "Advent"|xmas
+T|Letter before U|thm
+U|5th vowel in the alphabet|thm
+U|21st letter of the alphabet|thm
+U|Letter that sounds like "you"|thm
+U|First letter of Bathsheba's husband|ppl
+V|22nd letter of the alphabet|thm
+V|3rd alphabet after S|thm
+V|Roman numeral for five|thm
+V|Letter before W|thm
+W|23rd letter of the alphabet|thm
+W|First letter of "worship"|thm
+W|First letter of "wisdom"|thm
+X|24th letter of the alphabet|thm
+X|Roman numeral for ten|thm
+X|Greek letter chi, the first of Christ's title|thm
+X|Marks the spot, also a cross shape|thm
+Y|25th letter of the alphabet|thm
+Y|Letter that sounds like "why"|thm
+Y|Last letter of the name of Jesus' mother|ppl
+Y|Letter before Z|thm
+Z|26th letter of the alphabet|thm
+Z|Last letter of the alphabet|thm
+Z|First letter of the holy hill|plc
+Z|First letter of the tax collector who climbed a tree|ppl
+A|Joth_m|ot,ppl
+A|Frid_y|thm,east
+A|Es_u|ot,ppl
+A|P_rty|nt,thm
+A|Gr_cious|thm
+A|Sh_lt|thm
+A|Tr_mple|thm
+A|Hag_r|ot,ppl
+A|Curt_in|ot,obj
+A|L_zarus|nt,ppl
+A|Ad_h|ot,ppl
+A|Dun_mis|cur
+A|Sc_le|ot,obj
+A|Iss_char|ot,ppl
+A|C_naan|plc
+A|Ba_sha|ot,ppl
+A|Pr_ise|thm,psalm
+A|H_th|thm
+A|He_rd|thm
+A|Ah_b|ot,ppl
+A|Le_p|thm
+A|T_lk|thm
+A|Eliph_z|ot,ppl
+A|Sl_in|thm
+A|Bar_k|ot,ppl,hero
+A|Ramp_rt|obj
+B|Cale_|ot,ppl,hero
+B|Neigh_or|thm
+B|Gal_anum|obj
+B|Ta_itha|nt,ppl
+B|Eliza_eth|nt,ppl,xmas
+B|Re_uke|thm
+B|O_ed|ot
+B|A_igail|ot,ppl
+B|Trem_le|thm
+B|A_ijah|ot,ppl
+B|Beershe_a|ot,plc
+B|A_ednego|ot,ppl
+B|Stum_le|thm
+B|O_ey|nt,thm
+B|Re_ekah|ot,ppl
+B|No_le|nt,thm
+B|Sab_ath|thm
+B|The_es|ot,plc
+B|Le_anon|ot,plc
+B|E_ony|ot,obj
+B|Jaco_|ot,ppl
+B|La_or|thm
+B|Para_le|thm
+B|Cob_s|cur,ppl
+B|He_ron|plc
+B|Ab_a|thm,nt
+C|Inno_ent|thm
+C|Rea_h|thm
+C|Ta_kle|obj
+C|Antio_h|plc
+C|She_hem|ot,plc
+C|Mer_yme|cur
+C|Euty_hus|nt,ppl
+C|A_haia|nt,plc
+C|Synty_he|nt,ppl
+C|Sina_h|cur,ppl
+C|Ri_h|nt,thm
+C|Lo_ks|obj
+C|Spi_es|east
+C|Resurre_t|nt,thm,east
+C|Ar_h|thm
+C|Pie_e|nt,obj
+C|Sta_te|obj
+C|Euni_e|nt,ppl
+C|Fran_is|cur
+C|A_ts|bk,pent
+C|Tea_h|thm
+C|Lame_h|ot,ppl
+C|Eno_h|ot,ppl
+C|Kno_k|thm
+C|Tychi_us|nt,ppl
+C|Si_kle|obj
+D|Mai_en|ppl
+D|Can_ace|nt,ppl
+D|Soun_|nt,thm,pent
+D|Ju_ith|ot,ppl
+D|Rud_y|ot,thm
+D|Sad_ucee|nt
+D|Bid_en|thm
+D|Can_les|obj
+D|Tire_|thm
+D|Ju_ah|ot,ppl
+D|Za_ok|ot,ppl
+D|Ka_esh|ot,plc
+D|Wis_om|thm
+D|A_eboye|cur,ppl
+D|Sha_ow|psalm
+D|Ju_ge|thm
+D|Fiel_|nt,obj
+D|Bur_en|thm
+D|Lad_er|ot,obj
+D|Gour_|ot,obj
+D|Gla_ness|ot,thm,psalm
+D|Swa_dling|nt,obj,xmas
+D|Sar_is|nt,plc
+D|An_rew|nt,ppl
+D|Ju_ea|plc
+D|Caul_ron|obj
+E|Gabri_l|nt,ppl,xmas
+E|D_ny|east
+E|Whal_|ot,obj
+E|Sle_p|nt,thm
+E|Lin_ns|nt,obj,east
+E|K_ep|ot,thm
+E|Idl_|thm
+E|Wax_d|thm
+E|Gobl_t|obj
+E|L_per|nt,thm
+E|Rach_l|ot,ppl
+E|Emb_r|obj
+E|Des_rt|ot,plc
+E|Ab_l|ot,ppl
+E|Belov_d|thm
+E|Pip_|ot,obj
+E|N_hemiah|ot,ppl,hero
+E|Abov_|nt,thm
+E|Hebr_ws|bk
+E|Ke_l|obj
+E|L_aven|nt,obj
+E|Bibl_|thm
+E|Serp_nt|thm
+E|Writ_|thm
+E|M_nnonite|cur
+E|Dov_|thm
+F|Cha_f|psalm
+F|Af_lict|thm
+F|Swi_t|nt,thm
+F|Of_er|ot,thm
+F|Sco_f|thm
+F|Com_orter|pent
+G|Fi_ht|nt,thm
+G|Si_ht|thm
+G|Phry_ia|nt,plc
+G|An_lican|cur
+G|An_el|thm,xmas
+G|Vi_il|cur,thm
+G|Villa_e|plc
+G|Boaner_es|nt,ppl
+G|An_er|thm
+G|Be_at|ot,thm
+G|E_lon|ot,ppl
+G|Dir_e|thm
+G|A_ag|ot,ppl
+G|Dag_er|obj
+G|Ni_ht|cur,xmas
+G|Upri_ht|thm
+G|Ri_ht|thm
+G|Gil_al|ot,plc
+G|Me_iddo|ot,plc
+G|Wron_|thm
+G|Jud_es|bk
+G|Rcc_|cur
+H|T_ence|thm
+H|P_ares|ot,ppl
+H|T_ank|nt,thm
+H|C_eer|thm
+H|Fait_|thm
+H|Fait_ful|cur,xmas
+H|C_ain|nt,obj
+H|Ge_azi|ot,ppl
+H|Yout_|cur,thm
+H|Rut_|ot,ppl,hero
+H|Boug_|obj
+H|Ep_ah|ot,obj
+H|C_apel|cur,plc
+H|Ac_an|ot,ppl
+H|P_inehas|ot,ppl
+H|C_osen|cur
+H|Fles_|nt,thm,xmas
+H|Jos_ua|ot,ppl,hero
+H|Bet_esda|nt,plc
+H|P_ilippi|plc
+H|Thit_er|thm
+H|W_isper|thm
+H|Mot_er|thm
+H|Bet_uel|ot,ppl
+H|W_ip|nt,obj
+H|Orp_an|ot,thm
+I|Sa_th|thm
+I|Sm_tten|thm
+I|M_cah|ot,ppl,xmas
+I|V_rgin|xmas
+I|Wedd_ng|nt,thm
+I|Javel_n|obj
+I|Fa_r|thm
+I|Ethiop_a|nt,plc
+I|Ca_n|ot,ppl
+I|Pat_ent|thm
+I|T_de|obj
+I|Wh_te|ot,thm
+I|Pla_n|ot,plc
+I|Br_ght|thm
+I|Publ_us|nt,ppl
+I|Ano_nt|thm
+I|G_ft|xmas
+I|Ra_se|nt,thm,east
+I|M_lk|thm
+I|Sk_n|ot,thm
+I|Bas_n|nt,obj,east
+I|Adon_jah|ot,ppl
+I|S_gn|nt,thm
+I|Leg_on|nt
+I|S_don|ot,plc
+I|F_nger|ot,obj
+K|Jac_al|obj
+K|Than_s|thm
+K|Moc_|nt,thm,east
+K|Sic_|thm
+K|Floc_|ot,obj
+K|Don_ey|east
+K|Sac_|ot,obj
+K|La_ewood|cur
+K|Stoc_|ot,obj
+K|Bric_s|obj
+K|Sac_cloth|obj
+K|El_anah|ot,ppl
+K|Wic_|obj
+K|Quic_|thm
+L|Ca_m|thm
+L|Roya_|nt,thm
+L|E_amites|nt,ppl,pent
+L|Nai_s|east
+L|So_d|ot
+L|Cha_dea|ot,plc
+L|Hal_el|ot,thm,psalm
+L|F_ute|nt,obj
+L|Ho_y|thm,pent
+L|Gi_ead|ot,plc
+L|Tertu_lus|nt,ppl
+L|Mi_l|nt,obj
+L|Bow_|nt,obj
+L|Fal_|ot,thm
+L|Se_ah|psalm
+L|Kind_e|thm
+L|A_ms|thm
+L|A_oe|nt,obj,east
+L|P_ead|thm
+L|G_ean|ot,thm
+L|Ga_ilee|plc
+L|F_ax|ot,obj
+L|Ca_amus|obj
+L|Cha_ice|obj
+L|Tel_|nt,thm
+L|Bi_dad|ot,ppl
+M|Ku_uyi|cur,ppl
+M|Ca_el|thm
+M|La_ps|obj
+M|Cucu_ber|obj
+M|To_b|east
+M|Hel_et|thm
+M|Trophi_us|nt,ppl
+M|Co_pass|thm
+M|I_age|thm
+M|Ma_re|ot,plc
+M|Wo_b|ot,thm
+M|Dru_s|cur,obj
+M|Redee_er|thm
+M|Ga_aliel|nt,ppl
+M|Em_anuel|xmas
+M|Nicode_us|nt,ppl
+M|Testi_ony|cur,thm
+M|S_yrna|nt,plc
+M|Ti_brel|ot,obj,psalm
+M|Tho_as|nt,ppl,east
+M|Thum_im|obj
+M|E_maus|plc,east
+M|Pal_s|nt,obj,east
+M|Stu_p|ot,thm
+M|Co_mand|thm
+M|Su_mer|thm
+N|O_esimus|nt,ppl
+N|Alo_e|ot,thm
+N|Tale_t|thm
+N|Tu_ic|nt,obj,east
+N|Melo_s|obj
+N|Asce_d|nt,thm,east
+N|Abou_d|thm
+N|U_just|thm
+N|K_ow|thm
+N|Ri_g|nt,obj
+N|Bra_ch|nt,obj
+N|Sli_g|thm
+N|Gideo_s|cur
+N|Sow_|thm
+N|Stro_g|ot,thm,psalm
+N|Thi_e|thm
+N|Lausan_e|cur
+N|Roma_s|bk
+N|Ha_nah|ot,ppl,hero
+N|Si_g|ot,thm,psalm
+N|Mag_ify|psalm
+N|Ki_g|thm,xmas
+N|Ce_sus|nt,thm,xmas
+N|Sti_g|nt,thm,east
+N|Eter_al|thm
+N|Fra_klin|cur,ppl
+O|Man_ah|ot,ppl
+O|Nab_th|ot,ppl
+O|End_r|ot,plc
+O|S_dom|plc
+O|Foll_w|thm
+O|Rh_da|nt,ppl
+O|En_s|ot
+O|Y_ked|thm
+O|Ascensi_n|nt
+O|Rej_ice|thm,psalm
+O|Iv_ry|ot,obj
+O|D_rcas|nt,ppl
+O|W_rk|nt,thm
+O|S_uthern|cur,thm
+O|M_ney|nt,thm
+O|D_th|thm
+O|Rans_m|thm
+O|S_ldier|nt,thm
+O|At_ne|thm
+O|Arm_r|thm
+O|S_rrow|ot,thm,east
+O|L_ins|thm
+O|Pr_w|obj
+O|Zi_n|plc,psalm
+O|Jeal_us|thm
+O|Mahl_n|ot,ppl
+P|Zip_orah|ot,ppl
+P|Oyede_o|cur,ppl
+P|Epi_hany|xmas
+P|E_hraim|ot,ppl
+P|Ap_le|obj
+P|Sup_er|nt,thm,east
+P|Disci_les|thm
+P|Pro_hets|thm
+P|Ja_heth|ot,ppl
+P|Epa_hras|nt,ppl
+P|She_herd|thm,psalm
+P|Co_tic|cur
+P|Pul_it|cur,obj
+P|Pro_het|thm
+P|Ho_hni|ot,ppl
+Q|A_uila|nt,ppl
+R|Fi_st|nt,thm
+R|Powe_|pent
+R|D_agon|thm
+R|Sha_p|nt,thm
+R|Ma_vel|thm
+R|C_ib|nt,obj,xmas
+R|Wo_m|nt,thm
+R|F_uit|pent
+R|Pastu_es|psalm
+R|Endu_e|thm
+R|Lo_ds|thm
+R|Sc_oll|obj
+R|Tho_n|nt,obj,east
+R|P_ince|ot,thm,xmas
+R|Afa_|thm
+R|St_aw|ot,obj
+R|Towe_s|obj
+R|De_be|nt,plc
+R|D_oss|ot,obj
+R|Sh_ine|nt,obj
+R|Sp_ing|thm
+R|F_iend|ot,thm
+R|Sc_ibe|thm
+R|C_oss|thm,east
+R|Cathed_al|cur,plc
+R|Ea_th|thm
+S|Cros_es|east
+S|Choo_e|thm
+S|Jake_|cur,ppl
+S|Ea_ter|east
+S|Nur_e|ot,thm
+S|Penteco_t|pent
+S|Peri_h|thm
+S|La_t|nt,thm
+S|For_ake|thm
+S|Era_tus|nt,ppl
+S|Bles_|thm
+S|Ve_sel|nt,obj
+S|Bles_ings|thm
+S|Eli_ha|ot,ppl
+S|Pa_tor|thm
+S|Cru_ade|cur,thm
+S|Manas_eh|ot,ppl
+S|Bles_ing|thm
+S|Wor_hip|thm
+S|Cri_pus|nt,ppl
+S|Who_o|thm
+S|Me_hach|ot,ppl
+S|A_tray|thm
+S|Podca_t|cur,thm
+S|Fig_|obj
+S|Hou_e|nt,obj
+T|Migh_|ot,thm
+T|Grea_|nt,thm
+T|S_aff|ot,obj,psalm
+T|Scy_he|obj
+T|Gian_|thm
+T|A_hens|nt,plc
+T|Oa_h|ot,thm
+T|Vic_ory|thm
+T|Fain_|thm
+T|Oa_s|obj
+T|Lys_ra|nt,plc
+T|Al_ar|thm
+T|Nazare_h|plc,xmas
+T|Ket_le|obj
+T|Be_hlehem|plc,xmas
+T|Hit_ite|ot,ppl
+T|Jus_ice|thm
+T|Ba_tle|ot,thm
+T|Lef_|thm
+T|Roos_er|obj,east
+T|Wor_h|thm
+T|Migh_y|thm
+T|Ba_he|thm
+T|S_and|nt,thm
+T|Or_hodox|cur
+T|Keni_e|ot,ppl
+U|Cher_b|thm,ot
+U|Ref_ge|psalm
+U|Virt_e|thm
+U|Denari_s|obj
+U|E_odia|nt,ppl
+U|Jeh_|ot,ppl
+U|T_tu|cur
+U|R_by|obj
+U|S_nday|east
+U|Cla_dius|nt,ppl
+U|J_das|nt,ppl,east
+U|Ara_nah|ot,ppl
+U|Plag_e|thm
+U|Co_nsel|thm
+U|Tri_mph|thm
+U|C_bit|ot,obj
+U|Yo_ng|nt,thm
+U|Loc_st|thm
+U|D_ty|ot,thm
+U|M_rder|thm
+U|Q_een|ot,ppl
+U|J_lius|nt,ppl
+U|Zacchae_s|nt,ppl
+U|Eh_d|ot,ppl,hero
+U|G_ilt|thm
+U|Clo_d|obj
+V|Da_id|ot,ppl,hero,psalm
+V|Wea_e|thm
+V|Le_i|ot,ppl
+V|Le_iticus|bk
+V|Ad_ent|xmas
+V|Ele_ation|cur
+V|Di_ide|thm
+V|Twel_e|thm
+V|Sho_el|obj
+V|Do_es|obj
+V|Oli_es|plc,east
+V|Har_est|thm
+W|S_ord|thm
+W|Yah_eh|thm
+W|Wido_|nt,thm
+W|D_ell|ot,thm,psalm
+W|Sho_er|obj
+W|A_ake|thm
+W|Good_ill|nt,thm,xmas
+X|E_tol|thm,psalm
+X|E_odus|bk
+Y|Wear_|thm
+Y|H_ssop|ot,obj
+Y|Marr_|thm
+Y|Mart_r|nt,thm
+Y|On_cha|obj
+Y|Empt_|thm
+Y|Holl_|cur,obj,xmas
+Y|Ferr_|obj
+Y|Ab_ss|thm
+Y|Tarr_|thm
+Y|Env_|ot,thm
+Y|Lowl_|thm
+Y|C_prus|nt,plc
+Y|Eg_pt|plc
+Y|Fier_|thm
+Y|Vine_ard|obj
+Y|Merr_|ot,thm
+Y|H_mn|thm
+Z|Elea_ar|ot,ppl
+Z|U_ziah|ot,ppl
+Z|Be_alel|ot,ppl
+Z|E_ekiel|ot,ppl
+Z|Ad_e|obj
+ADAMANT|Hard as stone, like Ezekiel's forehead|thm
+ADOPTION|Becoming God's child|thm
+ADULTERY|Breaking marriage vows|thm
+ADVERSARY|Enemy, the devil|thm
+ADVOCATE|Jesus pleads for us as one|thm
+AMETHYST|Purple gem in the city wall|obj
+ANCHORED|Held firm in hope|thm
+ANISE|Tithed seasoning|obj
+ANTLER|Part of the deer that pants|obj
+APOSTASY|Falling away from the faith|thm
+ARABIA|Land where Paul went after conversion|plc
+ARCHER|Bow user|ot
+ARMOUR|Spiritual protection|thm
+ARRAY|Dress or arrange|thm
+ASSURANCE|Confidence of faith|thm
+ASSYRIA|Empire that captured Israel|plc
+ATTIRE|Clothing|thm
+AUTHOR|Maker, as of our faith|thm
+BADGER|Skin used in tabernacle covering|obj
+BAKER|Pharaoh's officer who was hanged|ot
+BALDNESS|Elisha was mocked for it|ot
+BARREN|Unable to bear children|thm
+BEACON|Signal light|obj
+BEARD|Facial hair of Aaron|obj
+BEATITUDE|Blessing from the Sermon on the Mount|thm
+BEDROOM|Where whispers are heard from the housetops|obj
+BEETLE|Insect|obj
+BEGGAR|Blind Bartimaeus was one|nt
+BEHEAD|John the Baptist suffered this|nt
+BELLY|Jonah's fish held him in its|ot
+BELTS|Girdles|obj
+BETROTH|Promise to marry|thm
+BETROTHED|Engaged, like Mary to Joseph|xmas
+BLASPHEME|Speak against God|thm
+BLEATING|Sound of sheep|obj
+BLINDED|Paul was for three days|nt
+BLOSSOM|Aaron's rod did this|ot
+BOASTING|Bragging|thm
+BOOTH|Temporary shelter|obj
+BORDER|Edge of a land|thm
+BOUNTY|Generous gift|thm
+BRAMBLE|Thorny bush in Jotham's parable|obj
+BRASS|Metal in the tabernacle basin|obj
+BREASTS|Nursing|thm
+BREWER|Drink maker|thm
+BRIDLE|Horse's headgear|obj
+BRIMSTONE|Burning sulfur|thm
+BRONZE|Serpent's metal|obj
+BUCKLER|Small shield|obj
+BUILDER|Wise man who built on rock|nt
+BULRUSH|Moses' basket was made of it|ot
+BURNT|Offering on the altar|thm
+BUTTER|Dairy product|obj
+CAESAREA|Port where Cornelius lived|plc
+CAMP|Israel's wilderness tents|thm
+CAPTIVE|Prisoner|thm
+CAPTIVITY|Exile in Babylon|thm
+CARCASS|Dead body|thm
+CARRION|Dead flesh vultures eat|obj
+CATTLE|Livestock|obj
+CEASE|Stop|thm
+CELEBRATE|Feast joyfully|thm
+CELESTIAL|Of heaven|thm
+CHAINS|Paul's bonds|nt
+CHAMBER|Room|obj
+CHARITY|Love|thm
+CHASTEN|Discipline|thm
+CHEERFUL|God loves a __ giver|thm
+CHERUBIM|Angels over the ark|ot
+CHESTNUT|Tree Jacob peeled sticks from|obj
+CHIEF|Head|thm
+CHILDREN|Let the little ones come|nt
+CHISEL|Stone tool|obj
+CIRCLE|Round shape|obj
+CISTERN|Water pit, Joseph's prison|obj
+CLAMOR|Noisy outcry|thm
+CLEFT|Crack in the rock|obj
+CLOUDS|Rain bringers|obj
+COALS|Burning embers|obj
+COBBLER|Shoemaker|thm
+COCKCROW|Dawn when Peter denied|east
+COMPANION|Friend|thm
+CONCEIVE|Become pregnant|thm
+CONDEMN|Judge guilty|thm
+CONSOLE|Comfort|thm
+CONTENT|Satisfied|thm
+CONTRITE|Sorry for sin|thm
+CONVERT|Change faith|thm
+CORNER|Stone rejected becomes the __stone|thm
+CORRUPT|Spoiled|thm
+COUNCIL|Sanhedrin|nt
+COURTYARD|Open area|obj
+COWARD|Fearful one|thm
+CRAFTSMAN|Skilled worker|thm
+CREEPING|Moving low on the ground|thm
+CRIMSON|Deep red, though sins be like scarlet|thm
+CRIPPLE|Lame man at the Beautiful Gate|nt
+CROWNED|Given a royal headdress|thm
+CRUCIBLE|Furnace for refining|obj
+CRUMBS|Fell from the master's table|nt
+CRYSTAL|Clear sea before the throne|obj
+CUCKOO|Unclean bird|obj
+CUNNING|Crafty|thm
+CURSED|Under a curse|thm
+CUSTOM|Habit or tradition|thm
+DAMSEL|Young girl|thm
+DARKNESS|Plague of Egypt|thm
+DAUGHTER|Jairus's little one|nt
+DAYBREAK|Dawn|thm
+DEADLY|Fatal|thm
+DEBTOR|One who owes|thm
+DECEIVE|Mislead|thm
+DECLARE|Announce|thm
+DEFILE|Make unclean|thm
+DELIVER|Rescue|thm
+DEMON|Evil spirit|nt
+DENOUNCE|Condemn|thm
+DEPART|Leave|thm
+DESCEND|Come down, like the dove|thm
+DESOLATE|Empty and lonely|thm
+DESPAIR|Lose hope|thm
+DESPISE|Look down on|thm
+DESTROY|Wipe out|thm
+DEVOTION|Dedication|thm
+DEVOUR|Eat up|thm
+DIADEM|Crown|obj
+DIAMOND|Hard gem|obj
+DIGNITY|Honor|thm
+DILIGENT|Hard-working|thm
+DISCERN|Judge rightly|thm
+DISGRACE|Shame|thm
+DISMAY|Alarm|thm
+DISPERSE|Scatter|thm
+DIVORCE|Legal ending of marriage|thm
+DOCTRINE|Teaching|thm
+DOMINION|Rule|thm
+DOORPOST|Where the lamb's blood was put|ot
+DOUBLE|Twofold|thm
+DOVECOTE|Dove house|obj
+DOWNCAST|Sad|psalm
+DRAGNET|Fishing net|obj
+DROUGHT|Dry season|thm
+DROWN|Die in water|thm
+DRUNKARD|Heavy drinker|thm
+DUNGEON|Prison pit|obj
+DWELLING|Home|thm
+EARRING|Golden calf ornament|obj
+EARTHEN|Made of clay|obj
+EASTERN|From the East|thm
+EDIFY|Build up|thm
+EFFORT|Strain|thm
+EGYPTIAN|Native of the Nile|ot
+EIGHTH|Day of circumcision|ot
+ELDERS|Church leaders|nt
+ELEMENT|Basic part|thm
+EMBRACE|Hug|thm
+EMERALD|Green gem|obj
+EMPEROR|Caesar|nt
+ENCAMP|Set up tents|thm
+ENCOURAGE|Give courage|thm
+ENDLESS|Without end|thm
+ENDURANCE|Lasting strength|thm
+ENEMIES|Foes|thm
+ENGRAVE|Carve|thm
+ENLIGHTEN|Shed light on|thm
+ENSIGN|Banner|obj
+ENTRANCE|Way in|thm
+ENVOY|Messenger|thm
+EPISTLE|Letter in the New Testament|nt
+ESTEEM|Value highly|thm
+ETERNITY|Forever|thm
+EUNUCH|Ethiopian official whom Philip baptized|nt
+EVANGEL|Good news|thm
+EVENING|End of the day|thm
+EVERMORE|Forever|thm
+EXALTED|Lifted high|thm
+EXAMPLE|Pattern to follow|thm
+EXCEL|Surpass|thm
+EXHORT|Urge|thm
+EXPANSE|Sky or firmament|thm
+EXPIRE|Breathe one's last|thm
+FACTION|Group causing division|thm
+FALLOW|Unplowed ground|obj
+FAMILY|Household|thm
+FAREWELL|Goodbye|thm
+FARMER|Tiller|thm
+FASHION|Shape|thm
+FATLING|Fattened calf|obj
+FAVOR|Grace|thm
+FEARFUL|Afraid|thm
+FEATHER|Under His wings, covered with these|obj
+FELLOW|Companion|thm
+FERTILE|Fruitful|thm
+FESTIVAL|Feast day|thm
+FETTERS|Leg irons|obj
+FEVER|Peter's mother-in-law had one|nt
+FIDELITY|Faithfulness|thm
+FIERCE|Violent|thm
+FIFTH|Number after fourth|thm
+FIFTY|Pentecost count|pent
+FIGHTER|Warrior|thm
+FILTHY|Dirty|thm
+FIREPAN|Priest's tool|obj
+FIRSTBORN|Eldest|ot
+FISHER|Peter's old trade|nt
+FISHERMEN|Peter and Andrew|nt
+FLAGRANT|Obvious|thm
+FLATTER|Praise falsely|thm
+FLESHLY|Of the body|thm
+FLOCKS|Shepherd's charges|obj
+FLOODS|Great waters|thm
+FLOURISH|Prosper|psalm
+FOLLOWER|Disciple|nt
+FOLLY|Foolishness|thm
+FOOTSTOOL|Enemies made one|thm
+FORBID|Not allow|thm
+FOREHEAD|Brow|thm
+FOREIGNER|Stranger|thm
+FOREST|Wooded land|obj
+FOREVER|Always|thm
+FORGET|Not remember|thm
+FORGIVEN|Pardoned|thm
+FORMLESS|Without shape|thm
+FORTIFY|Strengthen|thm
+FORTUNE|Wealth|thm
+FOURTH|Number after third|thm
+FRAGRANT|Sweet-smelling|thm
+FRAIL|Weak|thm
+FREEDOM|Liberty|thm
+FRIENDS|Greater love than laying down life for them|nt
+FRUITFUL|Productive|thm
+FULFILL|Complete|thm
+FUNERAL|Burial rites|thm
+GAINSAY|Contradict|thm
+GALLOWS|Haman's tall structure|ot
+GARRISON|Troops stationed|thm
+GENEALOGY|Family tree|thm
+GENEROUS|Giving freely|thm
+GENTILE|Non-Jew|nt
+GIVER|One who gives cheerfully|thm
+GLEANER|Ruth gathering leftover grain|ot
+GLITTER|Sparkle|thm
+GLORIOUS|Full of splendor|thm
+GLUTTONY|Excess in eating|thm
+GOADS|Prods for oxen|obj
+GODLESS|Without God|thm
+GODLY|Devout|thm
+GOVERNOR|Ruler of a province|nt
+GRACEFUL|Elegant|thm
+GRANARY|Grain store|obj
+GRANDSON|Child of a child|thm
+GRATITUDE|Thankfulness|thm
+GREEDY|Selfish for gain|thm
+GREETING|Salutation|thm
+GRIEVE|Mourn|thm
+GROVE|Trees planted by Abraham|obj
+GUARDIAN|Protector|thm
+GUESTROOM|Place of the Last Supper|east
+HAGGARD|Worn out|thm
+HALLOWED|Holy|thm
+HANDMAID|Mary called herself the Lord's|xmas
+HAPPY|Blessed|thm
+HARBOR|Port|obj
+HARDEN|Make stubborn|thm
+HARLOT|Rahab's old label|ot
+HARMONY|Agreement|thm
+HASTEN|Hurry|thm
+HAUGHTY|Proud|thm
+HEADSTONE|Chief cornerstone|thm
+HEALER|Jehovah Rapha|thm
+HEALTH|Wellness|thm
+HEARKEN|Listen|thm
+HEARTH|Fireplace|obj
+HEATHEN|Pagan|thm
+HEAVENLY|Of the sky|thm
+HEBREW|Jewish language|ot
+HEIFER|Young cow|obj
+HELPER|Holy Spirit's role|nt
+HERALD|Messenger|xmas
+HERITAGE|Inheritance|thm
+HERMIT|Loner|thm
+HIGHWAY|Road, prepare the way|thm
+HILLSIDE|Slope of the mount|obj
+HINDER|Block|thm
+HIRELING|Hired shepherd who flees|nt
+HOMELAND|Native country|thm
+HOMEWARD|Toward home|thm
+HONEYCOMB|Sweeter than this are the Lord's words|psalm
+HOPEFUL|Expecting good|thm
+HORIZON|Sky line|obj
+HORSEMEN|Cavalry|obj
+HOSTAGE|Captive held|thm
+HOUSEHOLD|Family|thm
+HUMILITY|Meekness|thm
+HUNDRED|Sheep count in a parable|thm
+HUNTER|Nimrod was a mighty one|ot
+HURRICANE|Violent wind|thm
+HYPOCRITE|One who pretends|nt
+ICICLE|Frozen drip|obj
+IDOLATRY|Worship of false gods|thm
+IGNORANT|Unknowing|thm
+ILLNESS|Sickness|thm
+IMMORTAL|Never dying|thm
+IMPART|Give|thm
+IMPRISON|Put in jail|thm
+INCARNATE|In human flesh|xmas
+INCREASE|Grow|thm
+INDEED|Truly|thm
+INFANT|Baby|xmas
+INFIRM|Weak|thm
+INHERITOR|One who receives an estate|thm
+INIQUITY|Sin|thm
+INNKEEPER|Cared for the injured man|nt
+INSIGHT|Understanding|thm
+INSPIRE|Breathe into|thm
+INSTRUCT|Teach|thm
+INTEGRITY|Honest character|thm
+INTERCEDE|Plead for another|thm
+INTREAT|Plead|thm
+INVITE|Ask to come|thm
+ISLAND|Patmos|plc
+ITINERANT|Traveling preacher|thm
+JAILER|Philippian who asked how to be saved|nt
+JASPER|Gem of the first wall foundation|obj
+JEALOUSY|Envy|thm
+JERKIN|Short coat|obj
+JOURNEYED|Traveled|thm
+JOYFUL|Glad|psalm
+JUDGMENT|Decision|thm
+JUNIPER|Tree where Elijah rested|ot
+JUSTIFY|Declare righteous|thm
+KEEPER|One who guards|thm
+KIDNEYS|Organs in sacrifices|obj
+KINDRED|Relatives|thm
+KINSMAN|Boaz was a redeemer|ot
+KNEELING|On bended knee|thm
+KNOWLEDGE|Understanding|thm
+LABORER|Worker in the vineyard|nt
+LAMENT|Mourn|thm
+LANDMARK|Boundary stone|thm
+LATTER|Second of two|thm
+LAUGHTER|Sarah's joy|ot
+LAYMAN|Not clergy|thm
+LEAVENED|Containing yeast|thm
+LEGACY|Inheritance|thm
+LEOPARD|Spotted cat|obj
+LIBERTY|Freedom|thm
+LIFETIME|Span of life|thm
+LIGHTNING|Flash of heaven|thm
+LINEAGE|Ancestry|thm
+LIONESS|Female lion|obj
+LISTEN|Hear|thm
+LITTLE|Not much|thm
+LIVING|Alive|thm
+LOCUSTS|John the Baptist ate them|nt
+LOOKING|Gazing|thm
+LOWLAND|Valley|thm
+LUKEWARM|Neither hot nor cold|nt
+LULLABY|Sleep song|xmas
+MAGICIAN|Egyptian sorcerer|ot
+MAJESTY|Royal splendor|psalm
+MANAGER|Steward|thm
+MANSION|Large house in the Father's house|nt
+MARRIAGE|Wedding bond|thm
+MARVELOUS|Wonderful|thm
+MATTER|Subject|thm
+MEADOW|Pasture|obj
+MEDIATOR|One between God and man|nt
+MEDITATE|Think deeply on Scripture|psalm
+MELODY|Tune|psalm
+MEMORIAL|Remembrance|thm
+MERCHANT|Trader|thm
+MERCIFUL|Showing compassion|thm
+MESSAGE|Word sent|thm
+MESSENGER|One sent|thm
+MIDNIGHT|Hour when Paul and Silas sang|nt
+MIDWIFE|Shiphrah or Puah|ot
+MILLSTONE|Heavy grinding wheel|nt
+MINISTRY|Service|thm
+MINSTREL|Musician|ot
+MISERY|Suffering|thm
+MOCKER|Scoffer|thm
+MODEST|Humble|thm
+MOMENT|Instant|thm
+MONARCH|King|thm
+MONTH|Moon cycle|thm
+MORNING|Sunrise|thm
+MORTAR|Pestle partner|obj
+MOURNER|One who grieves|thm
+MULTITUDE|Great crowd|nt
+MURMUR|Complain softly|ot
+MYSTERY|Hidden truth|thm
+NATIONS|Peoples of the world|thm
+NATIVE|Born there|thm
+NATURE|Natural world|thm
+NAZARENE|From Nazareth|nt
+NEAREST|Closest|thm
+NEEDY|Poor|thm
+NEIGHBOUR|Good Samaritan's lesson|nt
+NETWORK|Webwork of nets|obj
+NEVERMORE|Never again|thm
+NEWBORN|Baby|xmas
+NIGHTFALL|Dusk|thm
+NINTH|Hour of Jesus' death|east
+NOBLEMAN|Man of rank|nt
+NOURISH|Feed|thm
+NUMBER|Count|thm
+OBEDIENCE|Doing what is told|thm
+OBSTINATE|Stubborn|thm
+OFFENCE|Wrong|thm
+OFFERINGS|Gifts at the altar|ot
+OFFSPRING|Descendants|thm
+OINTMENT|Mary poured it on Jesus' feet|nt
+ONLOOKER|Spectator|thm
+OPPRESS|Burden|thm
+ORACLES|Sacred words|thm
+ORCHARD|Fruit garden|obj
+ORDINARY|Common|thm
+OUTCAST|Rejected one|nt
+OUTCRY|Loud protest|thm
+OUTSIDE|Not inside|thm
+OVERCOME|Conquer|thm
+OVERFLOW|Spill over|psalm
+OVERSEER|Bishop|nt
+PALLET|Bed of the paralytic|nt
+PARADISE|Where the thief joined Jesus|nt
+PARALYZED|Unable to move|nt
+PARCHMENT|Writing skin|obj
+PARDON|Forgive|thm
+PARENT|Mother or father|thm
+PARTNER|Companion|thm
+PASSION|Suffering of Christ|east
+PASTURE|Grazing land|psalm
+PATIENCE|Waiting calmly|thm
+PATRIARCH|Father of a tribe|ot
+PAVILION|Tent|obj
+PEDDLE|Sell|thm
+PENALTY|Punishment|thm
+PENNY|Small coin|obj
+PEOPLE|Nation|thm
+PERFUME|Fragrance|obj
+PERIL|Danger|thm
+PERSECUTE|Harass for faith|thm
+PERSEVERE|Keep going|thm
+PETITION|Request|thm
+PHYSICIAN|Doctor|nt
+PIETY|Devotion|thm
+PILGRIM|Traveler to a holy place|thm
+PINNACLE|Temple top where Satan tempted|nt
+PIONEER|Trailblazer|thm
+PITCHER|Jar|obj
+PLEDGE|Promise|thm
+PLENTEOUS|Abundant|thm
+PLOWMAN|Farmer|thm
+PONDER|Think over|thm
+PORTION|Share|thm
+POSSESS|Own|thm
+POSTERITY|Descendants|thm
+POTSHERD|Broken clay piece|obj
+POVERTY|Lack|thm
+PRAYERFUL|Devoted to prayer|thm
+PRECIOUS|Valuable|thm
+PREPARE|Make ready|thm
+PRESENCE|Being near|thm
+PRESERVE|Keep safe|thm
+PRISONER|Captive|thm
+PROCLAIM|Announce|thm
+PROFIT|Gain|thm
+PROMISED|Pledged|thm
+PROPHECY|Foretelling|thm
+PROSPER|Succeed|thm
+PROTECT|Guard|thm
+PROUDLY|Boastfully|thm
+PROVIDE|Supply|thm
+PROVINCE|Region|nt
+PRUDENT|Wise|thm
+PUNISH|Chastise|thm
+PURPLE|Lydia's cloth|nt
+PURPOSE|Goal|thm
+QUARREL|Argue|thm
+QUENCH|Put out|thm
+QUESTION|Query|thm
+QUICKEN|Give life|thm
+QUIETLY|Without noise|thm
+RABBLE|Mob|thm
+RADIANT|Shining|thm
+RAFTER|Roof beam|obj
+RANSOMED|Bought back|thm
+RAPTURE|Joy or being caught up|thm
+RAVENS|Fed Elijah|ot
+REAPER|Harvester|thm
+REASON|Think|thm
+REBELLION|Revolt|thm
+RECEIPT|Acceptance|thm
+RECKON|Count|thm
+RECONCILE|Bring back together|thm
+RECORD|Write down|thm
+RECOVER|Heal|thm
+REDEEMED|Bought back|thm
+REFINE|Purify|thm
+REFRESH|Renew|thm
+REFUSE|Decline|thm
+REGION|Area|thm
+REGISTER|Enroll for the census|xmas
+REJECT|Cast off|thm
+RELATIVE|Family member|thm
+RELEASE|Set free|thm
+RELIGION|Faith practice|thm
+REMEMBER|Recall|thm
+RENOWN|Fame|thm
+RENT|Torn, like the veil|east
+REPAIR|Mend|thm
+REPORT|Account|thm
+REPROACH|Disgrace|thm
+REQUEST|Petition|thm
+RESCUE|Save|thm
+RESIST|Withstand the devil|thm
+RESOLVE|Decide firmly|thm
+RESPECT|Honor|thm
+RESTORE|Give back|psalm
+REVEAL|Make known|thm
+REVENGE|Vengeance|thm
+REVERENCE|Awe|thm
+REVIVE|Bring back to life|psalm
+REWARD|Prize|thm
+RICHES|Wealth|thm
+RIDDLE|Samson's wedding puzzle|ot
+RIGHTEOUS|Just|thm
+RIPPLE|Small wave|obj
+RIVERS|Flowing waters|obj
+ROBBER|Thief|nt
+ROBES|Garments|obj
+ROUGH|Not smooth|thm
+RULER|Leader|thm
+RUMOR|Hearsay|thm
+RUNNER|One who races|thm
+SACRED|Holy|thm
+SACRIFICE|Offering|thm
+SADNESS|Sorrow|thm
+SAILOR|Seaman|thm
+SALUTE|Greet|thm
+SAMARITAN|Good neighbor in a parable|nt
+SANCTIFY|Make holy|thm
+SANCTUARY|Holy place|thm
+SANDALS|Foot coverings|obj
+SAPPHIRE|Blue gem|obj
+SATISFY|Fill|thm
+SCATTER|Disperse|thm
+SCEPTRE|Royal rod|obj
+SCHOLAR|Learned one|thm
+SCORN|Despise|thm
+SCORPION|Stinging creature|obj
+SCRIPT|Writing|thm
+SEAFARER|Sailor|thm
+SEARCH|Look carefully|thm
+SEASONS|Times of the year|thm
+SECRET|Hidden|thm
+SECURE|Safe|thm
+SEDUCE|Lead astray|thm
+SEEDTIME|Planting season|thm
+SELFLESS|Unselfish|thm
+SENATOR|Council member|thm
+SENTENCE|Judgment|thm
+SEPULCHRE|Tomb|east
+SERENE|Calm|thm
+SERVICE|Ministry|thm
+SEVENTH|Day of rest|thm
+SHAKEN|Unsettled|thm
+SHALLOW|Not deep|thm
+SHAPELESS|Formless|thm
+SHEEPFOLD|Pen for the flock|nt
+SHELTER|Protection|psalm
+SHIPWRECK|Paul's Malta mishap|nt
+SHOULDER|Government will be upon his|xmas
+SHRUB|Bush|obj
+SIBLING|Brother or sister|thm
+SICKLY|Often ill|thm
+SIGNET|Seal ring|obj
+SILENCE|Quiet|thm
+SIMPLE|Plain|thm
+SINCERE|Honest|thm
+SINFUL|Wicked|thm
+SIXTH|Hour when darkness came|east
+SKILFUL|Expert|thm
+SLANDER|False talk|thm
+SLAUGHTER|Kill|thm
+SLAVERY|Bondage|thm
+SLEEPER|Eutychus|nt
+SLIPPERY|Hard to stand on|psalm
+SLOTH|Laziness|thm
+SLUMBER|Sleep|thm
+SMITH|Metal worker|thm
+SNARE|Trap|psalm
+SOLEMN|Serious|thm
+SOLITARY|Alone|thm
+SOMEONE|A person|thm
+SORCERER|Magician|nt
+SORROWFUL|Grieving|thm
+SOVEREIGN|Supreme ruler|thm
+SPARROWS|Two sold for a penny|nt
+SPEAKER|Orator|thm
+SPECTACLE|Public sight|thm
+SPINDLE|Spinning tool|obj
+SPIRITUAL|Of the soul|thm
+SPLENDOR|Magnificence|psalm
+SPLINTER|Sliver of wood|obj
+SPOKEN|Said aloud|thm
+SPONGE|Offered vinegar to Jesus|east
+SPRINKLE|Scatter drops|thm
+STAIRS|Steps|obj
+STALK|Stem|obj
+STAMMER|Speak haltingly|thm
+STARLIGHT|Light of the heavens|xmas
+STATURE|Height|nt
+STATUTE|Law|thm
+STEADFAST|Firm|thm
+STEWARD|Manager|nt
+STINGY|Not generous|thm
+STOMACH|Belly|thm
+STONES|Rocks|obj
+STRANGER|Unknown guest|nt
+STREET|Road|thm
+STRIPES|By His we are healed|east
+STRUGGLE|Wrestle|thm
+STUBBORN|Hard-headed|thm
+STUDENT|Disciple|thm
+SUBMIT|Yield|thm
+SUBSTANCE|Matter|thm
+SUCCESS|Prosperity|thm
+SUCKLING|Nursing child|thm
+SUFFERING|Pain|thm
+SUMMON|Call|thm
+SUNRISE|Dawn|thm
+SUNSET|Dusk|thm
+SURETY|Guarantee|thm
+SURRENDER|Give up|thm
+SURVIVE|Live through|thm
+SWALLOW|Bird that nests near the altar|psalm
+SYCAMORE|Tree Zacchaeus climbed|nt
+SYMBOL|Sign|thm
+SYNAGOGUE|Jewish place of worship|nt
+TEACHER|Rabbi|nt
+TEACHING|Instruction|thm
+TEMPEST|Violent storm|thm
+TEMPLES|Holy buildings|thm
+TEMPTER|Satan|nt
+TENDER|Gentle|thm
+TENTMAKER|Paul's trade|nt
+TERRIBLE|Awesome|thm
+TESTAMENT|Covenant|thm
+TESTIFY|Bear witness|thm
+THANKFUL|Grateful|thm
+THEATER|Place Paul was begged not to enter|nt
+THIRTY|Pieces of silver|east
+THIRSTY|Needing a drink|nt
+THISTLE|Thorny weed|obj
+THRESH|Beat out grain|ot
+THRONES|Seats of kings|thm
+THUNDERED|Roared|thm
+TIDINGS|Good news|xmas
+TIMBER|Wood|obj
+TOGETHER|United|thm
+TOMORROW|Next day|thm
+TORMENT|Anguish|thm
+TOWNSHIP|Small place|plc
+TRADITION|Handed down custom|thm
+TRAGEDY|Disaster|thm
+TRANQUIL|Peaceful|thm
+TRANSFORM|Change|thm
+TRAVAIL|Painful labor|thm
+TRAVELER|Wayfarer|thm
+TREACHERY|Betrayal|thm
+TREMBLING|Shaking|thm
+TRESPASS|Sin against|thm
+TRIBUNAL|Court|thm
+TRUMPETS|Horns of Jericho|ot
+TUMULT|Uproar|thm
+TWILIGHT|Dusk|thm
+TWINKLE|Sparkle|xmas
+UNBELIEF|Lack of faith|thm
+UNCLEAN|Impure|thm
+UNFAILING|Never ending|thm
+UNGODLY|Wicked|thm
+UNHOLY|Not sacred|thm
+UNITED|Joined|thm
+UNKNOWN|God of Athens' altar|nt
+UNSEEN|Invisible|thm
+UNWORTHY|Not deserving|thm
+UPPERROOM|Place of the Last Supper|east
+UPRISING|Revolt|thm
+UTTERANCE|Speech|pent
+VAGABOND|Wanderer|ot
+VANITY|Emptiness|thm
+VANQUISH|Defeat|thm
+VAPOUR|Mist|thm
+VENGEANCE|Revenge|thm
+VENOM|Poison|thm
+VERDICT|Decision|thm
+VESTURE|Clothing|thm
+VICTOR|Winner|thm
+VIGOR|Strength|thm
+VILLAGER|Country dweller|thm
+VIRGINS|Wise and foolish ones|nt
+VISIBLE|Seen|thm
+VISITOR|Guest|thm
+VOYAGE|Sea journey|nt
+VULTURE|Carrion bird|obj
+WAGON|Cart|obj
+WAILING|Loud grief|thm
+WAITING|Expecting|thm
+WANDERER|Roamer|thm
+WARFARE|Combat|thm
+WARRIOR|Fighter|ot
+WASHING|Cleansing|thm
+WATCHMAN|Guard on the wall|ot
+WATERFALL|Cascade|obj
+WAYFARER|Traveler|thm
+WAYSIDE|Roadside where seed fell|nt
+WEAKNESS|Frailty|thm
+WEALTHY|Rich|thm
+WEAPONS|Arms|obj
+WEARINESS|Tiredness|thm
+WEEPING|Crying|thm
+WHIRLWIND|Elijah's heavenly ride|ot
+WHISTLE|Shrill sound|thm
+WHOLESOME|Healthy|thm
+WIDOWS|Women to care for|nt
+WILLING|Ready|thm
+WILLOW|Tree where harps were hung|ot
+WINDOW|Opening, like Paul's escape|nt
+WINEPRESS|Where grapes are crushed|ot
+WINESKIN|Old one bursts with new wine|nt
+WINGED|Having wings|thm
+WINNER|Victor|thm
+WITHERED|Dried up|nt
+WITNESSES|Those who testify|nt
+WOMANHOOD|Female adulthood|thm
+WONDERFUL|Counselor, Mighty God|xmas
+WORKMAN|Laborer|nt
+WORKSHOP|Carpenter's place|nt
+WORSHIPER|One who adores|thm
+WORTHY|Deserving|thm
+WOUNDED|Hurt|thm
+WRESTLE|Grapple like Jacob|ot
+WRITTEN|Inscribed|thm
+YEARNING|Longing|thm
+YESTERDAY|Jesus Christ is the same __, today and forever|nt
+YIELDED|Gave way|thm
+YOUTHFUL|Young|thm
+ZEALOT|Simon's party|nt
+ZEALOUS|Passionate|thm
 `;
 
 export const EVENT_TAGS = ['xmas', 'east', 'pent', 'hero', 'psalm'];
@@ -1606,7 +3482,7 @@ export function parseBank(raw = RAW) {
     line = line.trim();
     if (!line) return;
     const [a, c = '', tags = '', e = ''] = line.split('|');
-    if (!/^[A-Z]{2,9}$/.test(a)) { console.warn('bad answer', a); return; }
+    if (!/^[A-Z]{1,9}$/.test(a)) { console.warn('bad answer', a); return; }
     out.push({ id: out.length, a, c, e, tags: tags.split(',').filter(Boolean) });
   });
   return out;

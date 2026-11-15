@@ -20,9 +20,9 @@ Open http://localhost:8080 (add `?debug` to the URL to expose `window.fwDebug` f
 - All numbers live in `js/config.js`.
 
 ## Content
-- `js/bank.js` — ~1,600 Bible / church / Christian-life entries (`ANSWER|clue|tags|emoji`). **Append-only**: the puzzle pack refers to entries by position, so add new lines at the end and never reorder or delete.
-- `js/pack.js` — every puzzle, generated once offline by `node tools/make-pack.mjs` (about 4 minutes): 240 main levels, daily puzzles 2026-08-15 → 2027-02-28, 6 per event, 60 for live matches. Grid sizes vary (7×9, 8×9, 7×8, 8×8, 7×10), every square is a clue or a letter (no gaps), and every player on every device gets exactly the same puzzle. Levels past 240 repeat the set; to add more, raise the numbers in `tools/make-pack.mjs` and regenerate (then redeploy `fw-api`).
-- Gameplay: tapping a clue only zooms it. Drop tiles on any squares, then press **Submit**: right tiles score and stay, each wrong tile costs 1 point (never below 0) and returns to the rack.
+- `js/bank.js` — ~3,500 Bible / church / Christian-life entries (`ANSWER|clue|tags|emoji`), including ~600 one-letter riddle clues (`J|First letter of the disciple who betrayed Jesus`, `N|Jo_ah`). **Append-only**: the puzzle pack refers to entries by position, so add new lines at the end and never reorder or delete.
+- `js/pack.js` — every puzzle, generated once offline: `node tools/make-templates.mjs` (board layouts, needs `gcc`) then `node tools/make-pack.mjs` (about 40 minutes): 240 main levels, daily puzzles 2026-08-15 → 2027-02-28, 6 per event, 60 for live matches. Grid sizes vary (7×9, 8×9, 7×8, 8×8, 7×10), every square is a clue or a letter, and every player on every device gets exactly the same puzzle. Layout rule: the clue is always in the cell directly before its word (left of an across word, above a down word); a letter that is in no word is a one-letter answer with its own riddle. Levels past 240 repeat the set; to add more, raise the numbers in `tools/make-pack.mjs`, regenerate, then redeploy `fw-api`.
+- Gameplay: tapping a clue only zooms it. **Hint** shows a faint letter in a square you choose (it never fills it). Drop tiles on any squares, then press **Submit**: right tiles score and stay, each wrong tile costs 1 point (never below 0) and returns to the rack.
 - Admin panel at `#/admin` (PIN in `js/config.js`, default `faith`): preview any puzzle, edit clues/emoji, add new words, export/import content JSON.
   The PIN is only a screen lock for the offline build — use the `is_admin` role in Supabase for real protection.
 

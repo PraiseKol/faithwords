@@ -27,7 +27,7 @@ export function packKey(spec) {
 
 export function buildPuzzle(spec) {
   const key = packKey(spec);
-  const [W, H, wl, given] = PACK[key];
+  const [W, H, wl, given, orn = []] = PACK[key];
   const cells = Array.from({ length: W * H }, () => ({ t: 'x' }));
   const words = wl.map(([entry, dir, r, c, cr, cc, kind], id) => {
     const e = BANK[entry], len = e.a.length, cs = [];
@@ -42,6 +42,7 @@ export function buildPuzzle(spec) {
     if (cells[k].t !== 'c') cells[k] = { t: 'c', clues: [] };
     cells[k].clues.push(w.id);
   });
+  orn.forEach((k) => { cells[k] = { t: 'o' }; }); // the one clue-coloured ornament square (nothing to clue there)
   given.forEach((k) => { cells[k].given = true; });
   if (cells.some((c) => c.t === 'x')) throw new Error('puzzle ' + key + ' has an empty square');
   return { seed: spec.seed, key, W, H, cells, words, letterCount: cells.filter((c) => c.t === 'l').length };

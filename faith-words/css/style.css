@@ -165,9 +165,9 @@ hr { border: 0; border-top: 1px solid var(--line); width: 100%; margin: 8px 0; }
 .cell.letter { cursor: pointer; }
 .cell.letter.given { background: var(--given); }
 .cell.f-you { color: var(--you); } .cell.f-opp { color: var(--opp); } .cell.f-rev { color: var(--good); } .cell.f-given { color: var(--cell-ink); }
-.cell.pend { background: color-mix(in srgb, var(--primary) 18%, var(--cell)); color: var(--tile-ink); box-shadow: inset 0 0 0 2px var(--primary); cursor: pointer; }
-.cell.bad { background: color-mix(in srgb, #e5484d 30%, var(--cell)); color: #c5282d; box-shadow: inset 0 0 0 2px #e5484d; animation: shake .35s; }
-.cell.hint { animation: pulse 0.8s infinite alternate; background: color-mix(in srgb, var(--good) 25%, var(--cell)); }
+.cell.pend { background: linear-gradient(#fff0a8, #ffc93c); color: #3a2600; font-weight: 900; box-shadow: inset 0 0 0 2px #f2a000, 0 2px 0 #b97900; cursor: pointer; animation: pendin .16s ease-out; }
+.cell.bad { background: #ff5b5f; color: #fff; font-weight: 900; box-shadow: inset 0 0 0 2px #c5282d; animation: shake .35s; }
+
 .cell.drop { background: color-mix(in srgb, var(--good) 45%, var(--cell)); transform: scale(1.08); z-index: 2; box-shadow: 0 0 0 2px var(--good); }
 .cell.pop { animation: pop .35s; } .cell.shake { animation: shake .35s; } .cell.flash { animation: flash .9s; }
 @keyframes pulse { to { background: color-mix(in srgb, var(--good) 55%, var(--cell)); } }
@@ -241,3 +241,13 @@ hr { border: 0; border-top: 1px solid var(--line); width: 100%; margin: 8px 0; }
 .clue-pop .big-emo { font-size: 88px; line-height: 1.1; margin: 4px 0 8px; }
 .clue-pop .len { font-size: 13px; font-weight: 800; opacity: .75; margin-bottom: 12px; }
 .badge.inline { position: static; display: inline-block; }
+
+.cell.ghost-hint { color: color-mix(in srgb, var(--primary) 38%, transparent); background: color-mix(in srgb, var(--primary) 9%, var(--cell)); font-weight: 800; }
+.cell.pickable { outline: 2px dashed color-mix(in srgb, var(--primary) 55%, transparent); outline-offset: -3px; cursor: crosshair; }
+.cell.orn { background: var(--clue); color: var(--clue-line); font-size: calc(var(--cs) * .5); opacity: .9; }
+
+@keyframes pendin { from { transform: scale(.7); } to { transform: scale(1); } }
+@keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.35); } 100% { transform: scale(1); } }
+.sc.bump { animation: bump .28s ease-out; }
+.float.neg { color: #e5484d; font-size: 24px; }
+.cell.f-you.pop { animation: pop .3s ease-out; }

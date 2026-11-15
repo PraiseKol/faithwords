@@ -3,7 +3,7 @@ import { buildPuzzle, specMain, specDaily, specEvent, randomOnlineSeed } from '.
 import { EVENTS, EVENT_PUZZLES } from '../js/config.js';
 const fail = (m) => { console.error('FAIL', m); process.exit(1); };
 const keys = Object.keys(PACK);
-const sizes = {}; let empty = 0, orphan = 0;
+const sizes = {}; let empty = 0, orn = 0, singles = 0;
 for (const k of keys) {
   const p = buildPuzzle({ seed: k, kind: 'x' }), q = buildPuzzle({ seed: k, kind: 'x' });
   if (JSON.stringify(p) !== JSON.stringify(q)) fail('not deterministic ' + k);
@@ -12,9 +12,13 @@ for (const k of keys) {
   p.cells.forEach((c) => { if (c.t === 'c' && (c.clues.length < 1 || c.clues.length > 2)) fail('clue cell size ' + k); });
   p.words.forEach((w) => {
     const cc = p.cells[w.cr * p.W + w.cc]; if (cc.t !== 'c' || !cc.clues.includes(w.id)) fail('word without clue cell ' + k);
-    if (w.len < 2) fail('short word ' + k);
+    // strict rule: the clue sits directly left of an across word and directly above a down word
+    if (w.dir === 'a' ? !(w.cr === w.r && w.cc === w.c - 1) : !(w.cr === w.r - 1 && w.cc === w.c)) fail('clue not directly before its word ' + k + ' ' + w.ans);
+    if (w.kind !== 's') fail('bent arrow in ' + k);
   });
   if (p.cells.filter((c) => c.given).length < 3) fail('few givens ' + k);
+  p.cells.forEach((c, i) => { if (c.t === 'l' && !p.words.some((w) => w.cells.includes(i))) fail('letter outside every word ' + k); if (c.t === 'o') orn++; });
+  singles += p.words.filter((w) => w.len === 1).length;
 }
 if (empty) fail(empty + ' puzzles with empty squares');
 if (Object.keys(sizes).length < 4) fail('sizes do not vary ' + JSON.stringify(sizes));
@@ -26,4 +30,4 @@ for (let d = new Date(PACK_INFO.dailyFrom + 'T00:00:00Z'); d <= new Date(PACK_IN
 for (const ev of EVENTS) for (let i = 0; i < EVENT_PUZZLES; i++) if (!PACK[`ev-${ev.id}-${i}`]) fail('missing event ' + ev.id + i);
 for (let i = 1; i <= PACK_INFO.online; i++) if (!PACK['online-' + i]) fail('missing online-' + i);
 buildPuzzle(specMain(PACK_INFO.main + 7)); buildPuzzle(specDaily('2030-01-01')); buildPuzzle({ kind: 'online', seed: randomOnlineSeed() });
-console.log('pack ok', keys.length, 'puzzles', sizes);
+console.log('pack ok', keys.length, 'puzzles', sizes, 'one-letter clues', singles, 'ornament squares', orn);

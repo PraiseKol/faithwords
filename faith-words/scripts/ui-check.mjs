@@ -23,11 +23,14 @@ async function run(theme, n){
   const info = await p.evaluate(()=>{const G=fwDebug.game();const r=G.st.racks.you;const cells=G.st.puzzle.cells;
     const good=cells.findIndex((c,i)=>c.t==='l'&&c.ch===r[0]&&!G.st.board[i].ch);
     const bad=cells.findIndex((c,i)=>c.t==='l'&&c.ch!==r[1]&&!G.st.board[i].ch&&i!==good);return {good,bad}});
-    await p.locator('.rack .tile').nth(0).click(); await p.click('[data-k="'+info.good+'"]');
+    await p.click('.act.hint'); await p.click('[data-k="'+info.bad+'"]'); await p.waitForTimeout(200);
+  console.log('ghost hints:', await p.$$eval('.cell.ghost-hint',e=>e.map(x=>x.textContent)), 'filled cells', await p.evaluate(()=>fwDebug.game().st.board.filter(b=>b.ch).length));
+  await p.screenshot({path:out+'hint-'+theme+'.png'});
+  await p.locator('.rack .tile').nth(0).click(); await p.click('[data-k="'+info.good+'"]');
   await p.locator('.rack .tile').nth(1).click(); await p.click('[data-k="'+info.bad+'"]');
   console.log('score before submit', await p.$$eval('.sc',e=>e.map(x=>x.textContent)), 'pending', await p.$$eval('.cell.pend',e=>e.length));
   await p.screenshot({path:out+'pend-'+theme+'.png'});
-  await p.click('.main-act'); await p.waitForTimeout(250);
+  await p.click('.main-act'); await p.waitForTimeout(420);
   await p.screenshot({path:out+'sub-'+theme+'.png'});
   console.log('score after submit', await p.$$eval('.sc',e=>e.map(x=>x.textContent)), 'rack', await p.$$eval('.rack .tile',e=>e.length));
   await p.waitForTimeout(3500);
