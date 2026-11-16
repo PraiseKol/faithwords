@@ -3472,6 +3472,920 @@ YIELDED|Gave way|thm
 YOUTHFUL|Young|thm
 ZEALOT|Simon's party|nt
 ZEALOUS|Passionate|thm
+OMRI|King who built Samaria|ot,ppl
+UZZAH|Touched the ark and died|ot,ppl
+ZIBA|Servant of Mephibosheth|ot,ppl
+ZERAH|Twin of Perez|ot,ppl
+ZIMRI|King for only seven days|ot,ppl
+ABIHU|Aaron's son who died with Nadab|ot,ppl
+SARAI|Sarah's earlier name|ot,ppl
+SALOME|Mother of James and John in Mark's gospel|nt,ppl
+DAGON|Philistine fish god|ot,thm
+RIMMON|Syrian god Naaman bowed to|ot,thm
+MAMMON|Money as a master|nt,thm
+BELIAL|Worthless one|ot,thm
+JASON|Hosted Paul in Thessalonica|nt,ppl
+JABBOK|River where Jacob wrestled|ot,plc
+SYCHAR|Samaritan town with Jacob's well|nt,plc
+SHUNEM|Town of the woman who built a room for Elisha|ot,plc
+TROAS|Port of Paul's Macedonian vision|nt,plc
+SHARON|Valley with a rose|ot,plc
+EKRON|Philistine city that sent the ark back|ot,plc
+TABOR|Mountain where Barak gathered his army|ot,plc
+GILBOA|Mountain where Saul died|ot,plc
+BEGET|Father a child|thm
+MINA|Money in a parable of ten servants|cur
+PURIM|Feast of lots|ot,thm
+ACACIA|Wood of the ark|obj
+TARES|Weeds among the wheat|obj
+BRIER|Thorny plant|obj
+ASP|Venomous snake|obj
+ADDER|Serpent|obj
+STORK|Knows her appointed times|obj
+ROE|Gazelle|obj
+HART|Deer longing for water|obj,psalm
+HIND|Female deer|obj
+APE|Animal imported by Solomon|obj
+BEAR|Beast David fought off|obj
+ANT|Sluggard's teacher|obj
+ACHE|Dull pain|thm
+ACRE|Land measure|thm
+AIDE|Helper|thm
+AIRY|Light and breezy|thm
+AREA|Region|thm
+ARID|Dry like the desert|thm
+ATOP|On the summit of|thm
+AUNT|Parent's sister|thm
+AVID|Eager|thm
+AWAY|Not here|thm
+AXLE|Wheel's shaft|obj
+BAIL|Scoop water from a boat|thm
+BAIT|Lure for a fisher|obj
+BAKE|Make bread|thm
+BALD|Elisha was called this|ot,thm
+BANK|River's edge|thm
+BARE|Uncovered|thm
+BARK|Tree's outer layer|obj
+BASE|Foundation|thm
+BASK|Lie in the sun|thm
+BEAD|Small ornament|obj
+BEAN|Lentil's cousin|obj
+BEAT|Strike|thm
+BEEF|Fatted calf's meat|obj
+BELT|Girdle|obj
+BEND|Bow down|thm
+BEST|Finest|thm
+BITE|Use the teeth|thm
+BLOW|Sound a trumpet|thm
+BLUE|Colour of the tabernacle's thread|obj
+BOAR|Wild pig|obj
+BOIL|Skin sore of Job|ot,thm
+BOND|Chain|thm
+BONE|Part of a skeleton|obj
+BRAG|Boast|thm
+BRED|Raised|thm
+BREW|Prepare tea or ale|thm
+BRIM|Edge of a cup|obj
+BROW|Forehead|obj
+BUCK|Male deer|obj
+BUDS|Aaron's rod produced these|ot,obj
+BULK|Great size|thm
+BURY|Lay in a tomb|thm
+BUSY|Occupied|thm
+CART|Wagon|obj
+CASE|Lawyer's matter|thm
+CASH|Ready money|thm
+CHAT|Talk casually|thm
+CHIN|Part of the face|obj
+CHIP|Small piece|obj
+CITY|Large town|thm
+CLAD|Dressed|thm
+CLAN|Family group|thm
+CLAP|Hands do this in praise|psalm,thm
+CLAW|Eagle's talon|obj
+CLIP|Trim shears do this|thm
+CLUB|Weapon of the mob that arrested Jesus|nt,obj
+COIL|Wind in loops|thm
+COLD|Without warmth|thm
+COMB|Honey's wax structure|obj
+CONE|Pine's seed case|obj
+COOK|Prepare a meal|thm
+COOL|Slightly cold|thm
+COPE|Handle a difficulty|thm
+CORD|Triple strand not quickly broken|ot,obj
+CORE|Centre|thm
+COST|What it takes to follow, counted first|nt,thm
+COZY|Snug|thm
+CRAB|Sideways walker|obj
+CREW|Ship's company|thm
+CURE|Heal|thm
+CURL|Twist into a ringlet|thm
+DAMP|Slightly wet|thm
+DARE|Be bold enough|thm
+DART|Fiery one is stopped by the shield of faith|nt,obj
+DASH|Run quickly|thm
+DAYS|Twenty-four hours each|thm
+DEAL|Trade|thm
+DEAR|Beloved|thm
+DESK|Scribe's table|obj
+DIAL|Sundial face|obj
+DICE|Soldiers cast lots with these, perhaps|obj
+DIET|Daniel's vegetable meal plan|ot,thm
+DIRT|Soil|thm
+DISH|Plate|obj
+DIVE|Plunge|thm
+DOCK|Harbour platform|obj
+DOME|Rounded roof|obj
+DOSE|Measured medicine|thm
+DRAG|Pull along|thm
+DRAW|Pull up water|thm
+DREW|Pulled water from the well|thm
+DRIP|Fall in drops|thm
+DROP|Small bead of liquid|thm
+DRUM|Percussion instrument|obj
+DUAL|Double|thm
+DUCK|Water bird|obj
+DUEL|Fight between two|thm
+DUNE|Sandy hill|thm
+DUSK|Twilight|thm
+EARL|Noble rank|thm
+EARN|Be paid for work|thm
+EASE|Comfort|thm
+EASY|Yoke that is this|nt,thm
+EMIT|Give off|thm
+EPIC|Grand story|thm
+EXAM|Test|thm
+EXIT|Way out|thm
+FACE|What Moses' shone with glory|ot,thm
+FACT|Truth|thm
+FAKE|False|thm
+FARE|Price of a passage|thm
+FARM|Cultivate land|thm
+FATE|Destiny|thm
+FEEL|Touch|thm
+FELL|Walls of Jericho did this|ot,thm
+FELT|Thick cloth|obj
+FERN|Plant with fronds|obj
+FILE|Smooth with a tool|obj
+FILL|Make full|thm
+FILM|Thin coating|thm
+FINE|Excellent|thm
+FIST|Clenched hand|obj
+FLAG|Banner|obj
+FLAT|Level|thm
+FLED|Ran away|thm
+FLEW|Moved through air|thm
+FLIP|Toss over|thm
+FLOW|Run like a river|thm
+FOAM|Froth|thm
+FOLK|People|thm
+FOND|Loving|thm
+FORK|Winnowing tool|obj
+FORM|Shape|thm
+FOUL|Unclean|thm
+FOUR|Gospel count|thm
+FUEL|Wood for the fire|thm
+FUND|Money set aside|thm
+GAIN|Profit|thm
+GALE|Strong wind on the lake|nt,thm
+GAME|Hunter's catch|thm
+GEAR|Equipment|thm
+GIRL|Jairus's daughter was one|nt,ppl
+GLOW|Soft shine|thm
+GLUE|Stick together|obj
+GOAL|Target|thm
+GOES|Travels|thm
+GONE|Departed|thm
+GRAB|Seize|thm
+GRAY|Colour of the hair of the aged|thm
+GREW|Became larger|thm
+GRID|Pattern of squares|thm
+GRIM|Stern|thm
+GRIN|Wide smile|thm
+GRIP|Hold tightly|thm
+GULF|Wide chasm between Lazarus and the rich man|nt,thm
+GUST|Sudden wind|thm
+HALF|One of two equal parts|thm
+HALL|Large room|obj
+HALT|Stop|thm
+HAUL|Drag a heavy catch|thm
+HEAP|Pile|thm
+HEAT|Warmth|thm
+HEEL|Serpent bruised it|ot,obj
+HELD|Gripped|thm
+HINT|Slight clue|thm
+HOLE|Opening|thm
+HOOD|Head covering|obj
+HUGE|Enormous|thm
+HUNG|Suspended|thm
+HUNT|Pursue game|thm
+HUSH|Be quiet|thm
+IDEA|Thought|thm
+INCH|Small measure of length|thm
+ITEM|Single thing|thm
+JARS|Water containers at Cana|nt,obj
+JAWS|Donkey's was Samson's weapon|ot,obj
+JOIN|Unite|thm
+JOKE|Funny remark|thm
+JUMP|Leap|thm
+JURY|Panel of judges in a trial|thm
+KEEN|Sharp|thm
+KICK|Strike with the foot, like pricks|nt,thm
+KNEW|Understood|thm
+KNIT|Join with yarn|thm
+KNOB|Door handle|obj
+LACE|Delicate fabric|obj
+LADY|Woman of rank|thm
+LAID|Placed in a manger|xmas,thm
+LAKE|Sea of Galilee, in Luke|nt,plc
+LANE|Narrow street|thm
+LARK|Songbird|obj
+LASH|Stripe from a whip|thm
+LAWN|Mown grass|obj
+LAZY|Idle|thm
+LEAK|Slow drip|thm
+LENS|Part of the eye or glasses|obj
+LESS|Not as much|thm
+LIED|Spoke falsely|thm
+LIME|Citrus fruit|obj
+LINK|Chain part|obj
+LIST|Series of names|thm
+LOAD|Burden|thm
+LONE|Solitary|thm
+LOOM|Weaver's frame|obj
+LOOP|Ring of cord|obj
+LOSS|Opposite of gain|thm
+LUCK|Chance|thm
+LUMP|Bulge|thm
+LUNG|Breathing organ|obj
+LURE|Entice|thm
+LUSH|Green and thick|thm
+MAIL|Armour of chain links|obj
+MAIN|Chief|thm
+MASK|Face cover|obj
+MASS|Large amount|thm
+MATE|Companion|thm
+MEAN|Signify|thm
+MERE|Nothing more than|thm
+MESH|Net weave|obj
+MILD|Gentle|thm
+MINE|Belonging to me|thm
+MISS|Fail to hit|thm
+MODE|Manner|thm
+MOOD|Feeling|thm
+MOVE|Shift|thm
+MYTH|Old legend|thm
+NAVY|Dark blue|thm
+NEAT|Tidy|thm
+NECK|Head's support|obj
+NEWS|Good tidings|thm
+NICE|Pleasant|thm
+NODE|Joint|thm
+NONE|Not one|thm
+NORM|Standard|thm
+NOTE|Brief letter|thm
+NOUN|Part of speech|thm
+ODDS|Chances|thm
+OILY|Slick|thm
+OKAY|Fine|thm
+ORAL|Spoken|thm
+OVAL|Egg shape|thm
+PACE|Step|thm
+PACK|Bundle|thm
+PAGE|Leaf of a book|thm
+PAID|Settled the bill|thm
+PAIL|Bucket|obj
+PAIR|Two together|thm
+PARK|Public garden|plc
+PART|Piece|thm
+PAST|Gone by|thm
+PAWN|Chess piece|obj
+PEAR|Fruit tree|obj
+PEEL|Strip the skin|thm
+PEER|Look closely|thm
+PEST|Plague|thm
+PICK|Choose|thm
+PIER|Landing place|obj
+PILE|Heap|thm
+PILL|Tablet|obj
+PINE|Evergreen tree|obj
+PINK|Pale red|thm
+PLAY|Make music, like David on the harp|ot,thm
+PLEA|Earnest request|thm
+PLOT|Scheme|thm
+PLUG|Stopper|obj
+PLUS|Added to|thm
+POEM|Verse|thm
+POET|Writer of verse|thm
+POLE|Brazen serpent was set on one|ot,obj
+POLL|Vote count|thm
+POND|Small pool|plc
+PONY|Small horse|obj
+POSE|Hold a position|thm
+POST|Position of duty|thm
+PREY|Hunted animal|thm
+PULL|Draw towards|thm
+PUMP|Machine for water|obj
+PUSH|Shove|thm
+QUIT|Give up|thm
+QUIZ|Short test|thm
+RACE|Run, as the saints are told to with patience|nt,thm
+RACK|Torture frame|obj
+RAFT|Floating platform|obj
+RAGE|Fury|thm
+RAID|Surprise attack|thm
+RAIL|Fence bar|obj
+RAKE|Garden tool|obj
+RAMP|Slope|obj
+RANG|Sounded, like a bell|thm
+RANK|Position|thm
+RARE|Uncommon|thm
+RASH|Hasty|thm
+RATE|Speed|thm
+REAR|Back|thm
+RELY|Depend|thm
+RICE|Grain of Asia|obj
+RIDE|Travel on a donkey|thm
+RIOT|Wild uproar|thm
+RISK|Danger|thm
+RODE|Sat on a donkey|thm
+ROLE|Part played|thm
+ROLL|Stone moved from the tomb|east,thm
+ROSY|Pink|thm
+RUDE|Impolite|thm
+RUIN|Destroy|thm
+SAGE|Wise man|thm
+SALE|Exchange for money|thm
+SANG|Praised in song|thm
+SEEM|Appear|thm
+SELF|One's own person|thm
+SENT|Dispatched|thm
+SHOP|Place of trade|plc
+SHOT|Fired an arrow|thm
+SHOW|Display|thm
+SIDE|Edge|thm
+SIGH|Deep breath of sorrow|thm
+SITE|Location|thm
+SIZE|Dimensions|thm
+SKIP|Leap about|thm
+SLAB|Flat stone|obj
+SLID|Moved smoothly|thm
+SLIM|Thin|thm
+SLIP|Stumble|thm
+SOAK|Drench|thm
+SORT|Kind|thm
+SOUP|Esau's red pottage|ot,obj
+SOUR|Bitter in taste|thm
+SPIN|Twist thread|thm
+SPOT|Stain or blemish|thm
+STEM|Plant's stalk|obj
+STOP|Halt|thm
+SUIT|Be fitting|thm
+SUNG|Past tense of praise|thm
+SWAM|Moved through water|thm
+SWAN|White bird|obj
+SWAY|Rock from side to side|thm
+SWIM|Move through water|thm
+TAIL|Animal's rear|obj
+TALL|Zacchaeus was not|nt,thm
+TANK|Water container|obj
+TAPE|Sticky strip|obj
+TASK|Assignment|thm
+TEAM|Yoked animals|thm
+TERM|Period of time|thm
+TEXT|Scripture passage for a sermon|thm
+TIDY|Orderly|thm
+TIED|Bound|thm
+TILE|Roof piece|obj
+TILL|Plough|thm
+TINY|Mustard seed size|nt,thm
+TIRE|Grow weary|thm
+TOLL|Tax for a road|thm
+TONE|Sound quality|thm
+TOOL|Implement|obj
+TRIM|Cut neatly|thm
+TRIP|Journey|thm
+TUBE|Pipe|obj
+TUNE|Melody|thm
+UNIT|Single item|thm
+URGE|Strongly encourage|thm
+USED|Employed|thm
+USER|One who employs|thm
+VARY|Change|thm
+VEIN|Blood vessel|obj
+VERB|Word of action|thm
+VEST|Sleeveless garment|obj
+VIEW|Look at|thm
+VOTE|Cast a ballot|thm
+WADE|Walk through shallow water|thm
+WAND|Magician's stick|obj
+WAYS|Paths|thm
+WEAR|Be clothed in|thm
+WEPT|Shed tears, like Jesus at Lazarus' tomb|nt,thm
+WIDE|Broad is the gate|nt,thm
+WIRE|Thin metal strand|obj
+WOKE|Stirred from sleep|thm
+WORE|Had on, like a robe|thm
+WORN|Used much|thm
+WRAP|Enfold in cloth|thm
+YARD|Enclosed court|plc
+YARN|Wool thread|obj
+ZERO|Nothing|thm
+ACTOR|Stage performer|thm
+ADAPT|Adjust to new conditions|thm
+ADMIT|Confess|thm
+ADOPT|Take as one's own child|nt,thm
+ADULT|Grown-up|thm
+AGENT|Representative|thm
+AGREE|Be of one mind|thm
+AHEAD|In front|thm
+ALARM|Warning sound|thm
+ALERT|Watchful|thm
+ALIKE|Similar|thm
+ALLOW|Permit|thm
+ALTER|Change|thm
+AMAZE|Astonish|thm
+ANGLE|Fish with a hook|thm
+ANKLE|Foot joint|obj
+APART|Separated|thm
+APPLY|Put to use|thm
+ARGUE|Dispute|thm
+AROMA|Pleasing scent|thm
+ASIDE|To one side|thm
+ASSET|Valuable possession|thm
+AVOID|Shun evil|thm
+AWARD|Prize|thm
+AWARE|Conscious of|thm
+BASIC|Fundamental|thm
+BASIS|Foundation|thm
+BEACH|Sandy shore of the sea|plc
+BEGIN|In the ___ was the Word|nt,thm
+BEING|Living creature|thm
+BENCH|Seat for many|obj
+BERRY|Small juicy fruit|obj
+BLACK|Colour of night|thm
+BLADE|Sword's edge|obj
+BLAZE|Bright fire|thm
+BLEND|Mix together|thm
+BLOCK|Obstacle|thm
+BOARD|Ship's deck plank|thm
+BOAST|Brag|thm
+BONUS|Extra reward|thm
+BRAIN|Organ of thought|obj
+BRAKE|Stopping device|obj
+BRAND|Mark with a hot iron|thm
+BRAVE|Courageous like David|thm
+BREED|Raise animals|thm
+BRIEF|Short|thm
+BRING|Carry here|thm
+BROAD|Wide|thm
+BROOM|Sweeping tool|obj
+BROWN|Earthy colour|thm
+BRUSH|Painter's tool|obj
+BUILD|Raise a temple|thm
+BUNCH|Cluster of grapes|obj
+BURST|Break open|thm
+BUYER|Merchant's customer|thm
+CABIN|Small hut|obj
+CABLE|Strong rope|obj
+CANAL|Man-made waterway|plc
+CARRY|Bear a cross|thm
+CARVE|Cut an image|thm
+CATCH|Haul in fish|thm
+CAUSE|Reason|thm
+CHAIR|Seat|obj
+CHALK|White limestone|obj
+CHARM|Attractiveness|thm
+CHART|Map of the sea|obj
+CHASE|Pursue|thm
+CHEAP|Low in price|thm
+CHEAT|Deceive|thm
+CHECK|Examine|thm
+CHEST|Ark of the covenant, in a way|obj
+CHILL|Cold|thm
+CHORD|Notes played together|thm
+CIVIC|Of a city|thm
+CLAIM|Assert|thm
+CLASS|Group of students|thm
+CLERK|Town recorder in Ephesus|nt,ppl
+CLIFF|Steep rock face|plc
+CLIMB|Ascend, like Zacchaeus up a tree|nt,thm
+CLOCK|Timekeeper|obj
+CLOSE|Shut|thm
+COACH|Teacher of athletes|thm
+COAST|Land by the sea|plc
+COUCH|Bed Jesus told the paralytic to carry|nt,obj
+COUGH|Throat reflex|thm
+CRACK|Split open|thm
+CRANE|Long-legged bird|obj
+CRASH|Fall with noise|thm
+CRAZY|Mad|thm
+CREAM|Top of the milk|obj
+CRIME|Offence|thm
+CROWD|Throng that followed Jesus|nt,thm
+CURVE|Bend|thm
+CYCLE|Repeating series|thm
+DAILY|Bread we ask for each day|nt,thm
+DAIRY|Milk products|thm
+DELAY|Put off|thm
+DEPTH|Deep end|thm
+DIARY|Daily record|obj
+DIRTY|Unclean|thm
+DOZEN|Twelve|thm
+DRAFT|Rough version|thm
+DRAIN|Empty out|thm
+DRAMA|Play|thm
+DRANK|Sipped from the cup|thm
+DRAWN|Pulled, like water|thm
+DRIED|Free of moisture|thm
+DRIFT|Be carried by a current|thm
+DRIVE|Urge animals onward|thm
+EAGER|Keen|thm
+EIGHT|Number saved in the ark|ot,thm
+ELBOW|Arm joint|obj
+ENJOY|Take pleasure in|thm
+ENTRY|Way in|thm
+EQUAL|Same in value|thm
+EVENT|Happening|thm
+EXACT|Precise|thm
+EXIST|Be|thm
+EXTRA|More than needed|thm
+FABLE|Story with a moral|thm
+FAIRY|Imaginary sprite|thm
+FANCY|Elaborate|thm
+FATAL|Deadly|thm
+FENCE|Barrier around a field|obj
+FINAL|Last|thm
+FLASH|Sudden light|thm
+FLEET|Group of ships|thm
+FLOAT|Rest on water|thm
+FLUID|Liquid|thm
+FOCUS|Concentrate|thm
+FORTY|Days of the flood rain|ot,thm
+FRAME|Support structure|obj
+FRANK|Honest|thm
+FRAUD|Deceit|thm
+FRESH|New|thm
+FRONT|Forward part|thm
+FROST|Ice crystals|thm
+FUNNY|Amusing|thm
+GIVEN|Offered freely|thm
+GLASS|We see through it darkly|nt,obj
+GLOBE|Round earth|thm
+GLOOM|Darkness|thm
+GOOSE|Large water bird|obj
+GRAND|Great|thm
+GRANT|Bestow|thm
+GRASP|Take hold of|thm
+GROUP|Gathering|thm
+GROWN|Matured|thm
+GUESS|Estimate|thm
+HABIT|Regular practice|thm
+HARSH|Severe|thm
+HEDGE|Bush barrier|obj
+HOTEL|Inn, to travellers|plc
+HUMAN|Of mankind|thm
+HUMOR|Comedy|thm
+HURRY|Haste|thm
+IDEAL|Perfect|thm
+INDEX|Pointer finger|obj
+INNER|Inside|thm
+INPUT|Contribution|thm
+IRONY|Opposite meaning|thm
+ISSUE|Flow out|thm
+JOINT|Body connection|obj
+JUICE|Fruit liquid|obj
+LARGE|Big|thm
+LATER|After a time|thm
+LAYER|One level|thm
+LEARN|Study|thm
+LEASE|Rent out land|thm
+LEAST|Smallest|thm
+LEAVE|Depart|thm
+LEGAL|Lawful|thm
+LEMON|Sour fruit|obj
+LEVEL|Even|thm
+LIMIT|Boundary|thm
+LIVER|Organ consulted by Babylon's king|ot,obj
+LOCAL|Nearby|thm
+LODGE|Stay overnight|thm
+LOVER|Beloved in the Song of Songs|ot,thm
+LOWER|Bring down|thm
+LOYAL|Faithful|thm
+LUCKY|Fortunate|thm
+LUNCH|Midday meal|thm
+MAGIC|Sorcery|thm
+MANOR|Large estate|plc
+MAPLE|Syrup tree|obj
+MATCH|Equal|thm
+MAYBE|Perhaps|thm
+MAYOR|City leader|thm
+MEANT|Intended, as evil but God ___ it for good|ot,thm
+MEDAL|Award|obj
+METAL|Iron or bronze|obj
+MINOR|Lesser|thm
+MIXED|Blended|thm
+MODEL|Example to follow|thm
+MORAL|Ethical|thm
+MOUSE|Small rodent|obj
+MUSIC|Harp and psalm|thm
+NASTY|Unpleasant|thm
+NERVE|Courage|thm
+NEWLY|Recently|thm
+NOTED|Well known|thm
+OCCUR|Happen|thm
+OCEAN|Great sea|plc
+ORDER|Command|thm
+OUTER|External|thm
+OWNER|Possessor|thm
+PAINT|Colour a wall|obj
+PANEL|Section of wall|obj
+PAPER|Writing sheet|obj
+PASTE|Stick together|obj
+PATCH|Piece of cloth sewn on|nt,obj
+PEACH|Juicy fruit|obj
+PHASE|Stage|thm
+PILOT|Ship's steersman|thm
+PLACE|Position|thm
+PLANE|Carpenter's smoothing tool|obj
+PLATE|Dish|obj
+POINT|Tip|thm
+POUND|Strike heavily|thm
+PRICE|Cost of the pearl|nt,thm
+PRIME|First in rank|thm
+PRINT|Mark of the nails|nt,thm
+PRIOR|Earlier|thm
+PRIZE|Reward|thm
+PROOF|Evidence|thm
+PUPIL|Student or part of the eye|thm
+QUEST|Search|thm
+QUOTE|Cite words|thm
+RANGE|Row of mountains|thm
+RATIO|Proportion|thm
+READY|Prepared|thm
+REFER|Mention|thm
+RELAX|Rest|thm
+REPLY|Answer|thm
+RIDER|Man on a horse|thm
+RIDGE|Hill crest|plc
+RIFLE|Search through|thm
+RIGID|Stiff|thm
+RIVAL|Competitor|thm
+ROAST|Cook over a fire|thm
+ROBIN|Red-breasted bird|obj
+ROCKY|Stony|thm
+ROUTE|Way to travel|thm
+RURAL|Of the country|thm
+SADLY|With sorrow|thm
+SAUCE|Dish topping|obj
+SCARE|Frighten|thm
+SCENE|View|thm
+SCOPE|Range|thm
+SCORE|Twenty, as in three ___ and ten|psalm,thm
+SENSE|Perceive|thm
+SHAKE|Tremble|thm
+SHAPE|Form|thm
+SHEET|Linen cloth|obj
+SHELF|Narrow ledge|obj
+SHIFT|Change position|thm
+SHIRT|Garment|obj
+SHOCK|Sudden fright|thm
+SHORT|Not long|thm
+SIXTY|Number in the Song of Songs' mighty men|ot,thm
+SKILL|Ability|thm
+SKIRT|Hem of a garment|thm
+SLICE|Cut a thin piece|thm
+SLIDE|Glide|thm
+SLOPE|Hillside|plc
+SMART|Clever|thm
+SMELL|Scent|thm
+SMILE|Happy look|thm
+SOLID|Firm|thm
+SOLVE|Work out|thm
+SORRY|Regretful|thm
+SPACE|Room|thm
+SPARK|Tiny fire|thm
+SPEED|Swiftness|thm
+SPELL|Enchantment|thm
+SPEND|Pay out|thm
+SPILL|Pour out accidentally|thm
+SPINE|Backbone|obj
+SPLIT|Divide|thm
+SPOIL|Plunder|thm
+SPOON|Eating utensil|obj
+SPORT|Game|thm
+SPRAY|Fine mist|thm
+STACK|Heap|thm
+STAGE|Platform|thm
+STAIN|Spot|thm
+STAKE|Tent peg|obj
+STAMP|Press down firmly|thm
+STARE|Gaze|thm
+START|Begin|thm
+STATE|Declare|thm
+STEAM|Water vapour|thm
+STEEL|Strong metal|obj
+STEEP|Sharply sloped|thm
+STEER|Guide a ship|thm
+STIFF|Rigid|thm
+STOOD|Rose to one's feet|thm
+STORY|Parable|thm
+STRIP|Take off|thm
+STUCK|Fixed fast|thm
+STUDY|Examine the Scriptures|thm
+STUFF|Fill|thm
+STYLE|Fashion|thm
+SUITE|Set of rooms|thm
+SUNNY|Bright with light|thm
+SWAMP|Marsh|plc
+SWEAT|Brow moisture, by which man eats bread|ot,thm
+SWEEP|Clear with a broom|thm
+SWING|Move back and forth|thm
+TEETH|Gnashing of them in outer darkness|nt,obj
+THEME|Main topic|thm
+THICK|Dense|thm
+THING|Object|thm
+THINK|Ponder|thm
+THREW|Cast, as Jonah overboard|thm
+THROW|Cast a stone|thm
+TIGER|Striped big cat|obj
+TITLE|Name of a book|thm
+TOAST|Browned bread|obj
+TODAY|This very day|thm
+TOPIC|Subject|thm
+TOTAL|Sum|thm
+TOUGH|Hard|thm
+TOWEL|Cloth Jesus wrapped around His waist|nt,obj
+TRACE|Slight sign|thm
+TRACK|Path|thm
+TRAIL|Path through the wilderness|thm
+TRASH|Rubbish|thm
+TREAT|Handle a person|thm
+TRIED|Tested|thm
+TROOP|Band of soldiers|thm
+TRULY|Verily|thm
+TRUNK|Tree's main stem|obj
+TUTOR|Private teacher|thm
+TWIST|Turn|thm
+UNCLE|Parent's brother|thm
+UNION|Joining|thm
+UNITE|Join together|thm
+UPSET|Distressed|thm
+URBAN|Of the city|thm
+USAGE|Habit of use|thm
+USUAL|Customary|thm
+VALID|Sound|thm
+VAULT|Underground chamber|obj
+VISIT|Go to see|thm
+VITAL|Essential|thm
+VOCAL|Of the voice|thm
+WASTE|Squander|thm
+WEIRD|Strange|thm
+WHOLE|Complete, like the man made so|nt,thm
+WIDTH|Breadth|thm
+WORRY|Be anxious|nt,thm
+WORSE|Less good|thm
+WORST|Least good|thm
+WRIST|Hand's joint|obj
+ABROAD|In foreign lands|thm
+ACCEPT|Receive willingly|thm
+ADVICE|Counsel|thm
+AFFAIR|Matter|thm
+ALMOND|Aaron's rod bore this nut|ot,obj
+ANSWER|Reply|thm
+ARTIST|Painter or sculptor|thm
+BEFORE|Prior to|thm
+BEHIND|At the back of|thm
+BELIEF|Faith|thm
+BESIDE|Next to|thm
+BOTTLE|Skin container for wine|obj
+BRIDGE|Span over a river|obj
+BROKEN|Shattered|thm
+BUCKET|Pail|obj
+BUNDLE|Wrapped bunch|obj
+CALLED|Summoned|thm
+CASTLE|Fortress|plc
+CENTER|Middle|thm
+CLEVER|Smart|thm
+CLOSET|Where to pray in secret|nt,obj
+COLUMN|Pillar|obj
+COMING|Arriving|thm
+COMMON|Ordinary|thm
+COUSIN|Elizabeth was Mary's|nt,thm
+CRISIS|Time of danger|thm
+DAMAGE|Harm|thm
+DANGER|Peril|thm
+DECIDE|Make up one's mind|thm
+DEFEAT|Overcome|thm
+DEFEND|Protect|thm
+DETAIL|Small point|thm
+DEVOTE|Give oneself to|thm
+DINNER|Evening meal|thm
+DIRECT|Guide|thm
+DREAMS|Visions of the night|thm
+EITHER|One or the other|thm
+ENGAGE|Employ|thm
+ESCAPE|Flee|thm
+EXPERT|Skilled person|thm
+FABRIC|Cloth|obj
+FIGURE|Shape|thm
+FLAVOR|Taste|thm
+FORMER|Earlier|thm
+FOSTER|Nurture|thm
+FUTURE|What is to come|thm
+GIVING|Offering|thm
+GUILTY|Deserving blame|thm
+HANDLE|Grip|thm
+HEIGHT|Elevation|thm
+HIDDEN|Concealed|thm
+HOLLOW|Empty inside|thm
+HONEST|Truthful|thm
+INSIDE|Within|thm
+INSIST|Demand firmly|thm
+INTENT|Purpose|thm
+LESSON|Teaching|thm
+LETTER|Epistle|nt,thm
+LONELY|Alone|thm
+MARKET|Place of trade|plc
+MEMBER|Part of the body of Christ|nt,thm
+MEMORY|Remembrance|thm
+MIDDLE|Centre|thm
+MIRROR|Looking glass|obj
+MOTION|Movement|thm
+NEARBY|Close at hand|thm
+NOTICE|Observe|thm
+OBTAIN|Get|thm
+OFFICE|Position of duty|thm
+PERIOD|Span of time|thm
+PERSON|Individual|thm
+POCKET|Small pouch|obj
+POETRY|Verse|thm
+POLISH|Make shine|thm
+POWDER|Fine dust|thm
+PRETTY|Fair|thm
+PUBLIC|Open to all|thm
+RATHER|Preferably|thm
+REMAIN|Stay|thm
+REMOTE|Far away|thm
+REPEAT|Say again|thm
+RESULT|Outcome|thm
+RETURN|Come back|thm
+RIBBON|Narrow band of cloth|obj
+RIGHTS|Entitlements|thm
+SADDLE|Seat on a donkey|obj
+SCHEME|Plot|thm
+SEEING|Looking|thm
+SELECT|Choose|thm
+SENIOR|Elder|thm
+SERIES|Sequence|thm
+SETTLE|Establish a home|thm
+SINGER|Choir member|thm
+SLEEVE|Arm covering|obj
+SLIGHT|Small|thm
+SLOWLY|Not fast|thm
+SMOOTH|Not rough|thm
+SOURCE|Spring or fountain|thm
+SPEECH|Address|thm
+SPLASH|Scatter water|thm
+SPREAD|Extend|thm
+SQUARE|Four-sided shape|thm
+STATUE|Image in the king's dream|ot,obj
+STEADY|Firm|thm
+STOLEN|Taken by a thief|thm
+STRESS|Pressure|thm
+STRICT|Severe|thm
+STRING|Harp cord|obj
+SUDDEN|Without warning|thm
+SUMMIT|Mountain top|plc
+SURELY|Without doubt|thm
+SWITCH|Change|thm
+TABLET|Stone for the law|ot,obj
+TARGET|Aim|thm
+THRIVE|Flourish|thm
+TOWARD|In the direction of|thm
+TRAVEL|Journey|thm
+TREATY|Agreement between nations|thm
+TRIBAL|Of a clan|thm
+TUMBLE|Fall|thm
+TWENTY|Score|thm
+UNABLE|Not capable|thm
+UNLESS|If not|thm
+UNLOCK|Open with a key|thm
+UNREST|Disturbance|thm
+UPHOLD|Support|thm
+UPWARD|Toward the sky|thm
+URGENT|Pressing|thm
+VICTIM|One who suffers harm|thm
+VOLUME|Book|thm
+WARMTH|Gentle heat|thm
+WEAVER|One who makes cloth|thm
+WEEKLY|Every seven days|thm
+WEIGHT|Heaviness|thm
+WISELY|Prudently|thm
+WITHIN|Inside|thm
+WORKER|Labourer|nt,thm
+WRITER|Scribe|thm
+YELLOW|Colour of gold|thm
 `;
 
 export const EVENT_TAGS = ['xmas', 'east', 'pent', 'hero', 'psalm'];
