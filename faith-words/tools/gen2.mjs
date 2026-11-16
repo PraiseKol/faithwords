@@ -1,6 +1,7 @@
 // Offline puzzle generator: every cell is a letter or a clue cell (no empty squares).
 // 1) draw a clue/letter template that obeys the arrow-crossword rules, 2) fill it with Bible words by backtracking.
 // Deterministic for a given seed + bank. Used by tools/make-pack.mjs to build js/pack.js; the app never runs it.
+import fs from 'node:fs';
 import { BANK } from '../js/bank.js';
 import { mulberry32, hashSeed } from '../js/rng.js';
 
@@ -20,70 +21,33 @@ export function runsOf(T, W, H) {
   for (let c = 0; c < W; c++) { let s = -1; for (let r = 0; r <= H; r++) { const L = r < H && T[r * W + c] === 2; if (L && s < 0) s = r; if (!L && s >= 0) { if (r - s >= 2) runs.push({ h: false, cells: Array.from({ length: r - s }, (_, i) => (s + i) * W + c) }); s = -1; } } }
   return runs;
 }
-/** Clue cells that may clue a run: [cell index, arrow kind]. Kinds: s straight, u from above/left bent, v from below/right bent */
-function clueOptions(run, T, W, H) {
-  const k = run.cells[0], r = Math.floor(k / W), c = k % W, out = [];
-  const add = (rr, cc, kind) => { if (rr >= 0 && rr < H && cc >= 0 && cc < W && T[rr * W + cc] === 1) out.push([rr * W + cc, kind]); };
-  if (run.h) { add(r, c - 1, 's'); add(r - 1, c, 'u'); add(r + 1, c, 'v'); }
-  else { add(r - 1, c, 's'); add(r, c - 1, 'u'); add(r, c + 1, 'v'); }
-  return out;
-}
-/** Give every run a clue cell (max two per cell) so that every clue cell clues at least one run. */
-export function assignClues(T, W, H) {
-  const runs = runsOf(T, W, H), n = W * H;
-  const opts = runs.map((r) => clueOptions(r, T, W, H));
-  const cells = []; for (let k = 0; k < n; k++) if (T[k] === 1) cells.push(k);
-  const slotOf = new Map(); // right nodes: cell*2+copy -> run index
-  const matchR = new Map(), matchL = new Array(runs.length).fill(-1);
-  const adjCell = new Map(cells.map((k) => [k, []]));
-  opts.forEach((o, i) => o.forEach(([ck]) => adjCell.get(ck).push(i)));
-  // step 1: each clue cell takes one run
-  const seen = new Set(); let unsat = 0;
-  const tryC = (ck, vis) => { for (const i of adjCell.get(ck)) { if (vis.has(i)) continue; vis.add(i); const cur = matchL[i]; if (cur < 0 || tryC(cur >> 1, vis)) { matchL[i] = ck * 2; return true; } } return false; };
-  for (const ck of cells) { if (!tryC(ck, new Set())) unsat++; }
-  // step 2: remaining runs go to a free second slot (or re-route)
-  const copies = (i) => opts[i].flatMap(([ck]) => [ck * 2, ck * 2 + 1]);
-  const owner = new Map(); matchL.forEach((v, i) => { if (v >= 0) owner.set(v, i); });
-  const tryL = (i, vis) => { for (const node of copies(i)) { if (vis.has(node)) continue; vis.add(node); const cur = owner.get(node); if (cur === undefined || tryL(cur, vis)) { owner.set(node, i); matchL[i] = node; return true; } } return false; };
-  let unplaced = 0;
-  for (let i = 0; i < runs.length; i++) if (matchL[i] < 0 && !tryL(i, new Set())) unplaced++;
-  return { runs, opts, matchL, unsat, unplaced };
-}
-export function templateCost(T, W, H, o) {
-  const n = W * H; let cost = 0, nC = 0, two = 0;
-  const cover = new Uint8Array(n);
-  for (let k = 0; k < n; k++) if (T[k] === 1) nC++;
-  const A = assignClues(T, W, H);
-  cost += 3 * A.unplaced + 3 * A.unsat;
-  for (const run of A.runs) { const len = run.cells.length; if (len > o.maxLen) cost += len - o.maxLen; if (len === 2) two++; run.cells.forEach((k) => cover[k]++); }
-  for (let k = 0; k < n; k++) if (T[k] === 2 && !cover[k]) cost += 2; // a letter that belongs to no word
-  if (two > o.maxTwo) cost += two - o.maxTwo;
-  let cross = 0; for (let k = 0; k < n; k++) if (cover[k] > 1) cross++;
-  const maxCross = Math.round((n - nC) * o.crossRatio); if (cross > maxCross) cost += cross - maxCross;
-  if (nC < o.cLo) cost += (o.cLo - nC); if (nC > o.cHi) cost += (nC - o.cHi);
-  return cost;
-}
-export function makeTemplate(W, H, rnd, o = {}) {
-  o = { maxLen: 6, maxTwo: 2, crossRatio: 0.5, cLo: Math.round(W * H * 0.2), cHi: Math.round(W * H * 0.3), ...o };
-  const n = W * H, dirs = [1, W, -1, -W];
-  for (let restart = 0; restart < 12; restart++) {
-    const T = new Uint8Array(n);
-    for (let k = 0; k < n; k++) T[k] = rnd() < 0.25 ? 1 : 2;
-    let cost = templateCost(T, W, H, o);
-    const ITER = 12000;
-    for (let it = 0; it < ITER && cost > 0; it++) {
-      const temp = 1.0 * (1 - it / ITER) + 0.08;
-      const k = Math.floor(rnd() * n); T[k] = 3 - T[k];
-      let k2 = -1;
-      if (rnd() < 0.4) { const d = dirs[Math.floor(rnd() * 4)], j = k + d; if (j >= 0 && j < n && Math.abs((j % W) - (k % W)) <= 1) { k2 = j; T[k2] = 3 - T[k2]; } }
-      const c2 = templateCost(T, W, H, o);
-      if (c2 <= cost || rnd() < Math.exp((cost - c2) / temp)) cost = c2;
-      else { T[k] = 3 - T[k]; if (k2 >= 0) T[k2] = 3 - T[k2]; }
+/** Letters that belong to no word of 2+ letters. Each is a one-letter answer clued from the cell left of it or above it.
+ *  Returns {singles:[{cell, clueCell, dir}], orn:[cells]} — orn = clue-coloured cells left with nothing to clue (ornaments). */
+export function singlesOf(T, W, H) {
+  const n = W * H, runs = runsOf(T, W, H), cov = new Uint8Array(n);
+  runs.forEach((r) => r.cells.forEach((k) => cov[k]++));
+  const orphans = []; for (let k = 0; k < n; k++) if (T[k] === 2 && !cov[k]) orphans.push(k);
+  const clued = new Set(runs.map((r) => (r.h ? r.cells[0] - 1 : r.cells[0] - W)));
+  const needy = []; for (let k = 0; k < n; k++) if (T[k] === 1 && !clued.has(k)) needy.push(k);
+  const opts = (o) => { const out = []; if (o % W > 0 && T[o - 1] === 1) out.push([o - 1, 'a']); if (o >= W && T[o - W] === 1) out.push([o - W, 'd']); return out; };
+  const take = new Map(); // orphan -> [clueCell, dir]
+  const owner = new Map(); // clue cell -> orphan
+  const tryAssign = (cc, seen) => { // cc needs an orphan to its right or below
+    for (const [o, dir] of [[cc + 1, 'a'], [cc + W, 'd']]) {
+      if (!orphans.includes(o) || seen.has(o)) continue; if (dir === 'a' && (cc % W) + 1 >= W) continue;
+      seen.add(o); const cur = take.get(o);
+      if (!cur || tryAssign(cur[0], seen)) { take.set(o, [cc, dir]); owner.set(cc, o); return true; }
     }
-    if (cost === 0) return T;
-  }
-  return null;
+    return false;
+  };
+  const orn = []; for (const cc of needy) if (!tryAssign(cc, new Set())) orn.push(cc);
+  const singles = orphans.map((o) => { const t = take.get(o) || opts(o)[0]; return t ? { cell: o, clueCell: t[0], dir: t[1] } : null; });
+  if (singles.some((x) => !x)) return null;
+  return { singles, orn };
 }
+
+/** Strict rule: an across word is clued by the cell directly left of it, a down word by the cell directly above it. */
+export const clueCellOf = (run, W) => (run.h ? run.cells[0] - 1 : run.cells[0] - W);
 
 // ---------- filling
 export function makeFiller(words) {
@@ -148,22 +112,18 @@ export function fill(F, T, W, H, rnd, { weight = null, maxNodes = 60000, deadlin
 }
 
 /** Build a pool of legal templates for one board size (reused by many puzzles). */
-export function templatePool(W, H, count, seed) {
-  const rnd = mulberry32(hashSeed('pool-' + seed + W + 'x' + H)), pool = [];
-  let guard = 0;
-  while (pool.length < count && guard++ < count * 6) {
-    const T = makeTemplate(W, H, rnd, { maxLen: Math.max(W, H) - 1, crossRatio: 0.5 + 0.2 * rnd(), maxTwo: 1 + Math.floor(rnd() * 3) });
-    if (T) pool.push(T);
-  }
-  return pool;
+export function templatePool(W, H) {
+  const all = JSON.parse(fs.readFileSync(new URL('./templates.json', import.meta.url), 'utf8'))[W + 'x' + H] || [];
+  return all.map((t) => { const T = Uint8Array.from(t.g.replace(/\//g, '').split('').map((ch) => (ch === '#' ? 1 : 2))); T.dead = t.d; return T; });
 }
 
 /** One puzzle: returns { W, H, words:[{ans,entry,dir,r,c,cr,cc,kind}], T } or null.
  *  weight(i): preference score per word index (tagged words, rarely used words). */
-export function generate(F, { seed, W, H, pool, weightOf = null, minTagged = 0, isTagged = null, seconds = 30 }) {
+export function generate(F, { seed, W, H, pool, weightOf = null, minTagged = 0, isTagged = null, seconds = 30, singleBank = [], singleTag = null }) {
   const rnd = mulberry32(hashSeed(seed));
   const deadline = Date.now() + seconds * 1000;
   const order = pool.map((_, i) => i); for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+  order.sort((a, b) => pool[a].dead - pool[b].dead); // fewest ornament squares first
   for (let round = 0; round < 40 && Date.now() < deadline; round++) {
     for (const ti of order) {
       if (Date.now() > deadline) break;
@@ -171,13 +131,24 @@ export function generate(F, { seed, W, H, pool, weightOf = null, minTagged = 0, 
       const weight = weightOf ? Float32Array.from(F.words, (_, i) => weightOf(i) + rnd() * 0.01) : null;
       const res = fill(F, T, W, H, rnd, { weight, maxNodes: 5000, deadline });
       if (!res) continue;
-      const A = assignClues(T, W, H);
-      const words = res.slots.map((sl, i) => {
-        const ck = A.matchL[i] >> 1, kind = A.opts[i].find((o) => o[0] === ck)[1];
-        return { ans: F.words[sl.word].a, wi: sl.word, dir: sl.h ? 'a' : 'd', r: Math.floor(sl.cells[0] / W), c: sl.cells[0] % W, cr: Math.floor(ck / W), cc: ck % W, kind };
+      const words = res.slots.map((sl) => {
+        const ck = clueCellOf({ h: sl.h, cells: sl.cells }, W);
+        return { ans: F.words[sl.word].a, wi: sl.word, dir: sl.h ? 'a' : 'd', r: Math.floor(sl.cells[0] / W), c: sl.cells[0] % W, cr: Math.floor(ck / W), cc: ck % W, kind: 's' };
       });
       if (isTagged && minTagged && words.filter((w) => isTagged(w.wi)).length < minTagged) continue;
-      return { W, H, T, words };
+      // lone letters are one-letter answers with a riddle clue of their own
+      const sg = singlesOf(T, W, H); if (!sg) continue;
+      const usedClue = new Set(), usedEntry = new Set(), singles = [];
+      let ok = true;
+      for (const sl of sg.singles) {
+        let opts = singleBank.filter((e) => !usedEntry.has(e.id) && !usedClue.has(e.c));
+        if (singleTag) { const t = opts.filter((e) => e.tags.includes(singleTag)); if (t.length && rnd() < 0.6) opts = t; }
+        if (!opts.length) { ok = false; break; }
+        const e = opts[Math.floor(rnd() * opts.length)]; usedEntry.add(e.id); usedClue.add(e.c);
+        singles.push({ entry: e.id, ans: e.a, dir: sl.dir, cell: sl.cell, clueCell: sl.clueCell });
+      }
+      if (!ok) continue;
+      return { W, H, T, words, singles, orn: sg.orn };
     }
   }
   return null;

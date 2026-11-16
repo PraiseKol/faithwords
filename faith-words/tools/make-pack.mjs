@@ -14,9 +14,10 @@ export const DAILY_FROM = '2026-08-15', DAILY_TO = '2027-02-28';
 const sizeOf = (seed) => SIZES[hashSeed('size-' + seed) % SIZES.length];
 const words = wordList(); const F = makeFiller(words);
 const variants = new Map(); BANK.forEach((e) => { if (!variants.has(e.a)) variants.set(e.a, []); variants.get(e.a).push(e); });
+const singleBank = BANK.filter((e) => e.a.length === 1 && !/_$/.test(e.c)); // a blank at the end of a word is ambiguous (WEAR_ = Y or S)
 const usage = new Float32Array(F.nW);
 const pools = new Map();
-const poolFor = (W, H) => { const k = W + 'x' + H; if (!pools.has(k)) { process.stderr.write(`templates ${k}… `); const t = Date.now(); pools.set(k, templatePool(W, H, 70, 'v1')); process.stderr.write(`${pools.get(k).length} in ${((Date.now() - t) / 1000).toFixed(0)}s\n`); } return pools.get(k); };
+const poolFor = (W, H) => { const k = W + 'x' + H; if (!pools.has(k)) { process.stderr.write(`templates ${k}… `); const t = Date.now(); pools.set(k, templatePool(W, H)); process.stderr.write(`${pools.get(k).length} in ${((Date.now() - t) / 1000).toFixed(0)}s\n`); } return pools.get(k); };
 
 function makePuzzle(seed, tag = null) {
   const [W, H] = sizeOf(seed), pool = poolFor(W, H);
@@ -25,7 +26,7 @@ function makePuzzle(seed, tag = null) {
   let g = null;
   for (const [salt, minT] of [['', 4], ['#2', 3], ['#3', 2], ['#4', 1], ['#5', 0], ['#6', 0], ['#7', 0]]) {
     if (!tag && minT > 0) continue;
-    g = generate(F, { seed: seed + salt, W, H, pool, weightOf: (i) => (tag ? tagged[i] * 4 : 0) - usage[i] * 0.7, minTagged: minT, isTagged: (i) => tagged[i], seconds: 40 });
+    g = generate(F, { seed: seed + salt, W, H, pool, weightOf: (i) => (tag ? tagged[i] * 4 : 0) - usage[i] * 0.7, minTagged: minT, isTagged: (i) => tagged[i], seconds: 40, singleBank, singleTag: tag });
     if (g) break;
   }
   if (!g) throw new Error('could not build ' + seed);
@@ -36,14 +37,16 @@ function makePuzzle(seed, tag = null) {
     const v = (pickable.length ? pickable : vs)[Math.floor(rnd() * (pickable.length ? pickable.length : vs.length))];
     return [v.id, w.dir, w.r, w.c, w.cr, w.cc, w.kind];
   });
+  for (const sl of g.singles) out.push([sl.entry, sl.dir, Math.floor(sl.cell / W), sl.cell % W, Math.floor(sl.clueCell / W), sl.clueCell % W, 's']);
   // a few letters are given away: prefer crossings
   const count = new Array(W * H).fill(0);
   g.words.forEach((w) => { for (let i = 0; i < w.ans.length; i++) count[(w.r + (w.dir === 'd' ? i : 0)) * W + w.c + (w.dir === 'a' ? i : 0)]++; });
   const cross = [], single = [];
-  g.T.forEach((t, k) => { if (t === 2) (count[k] > 1 ? cross : single).push(k); });
+  const loneCells = new Set(g.singles.map((x) => x.cell));
+  g.T.forEach((t, k) => { if (t === 2 && !loneCells.has(k)) (count[k] > 1 ? cross : single).push(k); });
   const givens = [], nGive = 4 + Math.floor(rnd() * 3);
   while (givens.length < nGive && (cross.length || single.length)) { const src = cross.length ? cross : single; givens.push(src.splice(Math.floor(rnd() * src.length), 1)[0]); }
-  return [W, H, out, givens.sort((a, b) => a - b)];
+  return [W, H, out, givens.sort((a, b) => a - b), g.orn];
 }
 
 const days = []; for (let d = new Date(DAILY_FROM + 'T00:00:00Z'); d <= new Date(DAILY_TO + 'T00:00:00Z'); d = new Date(d.getTime() + 86400000)) days.push(d.toISOString().slice(0, 10));

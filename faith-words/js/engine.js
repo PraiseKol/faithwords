@@ -9,6 +9,7 @@ export function newGame(puzzle, { botLevel = 1 } = {}) {
     puzzle, board, cellWords, botLevel,
     scores: { you: 0, opp: 0 }, turn: 'you', placed: 0, rackAtStart: 0,
     racks: { you: [], opp: [] }, over: false, quota: 0, passes: 0,
+    hints: [], // squares whose letter this player has revealed with Hint (shown faintly, never filled in)
     log: [], // every action: [who, type, arg, time] — the server replays this to verify results
   };
   refill(st, 'you'); refill(st, 'opp');
@@ -92,6 +93,14 @@ export function submit(st, who, items) {
   }
   if (wrong.length) { logMove(st, who, 'w', wrong.length); st.scores[who] = Math.max(0, st.scores[who] - wrong.length); }
   return { ok: true, right, wrong, points, penalty: wrong.length, completed };
+}
+
+/** Hint: remember that this square's letter is shown to the player. It does not fill the square. */
+export function addHint(st, who, cell) {
+  if (st.puzzle.cells[cell]?.t !== 'l' || st.board[cell].ch || st.hints.includes(cell)) return false;
+  logMove(st, who, 'h', cell);
+  st.hints.push(cell);
+  return true;
 }
 
 /** Power-up: fill a whole word for free (no points). */

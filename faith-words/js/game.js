@@ -36,7 +36,7 @@ export function resumeGame() {
   return true;
 }
 function newCtx(spec, st, botName) {
-  return { spec, st, botName, online: null, sel: { tile: null }, pend: new Map(), badShow: null, busy: false, hintUntil: 0, last: null, flash: null, root: null, floats: [], finished: false };
+  return { spec, st, botName, online: null, sel: { tile: null }, pend: new Map(), badShow: null, hintMode: false, busy: false,  last: null, flash: null, root: null, floats: [], finished: false };
 }
 
 // ---------- live matches
@@ -137,8 +137,8 @@ function checkIdle() {
 // ---------- saving
 function persist() {
   if (G.online) { sync(); return; }
-  const { board, scores, turn, placed, rackAtStart, racks, quota, passes, botLevel, log } = G.st;
-  store.d.active = { spec: G.spec, botName: G.botName, st: { board, scores, turn, placed, rackAtStart, racks, quota, passes, botLevel, log } };
+  const { board, scores, turn, placed, rackAtStart, racks, quota, passes, botLevel, log, hints } = G.st;
+  store.d.active = { spec: G.spec, botName: G.botName, st: { board, scores, turn, placed, rackAtStart, racks, quota, passes, botLevel, log, hints } };
   store.save();
 }
 
@@ -171,10 +171,10 @@ function paint() {
       h('div', { class: 'g-score' },
         h('div', { class: 'side you' + (st.turn === 'you' && !st.over ? ' on' : '') },
           h('div', { class: 'av you' }, (store.d.name || 'Y')[0].toUpperCase()),
-          h('div', { class: 'nm' }, 'You'), h('div', { class: 'sc', id: 'sc-you' }, st.scores.you)),
+          h('div', { class: 'nm' }, 'You'), h('div', { class: 'sc', id: 'sc-you' }, G.shown ? G.shown.you : st.scores.you)),
         h('span', { class: 'vs' }, 'vs'),
         h('div', { class: 'side opp' + (st.turn === 'opp' && !st.over ? ' on' : '') },
-          h('div', { class: 'sc', id: 'sc-opp' }, st.scores.opp),
+          h('div', { class: 'sc', id: 'sc-opp' }, G.shown ? G.shown.opp : st.scores.opp),
           h('div', { class: 'nm' }, G.botName, G.online ? null : h('small', {}, ' Lv ' + st.botLevel)),
           h('div', { class: 'av opp' }, oppInit))),
       boardEl(),
@@ -200,24 +200,23 @@ function clueNode(w) {
 
 function boardEl() {
   const { st } = G, { W, H } = st.puzzle;
-  const hint = Date.now() < G.hintUntil;
-  const selLetter = G.sel.tile != null ? st.racks.you[G.sel.tile] : null;
-  const hintCells = new Set();
-  if (hint) (selLetter ? [selLetter] : st.racks.you).forEach((l) => E.targets(st, l).forEach((k) => hintCells.add(k)));
   const grid = h('div', { class: 'grid', style: { '--cols': W, '--rows': H, '--cs': `min(calc((100vw - 16px) / ${W}), calc((100dvh - 340px) / ${H}), 60px)` } });
   st.puzzle.cells.forEach((c, k) => {
+    if (c.t === 'o') return grid.append(h('div', { class: 'cell orn', 'aria-hidden': 'true' }, k % 2 ? '✝' : '🕊️'));
     if (c.t === 'c') {
-      const kids = c.clues.map((id) => clueNode(st.puzzle.words[id]));
+      const kids = [...c.clues].sort((x, y) => (st.puzzle.words[x].dir === 'a' ? 0 : 1) - (st.puzzle.words[y].dir === 'a' ? 0 : 1)).map((id) => clueNode(st.puzzle.words[id]));
       return grid.append(h('div', { class: 'cell clue ' + (kids.length > 1 ? 'two' : '') }, kids));
     }
     const b = st.board[k];
     const cls = ['cell', 'letter'];
     let text = b.ch || '';
-    if (b.ch) cls.push('f-' + b.by);
+    if (G.anim?.has(k)) { cls.push('pend'); text = G.anim.get(k); }
+    else if (b.ch) cls.push('f-' + b.by);
     else if (G.badShow?.has(k)) { cls.push('bad'); text = G.badShow.get(k); }
     else if (G.pend.has(k)) { cls.push('pend'); text = st.racks.you[G.pend.get(k)] || ''; }
     if (c.given) cls.push('given');
-    if (hintCells.has(k) && !b.ch) cls.push('hint');
+    if (!b.ch && st.hints.includes(k) && !G.pend.has(k) && !G.anim?.has(k) && !G.badShow?.has(k)) { cls.push('ghost-hint'); text = c.ch; }
+    if (G.hintMode && !b.ch) cls.push('pickable');
     if (G.last && G.last.cell === k) cls.push('pop');
     if (G.flash && G.flash.has(k)) cls.push('flash');
     grid.append(h('div', { class: cls.join(' '), 'data-k': k, onclick: () => onCell(k) }, text));
@@ -264,17 +263,19 @@ function showClue(w) {
   const inv = store.d.inv;
   const reveal = h('button', { class: 'btn ghost sm', disabled: !mine() || done, onclick: () => { m.close(); useWord(w); } },
     done ? 'Word complete' : ['Reveal this word  ', inv.word > 0 ? h('span', { class: 'badge inline' }, inv.word) : coin(CONFIG.price.word)]);
-  const m = modal(h('div', { class: 'clue-pop' }, text, h('div', { class: 'len' }, `${w.len} letters · ${w.dir === 'a' ? 'across →' : 'down ↓'}`), reveal), { cls: 'clue-modal' });
+  const m = modal(h('div', { class: 'clue-pop' }, text, h('div', { class: 'len' }, `${w.len} ${w.len === 1 ? 'letter' : 'letters'} · ${w.dir === 'a' ? 'across →' : 'down ↓'}`), reveal), { cls: 'clue-modal' });
   m.back.classList.add('clear');
 }
 
 function onTile(i) {
   if (!mine()) return;
+  if (G.hintMode) G.hintMode = false;
   if ([...G.pend.values()].includes(i)) return;
   G.sel.tile = G.sel.tile === i ? null : i;
   paint();
 }
 function onCell(k) {
+  if (G.hintMode) return pickHint(k);
   if (!mine() || G.st.board[k].ch) return;
   if (G.pend.has(k)) { G.pend.delete(k); sfx('place'); hap(6); return paint(); } // tap a tile on the board to take it back
   if (G.sel.tile != null) put(G.sel.tile, k);
@@ -334,31 +335,52 @@ function bigFloat(text, cls = '') {
   document.body.append(el); setTimeout(() => el.remove(), 1500);
 }
 
-/** Submit: right tiles score, wrong ones cost a point each and return to the rack, then the turn passes. */
-function submitTurn() {
+/** Submit: right tiles score, wrong ones cost a point each and return to the rack, then the turn passes.
+ *  The result is worked out at once (and saved), then played back tile by tile so the player sees every point counted. */
+async function submitTurn() {
   if (!mine() || !G.pend.size) return;
+  const g = G;
   const items = [...G.pend].map(([cell, i]) => ({ cell, letter: G.st.racks.you[i] }));
+  const before = G.st.scores.you;
   G.pend.clear(); G.sel.tile = null;
   const res = E.submit(G.st, 'you', items);
   if (!res.ok) return paint();
   const r = E.endTurn(G.st);
-  if (res.right.length) {
-    sfx(res.completed.length ? 'word' : 'place'); hap(res.completed.length ? [25, 40, 25] : 12);
-    G.last = { cell: res.right[res.right.length - 1].cell };
-    if (res.completed.length) { G.flash = new Set(); res.completed.forEach((id) => E.wordCells(G.st.puzzle.words[id]).forEach((c) => G.flash.add(c))); }
-    G.floats.push({ cell: res.right[res.right.length - 1].cell, text: '+' + res.points, cls: res.completed.length ? 'big' : '' });
+  persist();
+  const ptsOf = new Map(res.right.map((x) => [x.cell, x.points]));
+  const doneBy = new Map(); // which tile completed which word
+  res.completed.forEach((id) => { const w = G.st.puzzle.words[id]; const last = [...res.right].reverse().find((x) => w.cells.includes(x.cell)); if (last) doneBy.set(last.cell, w); });
+  G.busy = true; G.shown = { you: before, opp: G.st.scores.opp };
+  G.anim = new Map(items.map((i) => [i.cell, i.letter])); G.badShow = new Map(); G.flash = null;
+  paint();
+  for (const it of items) {
+    await sleep(190);
+    if (G !== g) return;
+    G.anim.delete(it.cell);
+    if (ptsOf.has(it.cell)) {
+      const pts = ptsOf.get(it.cell), w = doneBy.get(it.cell);
+      G.shown.you += pts; G.last = { cell: it.cell };
+      if (w) { G.flash = new Set(w.cells); sfx('word'); hap([25, 40, 25]); } else { sfx('place'); hap(10); }
+      G.floats.push({ cell: it.cell, text: '+' + pts, cls: w ? 'big' : '' });
+    } else {
+      G.shown.you = Math.max(0, G.shown.you - 1); G.badShow.set(it.cell, it.letter);
+      sfx('wrong'); hap(60);
+      G.floats.push({ cell: it.cell, text: '−1', cls: 'neg' });
+    }
+    paint(); bumpScore();
   }
-  if (res.wrong.length) {
-    sfx('wrong'); hap(70);
-    G.badShow = new Map(res.wrong.map((w) => [w.cell, w.letter]));
-    setTimeout(() => { if (G) { G.badShow = null; paint(); } }, 900);
-    bigFloat(`${res.wrong.length} wrong  −${res.penalty}`, 'bad');
+  if (r.bonus) {
+    await sleep(260); if (G !== g) return;
+    G.shown.you += r.bonus; sfx('bonus'); hap([20, 30, 20, 30, 40]); bigFloat(`ALL 5 RIGHT  +${r.bonus}`); paint(); bumpScore();
   }
-  if (r.bonus) { sfx('bonus'); hap([20, 30, 20, 30, 40]); setTimeout(() => bigFloat(`ALL 5 RIGHT  +${r.bonus}`), res.wrong.length ? 0 : 0); }
-  persist(); paint();
+  await sleep(items.length ? 420 : 0); if (G !== g) return;
+  G.shown = null; G.anim = null; G.busy = false; G.flash = null;
+  setTimeout(() => { if (G === g && G.badShow) { G.badShow = null; paint(); } }, 500);
+  paint();
   if (G.st.over) return finish();
   if (!G.online) runBot();
 }
+function bumpScore() { const el = document.getElementById('sc-you'); if (el) { el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); } }
 function passTurn() {
   if (!mine()) return;
   G.pend.clear(); G.sel.tile = null;
@@ -397,11 +419,23 @@ function spendOrPrompt(kind) {
   toast('Not enough coins — win games or check in daily to earn more');
   return false;
 }
+// Hint: choose a square and its letter is shown faintly there for the rest of the game. It never fills the square.
 function useHint() {
-  if (!spendOrPrompt('hint')) return;
-  E.logMove(G.st, 'you', 'h'); persist();
-  G.hintUntil = Date.now() + 5000;
-  paint(); setTimeout(() => G && paint(), 5100);
+  if (!mine()) return;
+  if (G.hintMode) { G.hintMode = false; return paint(); }
+  const left = G.st.puzzle.cells.some((c, k) => c.t === 'l' && !G.st.board[k].ch && !G.st.hints.includes(k));
+  if (!left) return toast('Nothing left to hint');
+  G.hintMode = true; G.sel.tile = null;
+  toast('Tap an empty square to see its letter');
+  paint();
+}
+function pickHint(k) {
+  const { st } = G, c = st.puzzle.cells[k];
+  if (c.t !== 'l' || st.board[k].ch || st.hints.includes(k)) return toast('Pick an empty square without a hint');
+  if (!spendOrPrompt('hint')) { G.hintMode = false; return paint(); }
+  E.addHint(st, 'you', k);
+  G.hintMode = false; G.pend.delete(k);
+  sfx('word'); persist(); paint();
 }
 function useWord(w) {
   if (w.cells.every((k) => G.st.board[k].ch)) { toast('That word is already complete'); return; }
