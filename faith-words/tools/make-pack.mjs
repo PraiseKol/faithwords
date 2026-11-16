@@ -1,5 +1,6 @@
 // Builds js/pack.js: every puzzle players can open, generated once so that it is identical for everyone.
-//   node tools/make-pack.mjs            (takes several minutes)
+//   node tools/make-pack.mjs            (takes several minutes; rebuilds everything, which CHANGES existing puzzles)
+//   node tools/make-pack.mjs extend     (keeps every existing puzzle and only adds the missing ones: use this to grow the pack)
 // The word bank is append-only: pack words refer to bank entries by position.
 import fs from 'node:fs';
 import { BANK } from '../js/bank.js';
@@ -8,7 +9,7 @@ import { mulberry32, hashSeed } from '../js/rng.js';
 import { wordList, makeFiller, templatePool, generate } from './gen2.mjs';
 
 export const SIZES = [[7, 9], [8, 9], [7, 8], [8, 8], [7, 10]];
-export const MAIN_LEVELS = 240, ONLINE_POOL = 60;
+export const MAIN_LEVELS = 400, ONLINE_POOL = 200;
 export const DAILY_FROM = '2026-08-15', DAILY_TO = '2027-02-28';
 
 const sizeOf = (seed) => SIZES[hashSeed('size-' + seed) % SIZES.length];
@@ -26,7 +27,7 @@ function makePuzzle(seed, tag = null) {
   let g = null;
   for (const [salt, minT] of [['', 4], ['#2', 3], ['#3', 2], ['#4', 1], ['#5', 0], ['#6', 0], ['#7', 0]]) {
     if (!tag && minT > 0) continue;
-    g = generate(F, { seed: seed + salt, W, H, pool, weightOf: (i) => (tag ? tagged[i] * 4 : 0) - usage[i] * 0.7, minTagged: minT, isTagged: (i) => tagged[i], seconds: 40, singleBank, singleTag: tag });
+    g = generate(F, { seed: seed + salt, W, H, pool, weightOf: (i) => (tag ? tagged[i] * 4 : 0) - usage[i] * 0.7 + (usage[i] === 0 ? 5 : 0), minTagged: minT, isTagged: (i) => tagged[i], seconds: 40, singleBank, singleTag: tag });
     if (g) break;
   }
   if (!g) throw new Error('could not build ' + seed);
@@ -56,9 +57,17 @@ for (let n = 1; n <= MAIN_LEVELS; n++) jobs.push([`main-${n}`, null]);
 for (const d of days) jobs.push([`daily-${d}`, null]);
 for (let n = 1; n <= ONLINE_POOL; n++) jobs.push([`online-${n}`, null]);
 
-const only = process.argv[2] ? Number(process.argv[2]) : jobs.length;
+const extend = process.argv[2] === 'extend';
+const only = !extend && process.argv[2] ? Number(process.argv[2]) : jobs.length;
 const pack = {}; const t0 = Date.now();
+if (extend) {
+  const { PACK: old } = await import('../js/pack.js');
+  Object.assign(pack, old);
+  const wi = new Map(words.map((e, i) => [e.a, i]));
+  for (const k in old) for (const w of old[k][2]) { const a = BANK[w[0]].a; if (wi.has(a)) usage[wi.get(a)]++; }
+}
 jobs.slice(0, only).forEach(([seed, tag], i) => {
+  if (pack[seed]) return;
   pack[seed] = makePuzzle(seed, tag);
   if (i % 20 === 0) process.stderr.write(`${i + 1}/${jobs.length} ${((Date.now() - t0) / 1000).toFixed(0)}s\n`);
 });
