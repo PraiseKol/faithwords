@@ -267,3 +267,5 @@ hr { border: 0; border-top: 1px solid var(--line); width: 100%; margin: 8px 0; }
 .cell.sel-cell { outline: 3px solid var(--primary); outline-offset: -3px; transform: translateY(-3px) scale(1.06); z-index: 2; }
 .cell.lifted { opacity: .3; }
 .tile.out { opacity: .22; pointer-events: auto; }
+.cell.hint-new { animation: hintnew .9s ease-out; }
+@keyframes hintnew { 0% { background: #ffe58a; transform: scale(1.12); } 100% { background: color-mix(in srgb, var(--primary) 9%, var(--cell)); transform: scale(1); } }

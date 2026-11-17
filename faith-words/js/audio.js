@@ -81,6 +81,7 @@ const SOUNDS = {
     tone(semis(C5, 12), 0.45, 0.6, { vol: 0.07, type: 'triangle' });
   },
   coin() { tone(988, 0, 0.07, { type: 'square', vol: 0.06 }); tone(1319, 0.07, 0.3, { type: 'square', vol: 0.06 }); bell(1976, 0.07, 0.05, 0.4); },
+  tick(n = 1) { tone(semis(C5 * 2, MAJOR[(Math.max(n, 1) - 1) % 8]), 0, 0.06, { vol: 0.04, type: 'triangle' }); },
   ui() { tone(700, 0, 0.05, { vol: 0.07, type: 'triangle' }); },
   // match end
   win() {
