@@ -22,19 +22,45 @@ export function activeLabel() { return store.d.active?.spec.label; }
 export const hasOnlineActive = () => !!store.d.activeOnline;
 
 // ---------- starting games
+// Open the game screen. Already being on it (Next puzzle after a result) does not fire a hashchange,
+// so the screen is redrawn explicitly: otherwise the new puzzle would exist but the old board stay on screen.
+function showGame() {
+  if (location.hash === '#/game') window.dispatchEvent(new HashChangeEvent('hashchange'));
+  else location.hash = '#/game';
+}
+// Saved games: one is active; the others are parked, so an event puzzle and the main game can both be in progress.
+const MAX_PARKED = 6;
+function parkActive(exceptSeed) {
+  const a = store.d.active;
+  if (!a || a.spec.seed === exceptSeed) return;
+  const p = (store.d.parked ||= {});
+  p[a.spec.seed] = a;
+  Object.keys(p).slice(0, Math.max(0, Object.keys(p).length - MAX_PARKED)).forEach((k) => delete p[k]);
+}
+export const parkedGames = () => Object.values(store.d.parked || {}).map((a) => ({ seed: a.spec.seed, label: a.spec.label }));
+export function resumeParked(seed) {
+  const a = store.d.parked?.[seed]; if (!a) return false;
+  parkActive(seed);
+  delete store.d.parked[seed];
+  store.d.active = a; store.save();
+  return resumeGame();
+}
+export function discardParked(seed) { if (store.d.parked) { delete store.d.parked[seed]; store.save(); } }
 export function startGame(spec) {
+  if (store.d.parked?.[spec.seed]) return resumeParked(spec.seed); // that puzzle was already in progress: carry on
+  parkActive(spec.seed);
   const puzzle = getPuzzle(spec);
   const st = E.newGame(puzzle, { botLevel: store.level().level });
   G = newCtx(spec, st, BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)]);
   persist();
-  location.hash = '#/game';
+  showGame();
 }
 export function resumeGame() {
   const a = store.d.active; if (!a) return false;
   const st = E.newGame(getPuzzle(a.spec), { botLevel: a.st.botLevel });
   Object.assign(st, a.st);
   G = newCtx(a.spec, st, a.botName);
-  location.hash = '#/game';
+  showGame();
   return true;
 }
 function newCtx(spec, st, botName) {
@@ -83,7 +109,7 @@ function beginOnline(row, role, st, spec) {
   G = newCtx(spec, st, oppName);
   G.online = { id: row.id, role, write: makeWriter(row.id, role), stamp: row.updated_at, timer: null, pending: 0, busy: false, lastActive: Date.now(), idle: false };
   store.d.activeOnline = { id: row.id, role }; store.save();
-  location.hash = '#/game';
+  showGame();
 }
 function sync(extra) {
   const O = G.online; O.pending++;
@@ -606,7 +632,7 @@ function nextAction(spec) {
   if (spec.kind === 'main') return nextLevel;
   if (spec.kind === 'online') return { label: 'Play online again', go: () => startOnline(), alt: nextLevel };
   if (spec.kind === 'event') {
-    const idx = store.d.events[spec.id] || 0;
+    const idx = spec.idx + 1; // the puzzle after the one just played, whatever the saved progress says
     return idx < EVENT_PUZZLES ? { label: 'Next puzzle', go: () => startGame(specEvent(spec.id, idx)), alt: nextLevel } : nextLevel;
   }
   return { ...nextLevel, alt: { label: 'Daily calendar', go: () => { location.hash = '#/daily'; } } };
