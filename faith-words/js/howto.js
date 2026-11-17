@@ -6,7 +6,7 @@ const slides = () => [
   { art: '🧩', title: 'Fill the crossword', body: 'Blue cells hold clues: words, fill-in-the-blanks or pictures. The little arrow shows which way the answer runs. Tap a clue to zoom in and read it — that never fills anything in.' },
   { art: '🔤', title: 'Place your 5 tiles', body: 'Drag a tile onto any square (or tap the tile, then the square). You can pick a placed tile up again and move it to another square, or drop it back on the rack. Nothing is checked yet. When you are ready, press Submit: right tiles score and stay, wrong tiles cost 1 point each and come back to your rack.' },
   { art: '⭐', title: 'Score points', body: `Every correct tile is 1 point, every wrong one −1. The tile that finishes a word is worth 1 plus the length of the word. Use all 5 tiles in one turn for +${CONFIG.allTilesBonus} bonus. Highest score wins.` },
-  { art: '🪙', title: 'Win coins, level up', body: `All your points add up as you climb levels. Check in daily and win games in a row for bonus coins, then spend them on Hints (${CONFIG.price.hint}) — a faint letter shown in a square you choose — and Word reveals (${CONFIG.price.word}): tap Word, every clue glows, then tap the one you want solved.` },
+  { art: '🪙', title: 'Win coins, level up', body: `All your points add up as you climb levels. Check in daily and win games in a row for bonus coins, then spend them on Hints (${CONFIG.price.hint}) — a faint letter shown in a square you choose — and Word reveals (${CONFIG.price.word}): tap Word, every clue glows, then tap the one you want: its letters appear faintly in the word's squares like a Hint, but nothing is filled in for you.` },
 ];
 
 export function showHowTo({ onDone, first = false, name } = {}) {

@@ -44,9 +44,7 @@ export function replay(puzzle, log) {
     } else if (t === 'r') {
       const ww = puzzle.words[k];
       if (!ww) return fail('bad word');
-      wordCellsOf(ww).forEach((c) => { if (!have[c]) { have[c] = true; empty--; } });
-      out.power[w].r++;
-      if (empty === 0) out.over = true;
+      out.power[w].r++; // shows the word's letters faintly like Hint; the board itself does not change
     } else if (t === 's') out.power[w].s++;
     else if (t === 'h') out.power[w].h++;
     else if (t !== 'x') return fail('unknown action');

@@ -31,9 +31,19 @@ await p.locator('.rack .tile').nth(0).click({ force: true }); await p.click('.ce
 const pendWhile = await G(() => fwDebug.game().pend.size + (fwDebug.game().sel.tile != null ? 1 : 0));
 pendWhile === 0 ? ok('tapping tiles/squares does nothing in pick mode') : fail('tile action leaked into pick mode');
 const disabled = await p.$$eval('.act.swap,.act.hint', (e) => e.every((x) => x.disabled)); disabled ? ok('Swap/Hint disabled while picking') : fail('swap/hint enabled');
-await p.locator('.cl.pick').nth(0).click(); await p.waitForTimeout(400);
+const hints0 = await G(() => fwDebug.game().st.hints.length);
+await p.locator('.cl.pick').nth(0).click(); await p.waitForTimeout(500);
 const filled1 = await G(() => fwDebug.game().st.board.filter((x) => x.ch).length), mode = await G(() => fwDebug.game().wordMode);
-filled1 > filled0 && mode === false ? ok(`word revealed (${filled0}→${filled1} squares), pick mode off`) : fail(`reveal failed ${filled0}→${filled1} mode ${mode}`);
+const hints1 = await G(() => fwDebug.game().st.hints.length), ghosts = await p.$$eval('.cell.ghost-hint', (e) => e.map((x) => x.textContent));
+filled1 === filled0 ? ok(`Word did NOT fill any square (${filled0} filled before and after)`) : fail(`Word filled squares ${filled0}→${filled1}`);
+hints1 > hints0 && ghosts.length === hints1 && ghosts.every((t) => /^[A-Z]$/.test(t)) ? ok(`Word showed the whole word faintly: ${hints1 - hints0} new hint squares (${ghosts.join('')})`) : fail(`hints ${hints0}→${hints1}, ghosts ${ghosts}`);
+mode === false ? ok('pick mode off after choosing') : fail('still in pick mode');
+await p.screenshot({ path: out + 'wordhint.png' });
+// the squares stay playable: a tile can still be placed on a hinted square
+const hintedCell = await G(() => fwDebug.game().st.hints[0]);
+await p.locator('.rack .tile').nth(0).click(); await p.click(`[data-k="${hintedCell}"]`);
+(await G((k) => fwDebug.game().pend.has(k), hintedCell)) ? ok('a hinted square can still be played on') : fail('hinted square not playable');
+await p.click('.recall');
 console.log('   power-up stock before/after:', coins0, await G(() => JSON.stringify([fwDebug.store?.d?.coins, fwDebug.store?.d?.inv?.word])));
 await p.click('.act.word'); await p.waitForTimeout(150); await p.click('.act.word'); await p.waitForTimeout(150);
 (await G(() => fwDebug.game().wordMode)) === false ? ok('Word button toggles pick mode off (Cancel)') : fail('cancel failed');
@@ -76,14 +86,25 @@ const outIdx = await G(() => [...fwDebug.game().pend.values()][0]); await p.loca
 await p.locator('.rack .tile').nth(0).click(); await p.click(`[data-k="${A}"]`);
 await p.screenshot({ path: out + 'placed.png' });
 
+// ---- 2b. score counts up one point at a time, for you and for the bot
+const right = await G(() => { const g = fwDebug.game(), r = g.st.racks.you, used = new Set(), picks = [];
+  g.st.puzzle.cells.forEach((c, k) => { if (picks.length >= 3 || c.t !== 'l' || g.st.board[k].ch) return; const i = r.findIndex((l, j) => l === c.ch && !used.has(j)); if (i >= 0) { used.add(i); picks.push([i, k]); } }); return picks; });
+for (const [i, k] of right) { await p.locator('.rack .tile').nth(i).click(); await p.click(`[data-k="${k}"]`); }
+await G(() => { window.__seq = { you: [], opp: [] }; window.__poll = setInterval(() => { for (const w of ['you', 'opp']) { const t = document.getElementById('sc-' + w)?.textContent; const a = window.__seq[w]; if (t != null && a[a.length - 1] !== t) a.push(t); } }, 15); });
+const tSub = Date.now(); await p.click('.main-act');
 // ---- 3. pause before the bot
 const mark = await G(() => { const g = fwDebug.game(); window.__t0 = performance.now(); window.__botAt = null; const orig = g.st.log.push.bind(g.st.log); g.st.log.push = (...a) => { if (a[0]?.[0] === 'opp' && !window.__botAt) window.__botAt = performance.now(); return orig(...a); }; return true; });
-await p.click('.main-act'); await G(() => { window.__t0 = performance.now(); });
+await G(() => { window.__t0 = performance.now(); });
 await p.waitForFunction(() => window.__botAt, null, { timeout: 15000 });
 const gap = await G(() => window.__botAt - window.__t0);
 // the count itself is a single tile here (~0.2 s) so the bot should start no earlier than the pause
 gap >= 1800 ? ok(`bot waited ${Math.round(gap)} ms after Submit (count animation + pause)`) : fail(`bot moved after only ${Math.round(gap)} ms`);
-await p.waitForFunction(() => fwDebug.game().st.turn === 'you', null, { timeout: 20000 }); await p.waitForTimeout(300);
+await p.waitForFunction(() => fwDebug.game().st.turn === 'you', null, { timeout: 20000 }); await p.waitForTimeout(600);
+const seq = await G(() => { clearInterval(window.__poll); return window.__seq; });
+const stepped = (a) => a.every((v, i) => i === 0 || Math.abs(+v - +a[i - 1]) <= 1);
+console.log('   your score display:', seq.you.join('→'), ' bot:', seq.opp.join('→'), ` (submit → bot done ${Date.now() - tSub} ms)`);
+seq.you.length >= 3 && stepped(seq.you) ? ok('your score counted up one point at a time') : fail('your count not stepped: ' + seq.you);
+stepped(seq.opp) && seq.opp.length >= 2 ? ok("the bot's score counted up one point at a time") : fail("bot count not stepped: " + seq.opp);
 
 // ---- 4. Next level button after a daily puzzle
 await p.click('.g-tools .icon-btn >> nth=1'); await p.waitForTimeout(250);

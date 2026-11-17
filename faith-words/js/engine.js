@@ -103,15 +103,14 @@ export function addHint(st, who, cell) {
   return true;
 }
 
-/** Power-up: fill a whole word for free (no points). */
+/** Power-up: a Hint for a whole word. Every empty square of the word shows its letter faintly (never filled in,
+ *  no points). Returns the squares that were newly shown. */
 export function revealWord(st, who, wordId) {
   const w = st.puzzle.words[wordId];
   logMove(st, who, 'r', wordId);
-  let n = 0;
-  wordCells(w).forEach((k) => { if (!st.board[k].ch) { st.board[k] = { ch: st.puzzle.cells[k].ch, by: 'rev' }; n++; } });
-  trimRacks(st);
-  if (emptyCount(st) === 0) st.over = true;
-  return n;
+  const shown = [];
+  wordCells(w).forEach((k) => { if (!st.board[k].ch && !st.hints.includes(k)) { st.hints.push(k); shown.push(k); } });
+  return shown;
 }
 
 export function swap(st, who, letters, paid = true) {

@@ -16,7 +16,7 @@ Open http://localhost:8080 (add `?debug` to the URL to expose `window.fwDebug` f
 - **Scoring** (`js/engine.js`): 1 point per correct tile; the tile that finishes a word scores 1 + that word's length; using all 5 tiles in a turn adds +5.
 - **Points → levels**: every round's points are added to your lifetime XP. Winning adds +25 XP (+15 on a daily puzzle). Level L → L+1 needs `100 + 50·(L−1)` XP.
 - **Coins**: daily check-in pays `10 × (1 + 0.5·(day−1))` for day 1–7 (consecutive days; a missed day resets). Wins pay `20 × (1 + 0.5·(streak−1))` (max ×5); a loss resets the streak. Event puzzles pay +30 on a win.
-- **Spend coins**: Hint (20) shows where your tiles fit; Word (40): tap it and every unsolved clue glows, tiles lock, then tap the clue whose word you want revealed (no points); Swap (15).
+- **Spend coins**: Hint (20) shows where your tiles fit; Word (40): tap it and every unsolved clue glows, tiles lock, then tap a clue: the whole word's letters appear faintly (like Hint, but for every square of the word; nothing is filled in); Swap (15).
 - All numbers live in `js/config.js`.
 
 ## Content
