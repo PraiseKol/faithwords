@@ -13,6 +13,7 @@ import { showHowTo } from './howto.js';
 let G = null; // current game
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const hap = (p) => buzz(p, store.d.settings);
+const BOT_PAUSE = 1700; // ms between the player's score count and the bot's first move
 
 export const _debug = () => G;
 export function hasActive() { return !!store.d.active; }
@@ -36,7 +37,7 @@ export function resumeGame() {
   return true;
 }
 function newCtx(spec, st, botName) {
-  return { spec, st, botName, online: null, sel: { tile: null }, pend: new Map(), badShow: null, hintMode: false, busy: false,  last: null, flash: null, root: null, floats: [], finished: false };
+  return { spec, st, botName, online: null, sel: { tile: null, cell: null }, pend: new Map(), badShow: null, hintMode: false, wordMode: false, busy: false,  last: null, flash: null, root: null, floats: [], finished: false };
 }
 
 // ---------- live matches
@@ -180,7 +181,11 @@ function paint() {
       boardEl(),
       rackEl(),
       actionsEl(),
-      h('div', { class: 'g-foot' }, idleBtn || (st.over ? 'Match finished' : st.turn === 'you' ? (G.pend.size ? 'Press Submit to check your tiles' : 'Drag tiles onto the board, then Submit') : `${G.botName} is playing…`)),
+      h('div', { class: 'g-foot' + (G.wordMode ? ' picking' : '') }, idleBtn || (G.wordMode
+        ? [h('span', {}, 'Tap a glowing clue to reveal its word'), h('button', { class: 'linkbtn', onclick: cancelWord }, 'Cancel')]
+        : st.over ? 'Match finished'
+        : st.turn === 'you' ? (G.sel.cell != null ? 'Tap an empty square to move that tile' : G.pend.size ? 'Press Submit to check your tiles' : 'Drag tiles onto the board, then Submit')
+        : `${G.botName} is playing…`)),
     ));
   G.floats.splice(0).forEach(spawnFloat);
   G.last = null; G.flash = null;
@@ -194,13 +199,19 @@ function clueNode(w) {
     ? h('span', { class: 'emo' }, w.emoji)
     : h('span', { class: 'ct ' + (long > 24 ? 'xs' : long > 15 ? 'sm' : '') }, w.clue.replace('__', '___'));
   const key = w.dir + '-' + w.kind;
-  return h('div', { class: 'cl k-' + key, role: 'button', tabindex: 0, onclick: (e) => { e.stopPropagation(); showClue(w); }, onkeydown: (e) => { if (e.key === 'Enter') showClue(w); } },
+  const done = w.cells.every((k) => G.st.board[k].ch);
+  const open = (e) => {
+    e?.stopPropagation();
+    if (G.wordMode) return done ? toast('That word is already complete') : pickWord(w);
+    showClue(w);
+  };
+  return h('div', { class: 'cl k-' + key + (G.wordMode ? (done ? ' done' : ' pick') : ''), role: 'button', tabindex: 0, onclick: open, onkeydown: (e) => { if (e.key === 'Enter') open(); } },
     body, h('i', { class: 'arr' }, ARROW[key]));
 }
 
 function boardEl() {
   const { st } = G, { W, H } = st.puzzle;
-  const grid = h('div', { class: 'grid', style: { '--cols': W, '--rows': H, '--cs': `min(calc((100vw - 16px) / ${W}), calc((100dvh - 340px) / ${H}), 60px)` } });
+  const grid = h('div', { class: 'grid' + (G.wordMode ? ' wordmode' : ''), style: { '--cols': W, '--rows': H, '--cs': `min(calc((100vw - 16px) / ${W}), calc((100dvh - 340px) / ${H}), 60px)` } });
   st.puzzle.cells.forEach((c, k) => {
     if (c.t === 'o') return grid.append(h('div', { class: 'cell orn', 'aria-hidden': 'true' }, k % 2 ? '✝' : '🕊️'));
     if (c.t === 'c') {
@@ -219,7 +230,11 @@ function boardEl() {
     if (G.hintMode && !b.ch) cls.push('pickable');
     if (G.last && G.last.cell === k) cls.push('pop');
     if (G.flash && G.flash.has(k)) cls.push('flash');
-    grid.append(h('div', { class: cls.join(' '), 'data-k': k, onclick: () => onCell(k) }, text));
+    const movable = !b.ch && G.pend.has(k) && !G.anim?.has(k) && mine() && !G.wordMode;
+    if (movable && G.sel.cell === k) cls.push('sel-cell');
+    grid.append(h('div', movable
+      ? { class: cls.join(' '), 'data-k': k, onpointerdown: (e) => startDrag(e, G.pend.get(k), k) }
+      : { class: cls.join(' '), 'data-k': k, onclick: () => onCell(k) }, text));
   });
   return h('div', { class: 'grid-wrap' }, grid);
 }
@@ -228,7 +243,7 @@ function rackEl() {
   const { st } = G;
   const out = new Set(G.pend.values());
   const tiles = st.racks.you.map((l, i) => h('button', {
-    class: 'tile' + (G.sel.tile === i ? ' sel' : '') + (mine() ? '' : ' dim') + (out.has(i) ? ' out' : ''), 'aria-label': 'Tile ' + l,
+    class: 'tile' + (G.sel.tile === i ? ' sel' : '') + (mine() && !G.wordMode ? '' : ' dim') + (out.has(i) ? ' out' : ''), 'aria-label': 'Tile ' + l,
     onpointerdown: (e) => startDrag(e, i),
     onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onTile(i); } },
   }, l));
@@ -245,14 +260,14 @@ function actionsEl() {
   const can = mine();
   const inv = store.d.inv;
   const center = G.pend.size
-    ? h('button', { class: 'main-act ok', disabled: !can, onclick: submitTurn }, h('span', { html: icon('check', 22) }), `Submit · ${G.pend.size}`)
-    : h('button', { class: 'main-act', disabled: !can, onclick: passTurn }, 'Pass');
+    ? h('button', { class: 'main-act ok', disabled: !can || G.wordMode, onclick: submitTurn }, h('span', { html: icon('check', 22) }), `Submit · ${G.pend.size}`)
+    : h('button', { class: 'main-act', disabled: !can || G.wordMode, onclick: passTurn }, 'Pass');
   const cost = (kind) => h('span', { class: 'cost' }, coin(CONFIG.price[kind]));
   return h('div', { class: 'actions' },
-    ab('swap', 'Swap', 'swap', swapPopup, cost('swap'), !can),
+    ab('swap', 'Swap', 'swap', swapPopup, cost('swap'), !can || G.wordMode),
     center,
-    ab('word', 'Word', 'eye', () => toast('Tap a clue, then choose “Reveal this word”'), inv.word > 0 ? h('span', { class: 'badge' }, inv.word) : cost('word'), !can),
-    ab('hint', 'Hint', 'bulb', useHint, inv.hint > 0 ? h('span', { class: 'badge' }, inv.hint) : cost('hint'), !can));
+    ab('word' + (G.wordMode ? ' on' : ''), G.wordMode ? 'Cancel' : 'Word', 'eye', useWordBtn, inv.word > 0 ? h('span', { class: 'badge' }, inv.word) : cost('word'), !can),
+    ab('hint', 'Hint', 'bulb', useHint, inv.hint > 0 ? h('span', { class: 'badge' }, inv.hint) : cost('hint'), !can || G.wordMode));
 }
 
 // ---------- interactions
@@ -268,53 +283,68 @@ function showClue(w) {
 }
 
 function onTile(i) {
-  if (!mine()) return;
+  if (!mine() || G.wordMode) return;
   if (G.hintMode) G.hintMode = false;
-  if ([...G.pend.values()].includes(i)) return;
+  const cell = [...G.pend].find(([, idx]) => idx === i)?.[0];
+  if (cell != null) { G.pend.delete(cell); G.sel.cell = null; sfx('recall'); hap(6); return paint(); } // tap a tile that is out: it goes back to the rack
+  G.sel.cell = null;
   G.sel.tile = G.sel.tile === i ? null : i;
+  sfx('pick');
   paint();
 }
 function onCell(k) {
+  if (G.wordMode) return;
   if (G.hintMode) return pickHint(k);
   if (!mine() || G.st.board[k].ch) return;
-  if (G.pend.has(k)) { G.pend.delete(k); sfx('place'); hap(6); return paint(); } // tap a tile on the board to take it back
-  if (G.sel.tile != null) put(G.sel.tile, k);
+  if (G.sel.tile != null) return put(G.sel.tile, k);                   // rack tile → this square
+  const from = G.sel.cell;
+  if (from != null && from !== k && G.pend.has(from)) return put(G.pend.get(from), k); // placed tile → this square
+  if (G.pend.has(k)) { G.sel.cell = from === k ? null : k; sfx('pick'); return paint(); } // select a placed tile to move it
 }
-/** Put rack tile i on cell k. Any tile is accepted; nothing is checked until Submit. */
+/** Put tile i (from the rack or from another square) on cell k. Landing on a placed tile swaps them.
+ *  Any tile is accepted; nothing is checked until Submit. */
 function put(i, k) {
-  if (!mine() || G.st.board[k].ch) return;
-  for (const [cell, idx] of G.pend) if (idx === i) G.pend.delete(cell); // moving a tile that is already out
+  if (!mine() || G.wordMode || G.st.board[k].ch) return;
+  let from = null;
+  for (const [cell, idx] of G.pend) if (idx === i) from = cell;
+  const displaced = G.pend.get(k);
+  if (from != null) G.pend.delete(from);
   G.pend.set(k, i);
-  G.sel.tile = null;
-  sfx('place'); hap(8);
+  if (displaced != null && displaced !== i && from != null) G.pend.set(from, displaced); // swap places
+  G.sel.tile = null; G.sel.cell = null;
+  sfx('drop'); hap(8);
   paint();
 }
-function recall() { G.pend.clear(); G.sel.tile = null; paint(); }
+function recall() { G.pend.clear(); G.sel.tile = null; G.sel.cell = null; sfx('recall'); paint(); }
 
-// drag a tile from the rack onto the board (a short press is treated as a tap)
-function startDrag(e, i) {
-  if (!mine() || e.button > 0) return;
-  const tile = e.currentTarget, x0 = e.clientX, y0 = e.clientY;
+// Drag a tile: from the rack, or from a square it was already placed on (so it can go straight to another
+// square, swap with another placed tile, or be dropped on the rack to take it back). A short press is a tap.
+function startDrag(e, i, fromCell = null) {
+  if (!mine() || G.wordMode || e.button > 0) return;
+  const src = e.currentTarget, x0 = e.clientX, y0 = e.clientY;
   let ghost = null, moved = false;
   const letter = G.st.racks.you[i];
-  const over = (x, y) => document.elementFromPoint(x, y)?.closest('.cell.letter');
+  const at = (x, y) => document.elementFromPoint(x, y);
+  const overCell = (x, y) => at(x, y)?.closest('.cell.letter');
   const mark = (cell) => {
     G.root.querySelectorAll('.cell.drop').forEach((c) => c.classList.remove('drop'));
     if (cell && !G.st.board[+cell.dataset.k].ch) cell.classList.add('drop');
   };
   const move = (ev) => {
     if (!moved && Math.hypot(ev.clientX - x0, ev.clientY - y0) < 8) return;
-    if (!moved) { moved = true; ghost = h('div', { class: 'tile ghost' }, letter); document.body.append(ghost); tile.classList.add('lifted'); }
+    if (!moved) { moved = true; ghost = h('div', { class: 'tile ghost' }, letter); document.body.append(ghost); src.classList.add('lifted'); sfx('pick'); }
     ghost.style.left = ev.clientX + 'px'; ghost.style.top = ev.clientY - 36 + 'px';
-    mark(over(ev.clientX, ev.clientY - 36));
+    mark(overCell(ev.clientX, ev.clientY - 36));
   };
   const up = (ev) => {
     window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up);
-    ghost?.remove(); tile.classList.remove('lifted');
+    ghost?.remove(); src.classList.remove('lifted');
     G.root.querySelectorAll('.cell.drop').forEach((c) => c.classList.remove('drop'));
-    if (!moved) return onTile(i);
-    const cell = over(ev.clientX, ev.clientY - 36);
-    if (cell && !G.st.board[+cell.dataset.k].ch) put(i, +cell.dataset.k);
+    if (!moved) return fromCell != null ? onCell(fromCell) : onTile(i);
+    const cell = overCell(ev.clientX, ev.clientY - 36);
+    if (cell && !G.st.board[+cell.dataset.k].ch) return put(i, +cell.dataset.k);
+    const onRack = at(ev.clientX, ev.clientY)?.closest('.rack-wrap') || at(ev.clientX, ev.clientY - 36)?.closest('.rack-wrap');
+    if (fromCell != null && onRack) { G.pend.delete(fromCell); G.sel.cell = null; sfx('recall'); paint(); }
   };
   window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
 }
@@ -342,7 +372,7 @@ async function submitTurn() {
   const g = G;
   const items = [...G.pend].map(([cell, i]) => ({ cell, letter: G.st.racks.you[i] }));
   const before = G.st.scores.you;
-  G.pend.clear(); G.sel.tile = null;
+  G.pend.clear(); G.sel.tile = null; G.sel.cell = null;
   const res = E.submit(G.st, 'you', items);
   if (!res.ok) return paint();
   const r = E.endTurn(G.st);
@@ -350,6 +380,7 @@ async function submitTurn() {
   const ptsOf = new Map(res.right.map((x) => [x.cell, x.points]));
   const doneBy = new Map(); // which tile completed which word
   res.completed.forEach((id) => { const w = G.st.puzzle.words[id]; const last = [...res.right].reverse().find((x) => w.cells.includes(x.cell)); if (last) doneBy.set(last.cell, w); });
+  let rightN = 0;
   G.busy = true; G.shown = { you: before, opp: G.st.scores.opp };
   G.anim = new Map(items.map((i) => [i.cell, i.letter])); G.badShow = new Map(); G.flash = null;
   paint();
@@ -360,7 +391,8 @@ async function submitTurn() {
     if (ptsOf.has(it.cell)) {
       const pts = ptsOf.get(it.cell), w = doneBy.get(it.cell);
       G.shown.you += pts; G.last = { cell: it.cell };
-      if (w) { G.flash = new Set(w.cells); sfx('word'); hap([25, 40, 25]); } else { sfx('place'); hap(10); }
+      rightN++;
+      if (w) { G.flash = new Set(w.cells); sfx('word', rightN); hap([25, 40, 25]); } else { sfx('right', rightN); hap(10); }
       G.floats.push({ cell: it.cell, text: '+' + pts, cls: w ? 'big' : '' });
     } else {
       G.shown.you = Math.max(0, G.shown.you - 1); G.badShow.set(it.cell, it.letter);
@@ -374,26 +406,31 @@ async function submitTurn() {
     G.shown.you += r.bonus; sfx('bonus'); hap([20, 30, 20, 30, 40]); bigFloat(`ALL 5 RIGHT  +${r.bonus}`); paint(); bumpScore();
   }
   await sleep(items.length ? 420 : 0); if (G !== g) return;
-  G.shown = null; G.anim = null; G.busy = false; G.flash = null;
+  G.shown = null; G.anim = null; G.flash = null;
+  const botNext = !G.online && !G.st.over;
+  G.busy = botNext; // stays locked through the pause so nothing else can start the bot's turn
   setTimeout(() => { if (G === g && G.badShow) { G.badShow = null; paint(); } }, 500);
   paint();
-  if (G.st.over) return finish();
-  if (!G.online) runBot();
+  if (G.st.over) { G.busy = false; return finish(); }
+  if (botNext) { // a clear beat after the count, then the opponent plays
+    await sleep(BOT_PAUSE); if (G !== g || g.finished) return;
+    runBot(0);
+  }
 }
 function bumpScore() { const el = document.getElementById('sc-you'); if (el) { el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); } }
 function passTurn() {
   if (!mine()) return;
-  G.pend.clear(); G.sel.tile = null;
+  G.pend.clear(); G.sel.tile = null; G.sel.cell = null;
   E.endTurn(G.st);
   persist(); paint();
   if (G.st.over) return finish();
   if (!G.online) runBot();
 }
 
-async function runBot() {
-  if (G.busy && G.botRunning) return;
-  G.busy = true; G.botRunning = true; paint();
-  await sleep(900);
+async function runBot(lead = 900) {
+  if (G.botRunning) return;
+  G.busy = true; G.botRunning = true; paint(); sfx('turn');
+  if (lead) await sleep(lead);
   let guard = 0;
   while (guard++ < 8 && G && !G.finished) {
     const s = E.botStep(G.st);
@@ -422,12 +459,13 @@ function spendOrPrompt(kind) {
 // Hint: choose a square and its letter is shown faintly there for the rest of the game. It never fills the square.
 function useHint() {
   if (!mine()) return;
+  G.wordMode = false;
   if (G.hintMode) { G.hintMode = false; return paint(); }
   const left = G.st.puzzle.cells.some((c, k) => c.t === 'l' && !G.st.board[k].ch && !G.st.hints.includes(k));
   if (!left) return toast('Nothing left to hint');
-  G.hintMode = true; G.sel.tile = null;
+  G.hintMode = true; G.sel.tile = null; G.sel.cell = null;
   toast('Tap an empty square to see its letter');
-  paint();
+  sfx('whoosh'); paint();
 }
 function pickHint(k) {
   const { st } = G, c = st.puzzle.cells[k];
@@ -435,18 +473,31 @@ function pickHint(k) {
   if (!spendOrPrompt('hint')) { G.hintMode = false; return paint(); }
   E.addHint(st, 'you', k);
   G.hintMode = false; G.pend.delete(k);
-  sfx('word'); persist(); paint();
+  sfx('sparkle'); persist(); paint();
 }
+// Word power-up: tap Word and every unsolved clue on the board glows; tiles are locked until one clue is chosen.
+function useWordBtn() {
+  if (!mine()) return;
+  G.hintMode = false;
+  if (G.wordMode) return cancelWord();
+  if (G.st.puzzle.words.every((w) => w.cells.every((k) => G.st.board[k].ch))) return toast('Every word is already complete');
+  if (!(store.d.inv.word > 0) && !(store.d.coins >= CONFIG.price.word)) return toast('Not enough coins — win games or check in daily to earn more');
+  G.wordMode = true; G.sel.tile = null; G.sel.cell = null;
+  sfx('whoosh'); hap(12); paint();
+}
+function cancelWord() { G.wordMode = false; sfx('recall'); paint(); }
+function pickWord(w) { G.wordMode = false; useWord(w); }
 function useWord(w) {
-  if (w.cells.every((k) => G.st.board[k].ch)) { toast('That word is already complete'); return; }
-  if (!spendOrPrompt('word')) return;
+  if (w.cells.every((k) => G.st.board[k].ch)) { toast('That word is already complete'); return paint(); }
+  if (!spendOrPrompt('word')) return paint();
   for (const [cell] of [...G.pend]) if (w.cells.includes(cell)) G.pend.delete(cell);
   E.revealWord(G.st, 'you', w.id);
-  sfx('word'); persist(); paint();
+  G.flash = new Set(w.cells); G.last = null;
+  sfx('power'); hap([20, 30, 20]); persist(); paint();
   if (G.st.over) finish();
 }
 function swapPopup() {
-  G.pend.clear(); G.sel.tile = null; paint();
+  G.pend.clear(); G.sel.tile = null; G.sel.cell = null; paint();
   const picked = new Set();
   const rackRow = h('div', { class: 'swap-rack' });
   const slots = h('div', { class: 'swap-rack' });
@@ -524,15 +575,18 @@ function finish(mode) {
     h('div', { class: 'lvl-line' }, h('span', {}, 'Level ' + r.after.level), h('div', { class: 'bar' }, fill), h('small', {}, `${r.after.into}/${r.after.need} XP`)),
     h('div', { class: 'btn-row' },
       h('button', { class: 'btn', onclick: () => { m.close(); next.go(); } }, next.label),
+      next.alt ? h('button', { class: 'btn ghost', onclick: () => { m.close(); next.alt.go(); } }, next.alt.label) : null,
       h('button', { class: 'btn ghost', onclick: () => { m.close(); location.hash = '#/'; } }, 'Home'))), { dismiss: false, cls: 'sheet' });
   paint();
 }
+// Every finished puzzle offers the next one straight away, so nobody has to go back to the home screen.
 function nextAction(spec) {
-  if (spec.kind === 'main') return { label: 'Next puzzle', go: () => startGame(specMain(store.d.mainNext)) };
-  if (spec.kind === 'online') return { label: 'Play online again', go: () => startOnline() };
+  const nextLevel = { label: 'Next level', go: () => startGame(specMain(store.d.mainNext)) };
+  if (spec.kind === 'main') return nextLevel;
+  if (spec.kind === 'online') return { label: 'Play online again', go: () => startOnline(), alt: nextLevel };
   if (spec.kind === 'event') {
     const idx = store.d.events[spec.id] || 0;
-    return idx < EVENT_PUZZLES ? { label: 'Next event puzzle', go: () => startGame(specEvent(spec.id, idx)) } : { label: 'Event complete ✓', go: () => { location.hash = '#/'; } };
+    return idx < EVENT_PUZZLES ? { label: 'Next puzzle', go: () => startGame(specEvent(spec.id, idx)), alt: nextLevel } : nextLevel;
   }
-  return { label: 'Daily calendar', go: () => { location.hash = '#/daily'; } };
+  return { ...nextLevel, alt: { label: 'Daily calendar', go: () => { location.hash = '#/daily'; } } };
 }

@@ -251,3 +251,19 @@ hr { border: 0; border-top: 1px solid var(--line); width: 100%; margin: 8px 0; }
 .sc.bump { animation: bump .28s ease-out; }
 .float.neg { color: #e5484d; font-size: 24px; }
 .cell.f-you.pop { animation: pop .3s ease-out; }
+
+/* ---- Word power-up: every unsolved clue glows, tiles are locked until one is chosen */
+.cl.pick { background: linear-gradient(#fff0a8, #ffc93c) !important; color: #3a2600 !important; outline: 3px solid #f2a000; outline-offset: -3px; z-index: 2; animation: pickpulse .85s ease-in-out infinite; }
+.cl.pick .arr { color: #b86e00; }
+.cl.done { opacity: .35; }
+.grid.wordmode .cell.letter { opacity: .5; }
+.rack .tile.dim { opacity: .35; }
+@keyframes pickpulse { 0%, 100% { filter: brightness(1); outline-color: #f2a000; } 50% { filter: brightness(1.18); outline-color: #fff; } }
+.act.on .ico { background: var(--primary); color: var(--on-primary); box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 28%, transparent); }
+.g-foot.picking { display: flex; gap: 10px; justify-content: center; align-items: center; color: var(--primary); }
+.linkbtn { font-weight: 900; color: var(--primary); text-decoration: underline; padding: 2px 6px; }
+/* ---- placed tiles can be picked up again and moved to another square */
+.cell.pend { touch-action: none; cursor: grab; }
+.cell.sel-cell { outline: 3px solid var(--primary); outline-offset: -3px; transform: translateY(-3px) scale(1.06); z-index: 2; }
+.cell.lifted { opacity: .3; }
+.tile.out { opacity: .22; pointer-events: auto; }
