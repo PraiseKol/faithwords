@@ -2,7 +2,7 @@ import { h, $, toast, modal, crossSvg, trophySvg, confetti, icon, coin, applyThe
 import { store, todayStr } from './store.js';
 import { CONFIG, EVENTS, EVENT_PUZZLES } from './config.js';
 import { specMain, specDaily, specEvent, eventStatus, setRemoteContent } from './puzzles.js';
-import { startGame, resumeGame, renderGame, leaveGame, hasActive, activeLabel, hasOnlineActive, startOnline, rejoinOnline, _debug } from './game.js';
+import { startGame, resumeGame, renderGame, leaveGame, hasActive, activeLabel, hasOnlineActive, startOnline, rejoinOnline, parkedGames, resumeParked, discardParked, _debug } from './game.js';
 import { initCloud, cloudEnabled, currentUser, signIn, signUp, signOut, leaderboard, A } from './cloud.js';
 import { renderAdmin } from './admin.js';
 import { showHowTo } from './howto.js';
@@ -70,13 +70,19 @@ function home() {
     h('div', { class: 'cta-stack' },
       h('button', { class: 'cta', onclick: () => (cont ? resumeGame() : startGame(specMain(d.mainNext))) },
         h('b', {}, cont ? 'Continue' : 'New Game'), h('small', {}, cont ? activeLabel() : 'Puzzle ' + d.mainNext)),
+      // an event or daily puzzle is in progress: the main game is still one tap away (the other game is kept)
+      cont && d.active.spec.kind !== 'main' ? h('button', { class: 'cta alt', onclick: () => startGame(specMain(d.mainNext)) },
+        h('span', {}, h('b', {}, 'Main game'), h('small', {}, 'Puzzle ' + d.mainNext))) : null,
+      ...parkedGames().map((g) => h('div', { class: 'parked' },
+        h('button', { class: 'link', onclick: () => resumeParked(g.seed) }, 'Resume: ' + g.label),
+        h('button', { class: 'link x', 'aria-label': 'Discard ' + g.label, onclick: () => { discardParked(g.seed); render(); } }, '✕'))),
       h('button', { class: 'cta alt', onclick: () => startOnline() }, h('span', { html: icon('globe', 22) }), h('span', {}, h('b', {}, 'Play online'), h('small', {}, currentUser() ? 'Match with another believer' : 'Sign in to play live'))),
       hasOnlineActive() ? h('button', { class: 'link', onclick: () => rejoinOnline() }, 'Rejoin your live match') : null,
       cont ? h('button', { class: 'link', onclick: abandon }, 'Abandon saved match') : null),
     navBar('home'));
 }
 function abandon() {
-  const m = modal(h('div', {}, h('h3', {}, 'Abandon this match?'), h('p', { class: 'muted' }, 'Your saved game will be lost.'),
+  const m = modal(h('div', {}, h('h3', {}, 'Abandon this match?'), h('p', { class: 'muted' }, 'This saved game will be lost.'),
     h('div', { class: 'btn-row' }, h('button', { class: 'btn danger', onclick: () => { m.close(); store.d.active = null; store.save(); render(); } }, 'Abandon'), h('button', { class: 'btn ghost', onclick: () => m.close() }, 'Keep playing'))), { cls: 'sheet' });
 }
 function claimCheckin() {

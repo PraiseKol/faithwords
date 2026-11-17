@@ -269,3 +269,5 @@ hr { border: 0; border-top: 1px solid var(--line); width: 100%; margin: 8px 0; }
 .tile.out { opacity: .22; pointer-events: auto; }
 .cell.hint-new { animation: hintnew .9s ease-out; }
 @keyframes hintnew { 0% { background: #ffe58a; transform: scale(1.12); } 100% { background: color-mix(in srgb, var(--primary) 9%, var(--cell)); transform: scale(1); } }
+.parked { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.parked .link.x { color: var(--muted); padding: 4px 8px; }
