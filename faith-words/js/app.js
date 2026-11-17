@@ -26,6 +26,7 @@ function navBar(active) {
 }
 
 // ---------- Home
+const DEBUG = location.search.includes('debug');
 function home() {
   const d = store.d, lv = store.level(), ci = store.checkinInfo();
   const t = todayStr(), todayDone = !!d.daily[t];
@@ -43,7 +44,7 @@ function home() {
 
   const cards = EVENTS.map((ev) => {
     const st = eventStatus(ev), done = d.events[ev.id] || 0;
-    const open = st.active || d.settings.unlockEvents;
+    const open = st.active || (DEBUG && d.settings.unlockEvents); // the testing switch only exists on ?debug builds
     const idx = Math.min(done, EVENT_PUZZLES - 1);
     return h('div', { class: 'ev-card', style: { background: `linear-gradient(160deg, ${ev.colors[0]}, ${ev.colors[1]})` } },
       h('div', { class: 'ev-time' }, st.label),
@@ -167,8 +168,8 @@ function me() {
       h('div', { class: 'row-between' }, h('b', {}, 'Win streak'), h('b', { class: 'flame' }, h('span', { html: icon('flame', 18) }), d.winStreak)),
       h('small', { class: 'muted' }, `Win coins: ${CONFIG.win.base} × streak multiplier. Your next win pays ×${nextMult} (${Math.round(CONFIG.win.base * nextMult)} coins).`)),
     h('div', { class: 'card' }, h('b', {}, 'Shop'),
-      shopRow('hint', 'bulb', 'Hint', 'Shows where your tiles fit'),
-      shopRow('word', 'eye', 'Word', 'Reveals the selected word (row or column)')),
+      shopRow('hint', 'bulb', 'Hint', 'Shows one square\'s letter faintly'),
+      shopRow('word', 'eye', 'Word', 'Shows a whole word faintly')),
     h('div', { class: 'card stats' }, stat('Games', d.stats.games), stat('Wins', d.stats.wins), stat('Best score', d.stats.bestScore), stat('Best streak', d.bestWinStreak)),
     accountCard(user),
     h('div', { class: 'card' }, h('b', {}, 'Settings'),
@@ -176,7 +177,7 @@ function me() {
       seg('Sound', 'sound', [[true, 'On'], [false, 'Off']]),
       seg('Vibration', 'haptics', [[true, 'On'], [false, 'Off']]),
       h('button', { class: 'btn ghost', onclick: () => showHowTo() }, 'How to play'),
-      h('button', { class: 'btn ghost', onclick: () => { d.settings.unlockEvents = !d.settings.unlockEvents; store.save(); render(); } }, 'Unlock all events (testing): ' + (d.settings.unlockEvents ? 'On' : 'Off')),
+      DEBUG ? h('button', { class: 'btn ghost', onclick: () => { d.settings.unlockEvents = !d.settings.unlockEvents; store.save(); render(); } }, 'Unlock all events (testing): ' + (d.settings.unlockEvents ? 'On' : 'Off')) : null,
       h('a', { class: 'link', href: '#/admin' }, 'Admin panel')),
     navBar('me'));
 }
