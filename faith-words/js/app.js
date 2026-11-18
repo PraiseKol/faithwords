@@ -7,6 +7,10 @@ import { initCloud, cloudEnabled, currentUser, signIn, signUp, signOut, leaderbo
 import { renderAdmin } from './admin.js';
 import { showHowTo } from './howto.js';
 import { sfx } from './audio.js';
+import { questText } from './quests.js';
+import { VERSES } from './verses.js';
+import { verseCard } from './verseui.js';
+import { BADGES, earnedBadges } from './achievements.js';
 
 const app = $('#app');
 let dailyMonth = new Date(); dailyMonth.setDate(1);
@@ -34,7 +38,7 @@ function home() {
 
   const checkin = ci.claimed ? null : h('button', { class: 'banner gold', onclick: () => claimCheckin() },
     h('span', { class: 'b-ico', html: icon('sun', 26) }),
-    h('span', { class: 'b-txt' }, h('b', {}, 'Daily check-in ready'), h('small', {}, ci.day > 1 ? `Day ${ci.day} streak bonus` : 'Start your streak')),
+    h('span', { class: 'b-txt' }, h('b', {}, 'Daily check-in ready'), h('small', {}, ci.usedFreezes ? `🧊 ${ci.usedFreezes} streak freeze will save your streak` : ci.lost ? 'Your streak ended — start a new one' : ci.day > 1 ? `Day ${ci.day} streak bonus` : 'Start your streak')),
     h('span', { class: 'b-act' }, '+', coin(ci.today)));
 
   const dailyCard = h('button', { class: 'banner today' + (todayDone ? ' done' : ''), onclick: () => startGame(specDaily(t)) },
@@ -60,11 +64,11 @@ function home() {
     h('div', { class: 'card hello' },
       h('div', { class: 'avatar' }, initial()),
       h('div', { class: 'hello-main' },
-        h('div', { class: 'hello-name' }, 'Hi, ' + d.name),
+        h('div', { class: 'hello-name' }, 'Hi, ' + d.name, store.titleName() ? h('em', { class: 'lb-title' }, ' · ' + store.titleName()) : null),
         h('div', { class: 'hello-sub' }, `Level ${lv.level} · ${d.xp.toLocaleString()} points`),
         h('div', { class: 'bar' }, h('i', { style: { width: (lv.into / lv.need) * 100 + '%' } }))),
       h('div', { class: 'streak', title: 'Win streak' }, h('span', { html: icon('flame', 20) }), h('b', {}, d.winStreak))),
-    checkin, dailyCard,
+    checkin, dailyCard, questsCard(),
     h('div', { class: 'sec-title' }, 'Events'),
     h('div', { class: 'ev-row' }, cards),
     h('div', { class: 'spacer' }),
@@ -82,6 +86,30 @@ function home() {
       cont ? h('button', { class: 'link', onclick: abandon }, 'Abandon saved match') : null),
     navBar('home'));
 }
+function questsCard() {
+  const qv = store.quests();
+  const rows = qv.list.map((q) => {
+    const t = questText(q);
+    return h('div', { class: 'quest' + (q.done ? ' done' : ''), 'data-quest': q.id },
+      h('span', { class: 'q-ico' }, q.done ? '✓' : t.icon),
+      h('div', { class: 'q-main' }, h('span', { class: 'q-text' }, t.text), h('div', { class: 'bar' }, h('i', { style: { width: Math.round((q.have / q.need) * 100) + '%' } }))),
+      h('small', { class: 'q-n' }, `${q.have}/${q.need}`));
+  });
+  const r = qv.reward;
+  const chest = qv.opened ? h('div', { class: 'chest opened' }, '🎁 Today\'s chest opened — new quests tomorrow')
+    : h('button', { class: 'chest' + (qv.ready ? ' ready' : ''), id: 'chest-btn', disabled: !qv.ready, onclick: openChest },
+      h('span', { class: 'ch-ico' }, qv.ready ? '🎁' : '🔒'), h('span', { class: 'ch-txt' }, qv.ready ? 'Open your chest!' : `Finish all 3 to open the chest (${qv.doneCount}/3)`));
+  return h('div', { class: 'card quests' }, h('div', { class: 'row-between' }, h('b', {}, 'Daily quests'), h('small', { class: 'muted' }, `+${CONFIG.questCoins} 🪙 each`)), rows, chest);
+}
+function openChest() {
+  const r = store.openChest(); if (!r) return;
+  sfx('coin'); confetti();
+  const item = r.kind === 'freeze' ? '🧊 Streak freeze' : r.kind === 'word' ? '👁 Word power-up' : `💡 ${r.qty} Hints`;
+  const m = modal(h('div', { class: 'result' }, h('div', { class: 'res-emoji' }, '🎁'), h('h2', {}, 'Chest opened!'),
+    h('div', { class: 'res-rows' }, h('div', { class: 'res-row gold' }, h('span', {}, 'Coins'), h('b', {}, '+' + r.coins + ' 🪙')), h('div', { class: 'res-row' }, h('span', {}, 'Bonus'), h('b', {}, item))),
+    h('div', { class: 'btn-row' }, h('button', { class: 'btn', onclick: () => { m.close(); render(); } }, 'Amen'))), { dismiss: false, cls: 'sheet' });
+}
+
 function abandon() {
   const m = modal(h('div', {}, h('h3', {}, 'Abandon this match?'), h('p', { class: 'muted' }, 'This saved game will be lost.'),
     h('div', { class: 'btn-row' }, h('button', { class: 'btn danger', onclick: () => { m.close(); store.d.active = null; store.save(); render(); } }, 'Abandon'), h('button', { class: 'btn ghost', onclick: () => m.close() }, 'Keep playing'))), { cls: 'sheet' });
@@ -162,6 +190,7 @@ function me() {
       h('small', { class: 'muted' }, `${lv.need - lv.into} points to Level ${lv.level + 1}`)),
     h('div', { class: 'card' },
       h('div', { class: 'row-between' }, h('b', {}, 'Daily check-in'), h('small', { class: 'muted' }, ci.claimed ? 'Come back tomorrow' : 'Keep your streak for bigger rewards')),
+      h('small', { class: 'muted' }, `🧊 Streak freezes: ${d.inv.freeze || 0}/${CONFIG.maxFreezes}${ci.usedFreezes ? ` — ${ci.usedFreezes} will be used to save your streak` : ''}`),
       strip,
       h('button', { class: 'btn', disabled: ci.claimed, onclick: claimCheckin }, ci.claimed ? 'Claimed today ✓' : h('span', {}, 'Check in  +', coin(ci.today)))),
     h('div', { class: 'card' },
@@ -169,7 +198,9 @@ function me() {
       h('small', { class: 'muted' }, `Win coins: ${CONFIG.win.base} × streak multiplier. Your next win pays ×${nextMult} (${Math.round(CONFIG.win.base * nextMult)} coins).`)),
     h('div', { class: 'card' }, h('b', {}, 'Shop'),
       shopRow('hint', 'bulb', 'Hint', 'Shows one square\'s letter faintly'),
-      shopRow('word', 'eye', 'Word', 'Shows a whole word faintly')),
+      shopRow('word', 'eye', 'Word', 'Shows a whole word faintly'),
+      shopRow('freeze', 'shield', 'Streak freeze', `Saves your check-in streak for a missed day (max ${CONFIG.maxFreezes})`)),
+    albumCard(), badgesCard(),
     h('div', { class: 'card stats' }, stat('Games', d.stats.games), stat('Wins', d.stats.wins), stat('Best score', d.stats.bestScore), stat('Best streak', d.bestWinStreak)),
     accountCard(user),
     h('div', { class: 'card' }, h('b', {}, 'Settings'),
@@ -180,6 +211,33 @@ function me() {
       DEBUG ? h('button', { class: 'btn ghost', onclick: () => { d.settings.unlockEvents = !d.settings.unlockEvents; store.save(); render(); } }, 'Unlock all events (testing): ' + (d.settings.unlockEvents ? 'On' : 'Off')) : null,
       h('a', { class: 'link', href: '#/admin' }, 'Admin panel')),
     navBar('me'));
+}
+
+function albumCard() {
+  const n = Object.keys(store.d.album || {}).length;
+  return h('div', { class: 'card' }, h('div', { class: 'row-between' }, h('b', {}, 'Verse Album'), h('b', { class: 'blue' }, `${n}/${VERSES.length}`)),
+    h('div', { class: 'bar' }, h('i', { style: { width: (n / VERSES.length) * 100 + '%' } })),
+    h('small', { class: 'muted' }, 'Finish puzzles to collect verse cards, each with the story behind it.'),
+    h('a', { class: 'btn', href: '#/album', id: 'open-album' }, 'Open album'));
+}
+function badgesCard() {
+  const d = store.d, got = new Set(earnedBadges(d)), worn = store.titleName();
+  const set = (id) => { store.setTitle(id); render(); };
+  return h('div', { class: 'card badges' }, h('div', { class: 'row-between' }, h('b', {}, 'Titles & badges'), h('small', { class: 'muted' }, `${got.size}/${BADGES.length} earned`)),
+    h('small', { class: 'muted' }, worn ? `You are known as “${worn}”. Tap a badge to wear it.` : 'Earn a badge, then tap it to wear it as your title.'),
+    h('div', { class: 'badge-grid' }, BADGES.map((b) => h('button', { class: 'badge' + (got.has(b.id) ? ' got' : '') + (d.title === b.id && got.has(b.id) ? ' worn' : ''), title: b.desc, 'data-badge': b.id,
+      onclick: () => (got.has(b.id) ? set(d.title === b.id ? '' : b.id) : toast(b.desc)) }, h('span', { class: 'b-e' }, got.has(b.id) ? b.icon : '🔒'), h('small', {}, b.name)))));
+}
+function album() {
+  const have = store.d.album || {};
+  const n = Object.keys(have).length;
+  const cards = VERSES.map((v) => {
+    const got = have[v.ref];
+    return h('button', { class: 'al-card' + (got ? ' got' : ''), 'data-ref': v.ref, onclick: () => got ? modal(h('div', {}, verseCard(v.ref, { count: got.n }), h('button', { class: 'btn', onclick: (e) => e.target.closest('.modal-back').click() }, 'Close')), { cls: 'sheet' }) : toast('Finish more puzzles to find this verse') },
+      got ? h('b', {}, v.ref) : h('b', {}, '?'), got ? h('small', {}, v.text.length > 60 ? v.text.slice(0, 57) + '…' : v.text) : h('small', {}, 'Not found yet'));
+  });
+  return h('div', { class: 'screen album' }, h('div', { class: 'top-row' }, h('a', { class: 'back-btn', href: '#/me', 'aria-label': 'Back', html: icon('back', 22) }), h('h2', {}, 'Verse Album'), h('b', { class: 'blue' }, `${n}/${VERSES.length}`)),
+    h('div', { class: 'bar' }, h('i', { style: { width: (n / VERSES.length) * 100 + '%' } })), h('div', { class: 'al-grid' }, cards), navBar('me'));
 }
 
 function accountCard(user) {
@@ -212,7 +270,7 @@ async function leaderboardModal() {
   try { rows = await leaderboard(); } catch { /* signed out */ }
   body.innerHTML = '';
   if (!rows.length) body.append(h('p', { class: 'muted' }, currentUser() ? 'No players yet — be the first!' : 'Sign in to see the leaderboard.'));
-  rows.forEach((r, i) => body.append(h('div', { class: 'lb-row' }, h('span', {}, `${i + 1}. ${r.name}`), h('small', {}, `Lv ${r.level}`), h('b', {}, r.xp.toLocaleString()))));
+  rows.forEach((r, i) => body.append(h('div', { class: 'lb-row' }, h('span', {}, `${i + 1}. ${r.name}`, r.title ? h('em', { class: 'lb-title' }, ' · ' + r.title) : null), h('small', {}, `Lv ${r.level}`), h('b', {}, r.xp.toLocaleString()))));
 }
 
 // ---------- router
@@ -224,7 +282,7 @@ function render() {
   window.scrollTo(0, 0);
   if (route === '/game') { const root = h('div', { class: 'screen gamescreen' }); app.append(root); renderGame(root); return; }
   if (route === '/admin') { app.append(renderAdmin()); return; }
-  app.append(route === '/daily' ? daily() : route === '/me' ? me() : home());
+  app.append(route === '/daily' ? daily() : route === '/me' ? me() : route === '/album' ? album() : home());
 }
 window.addEventListener('hashchange', render);
 applyTheme(store.d.settings.theme);

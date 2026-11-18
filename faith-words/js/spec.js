@@ -35,7 +35,7 @@ export function buildPuzzle(spec) {
       const k = (r + (dir === 'd' ? i : 0)) * W + c + (dir === 'a' ? i : 0);
       cs.push(k); cells[k] = { t: 'l', ch: e.a[i] };
     }
-    return { id, ans: e.a, clue: e.c, emoji: e.e, entry, dir, r, c, cr, cc, kind, len, cells: cs };
+    return { id, ans: e.a, clue: e.c, emoji: e.e, tags: e.tags, entry, dir, r, c, cr, cc, kind, len, cells: cs };
   });
   words.forEach((w) => {
     const k = w.cr * W + w.cc;

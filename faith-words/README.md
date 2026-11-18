@@ -38,6 +38,13 @@ This project is wired to the Supabase project **Faith Words** (`js/env.js`). The
 - Sound is synthesised in `js/audio.js` (no audio files); each effect is a named entry in `SOUNDS`.
 - Theme (light / dark / auto), vibration and sound are in Me → Settings; a first-run how-to explains the rules.
 
+## Quests, streak freezes, Verse Album, titles
+- **Daily quests** (`js/quests.js`): three small goals a day, chosen from the date so every player and the server agree; progress is counted from the verified match replay. Each pays coins, and finishing all three opens the day's **chest** (server op `openChest`, coins plus a freeze, hints or a Word).
+- **Streak freeze**: held up to `CONFIG.maxFreezes`, bought in the shop or won from chests; a check-in after missed days uses one freeze per missed day, otherwise the streak restarts.
+- **Verse Album** (`js/verses.js`): every finished (not given-up) puzzle reveals the KJV verse that best matches its words, with a short story note. The list is append-only because albums store references.
+- **Titles & badges** (`js/achievements.js`): earned automatically from progress; the worn title (server op `setTitle`) shows on Home, the leaderboard and in online matches.
+- Old saves are filled in by `migrate()` in `progress.js`. Tests: `node scripts/test-phase1.mjs`, `scripts/ui-check4.mjs`.
+
 ## Android / iOS (Capacitor)
     npm run cap:init          # once; use appId com.faithwords.app
     npx cap add android && npx cap add ios

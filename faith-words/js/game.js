@@ -3,11 +3,13 @@ import { h, toast, modal, confetti, icon, buzz, coin } from './ui.js';
 import { CONFIG, BOT_NAMES, EVENT_PUZZLES } from './config.js';
 import { getPuzzle, specMain, specEvent } from './puzzles.js';
 import * as E from './engine.js';
-import { store } from './store.js';
+import { store, todayStr } from './store.js';
 import { sfx } from './audio.js';
 import { A, currentUser } from './cloud.js';
 import { findMatch, waitForOpponent, makeWriter, applyRemoteState } from './online.js';
 import { absLog } from './replay.js';
+import { verseCard } from './verseui.js';
+import { questsFor, questText } from './quests.js';
 import { showHowTo } from './howto.js';
 
 let G = null; // current game
@@ -105,7 +107,8 @@ export async function rejoinOnline() {
   } catch { toast('Could not reach the server'); }
 }
 function beginOnline(row, role, st, spec) {
-  const oppName = (role === 'p1' ? row.p2_name : row.p1_name) || 'Opponent';
+  const oppTitle = (role === 'p1' ? row.p2_title : row.p1_title) || '';
+  const oppName = ((role === 'p1' ? row.p2_name : row.p1_name) || 'Opponent') + (oppTitle ? ' · ' + oppTitle : '');
   G = newCtx(spec, st, oppName);
   G.online = { id: row.id, role, write: makeWriter(row.id, role), stamp: row.updated_at, timer: null, pending: 0, busy: false, lastActive: Date.now(), idle: false };
   store.d.activeOnline = { id: row.id, role }; store.save();
@@ -610,14 +613,15 @@ function finish(mode) {
     h('div', { class: 'res-emoji' }, r.won ? '🏆' : r.draw ? '🤝' : '🙏'),
     h('h2', {}, title),
     h('div', { class: 'res-score' }, h('b', {}, r.score), ' – ', h('b', {}, r.oppScore)),
-    h('p', { class: 'verse' }, verse),
+    r.verse ? verseCard(r.verse, { isNew: r.newVerse, count: store.d.album[r.verse]?.n }) : h('p', { class: 'verse' }, verse),
     h('div', { class: 'res-rows' },
       row('Round points → total', '+' + r.score),
       r.winBonus ? row('Win bonus XP', '+' + r.winBonus) : null,
       r.dailyBonus ? row('Daily puzzle XP', '+' + r.dailyBonus) : null,
       r.coins - r.eventCoins ? row(`Win coins${r.streak > 1 ? ` (streak ×${r.mult})` : ''}`, '+' + (r.coins - r.eventCoins) + ' 🪙', 'gold') : null,
       r.eventCoins ? row('Event reward', '+' + r.eventCoins + ' 🪙', 'gold') : null,
-      r.streak > 0 ? row('Win streak', '🔥 ' + r.streak) : null),
+      r.streak > 0 ? row('Win streak', '🔥 ' + r.streak) : null,
+      ...(r.questsDone || []).map((id) => row('Quest: ' + questText(questsFor(todayStr()).find((q) => q.id === id)).text, '+' + CONFIG.questCoins + ' 🪙', 'gold'))),
     r.leveledUp ? h('div', { class: 'levelup' }, `⬆ Level up! You are now Level ${r.after.level}`) : null,
     h('div', { class: 'lvl-line' }, h('span', {}, 'Level ' + r.after.level), h('div', { class: 'bar' }, fill), h('small', {}, `${r.after.into}/${r.after.need} XP`)),
     h('div', { class: 'btn-row' },
