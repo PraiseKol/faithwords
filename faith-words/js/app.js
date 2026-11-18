@@ -6,7 +6,8 @@ import { startGame, resumeGame, renderGame, leaveGame, hasActive, activeLabel, h
 import { initCloud, cloudEnabled, currentUser, signIn, signUp, signOut, leaderboard, A } from './cloud.js';
 import { renderAdmin } from './admin.js';
 import { showHowTo } from './howto.js';
-import { sfx } from './audio.js';
+import { sfx, syncMusic } from './audio.js';
+import { COSMETICS, available } from './cosmetics.js';
 import { questText } from './quests.js';
 import { VERSES } from './verses.js';
 import { verseCard } from './verseui.js';
@@ -176,7 +177,7 @@ function me() {
   const shopRow = (kind, ico, name, desc) => h('div', { class: 'shop-row' }, h('span', { class: 'si', html: icon(ico, 22) }), h('div', { class: 'sd' }, h('b', {}, `${name} ×${d.inv[kind]}`), h('small', {}, desc)),
     h('button', { class: 'btn sm', onclick: () => { if (store.buy(kind)) { sfx('coin'); toast(`${name} added`); render(); } else toast('Not enough coins'); } }, coin(CONFIG.price[kind])));
   const seg = (label, key, opts) => h('div', { class: 'seg-row' }, h('span', {}, label),
-    h('div', { class: 'seg' }, opts.map(([v, txt]) => h('button', { class: d.settings[key] === v ? 'on' : '', onclick: () => { d.settings[key] = v; store.save(); if (key === 'theme') applyTheme(v); render(); } }, txt))));
+    h('div', { class: 'seg' }, opts.map(([v, txt]) => h('button', { class: d.settings[key] === v ? 'on' : '', onclick: () => { d.settings[key] = v; store.save(); if (key === 'theme') applyTheme(v); if (key === 'music') syncMusic(); render(); } }, txt))));
   return h('div', { class: 'screen me' },
     topBar(),
     h('div', { class: 'card prof' },
@@ -200,12 +201,13 @@ function me() {
       shopRow('hint', 'bulb', 'Hint', 'Shows one square\'s letter faintly'),
       shopRow('word', 'eye', 'Word', 'Shows a whole word faintly'),
       shopRow('freeze', 'shield', 'Streak freeze', `Saves your check-in streak for a missed day (max ${CONFIG.maxFreezes})`)),
-    albumCard(), badgesCard(),
+    themesCard(), albumCard(), badgesCard(),
     h('div', { class: 'card stats' }, stat('Games', d.stats.games), stat('Wins', d.stats.wins), stat('Best score', d.stats.bestScore), stat('Best streak', d.bestWinStreak)),
     accountCard(user),
     h('div', { class: 'card' }, h('b', {}, 'Settings'),
       seg('Theme', 'theme', [['system', 'Auto'], ['light', 'Light'], ['dark', 'Dark']]),
       seg('Sound', 'sound', [[true, 'On'], [false, 'Off']]),
+      seg('Worship music', 'music', [[true, 'On'], [false, 'Off']]),
       seg('Vibration', 'haptics', [[true, 'On'], [false, 'Off']]),
       h('button', { class: 'btn ghost', onclick: () => showHowTo() }, 'How to play'),
       DEBUG ? h('button', { class: 'btn ghost', onclick: () => { d.settings.unlockEvents = !d.settings.unlockEvents; store.save(); render(); } }, 'Unlock all events (testing): ' + (d.settings.unlockEvents ? 'On' : 'Off')) : null,
@@ -213,6 +215,20 @@ function me() {
     navBar('me'));
 }
 
+function applyCosmetics() { const c = store.d.cosmetics || {}; document.body.dataset.board = c.board || ''; document.body.dataset.tile = c.tile || ''; }
+function themesCard() {
+  const d = store.d;
+  const row = (slot, label) => h('div', { class: 'theme-block' }, h('small', { class: 'muted' }, label), h('div', { class: 'theme-row' }, COSMETICS.filter((c) => c.slot === slot).map((c) => {
+    const have = available(d, c), on = d.cosmetics[slot] === c.id;
+    return h('button', { class: 'theme-chip' + (on ? ' on' : ''), 'data-cos': c.id, onclick: () => {
+      if (have) { if (store.equipCosmetic(c.id)) { applyCosmetics(); render(); } }
+      else if (c.badge) toast('Unlocked by a badge — see Titles & badges');
+      else if (store.buyCosmetic(c.id)) { sfx('coin'); store.equipCosmetic(c.id); applyCosmetics(); toast(c.name + ' unlocked'); render(); } else toast('Not enough coins'); } },
+      h('span', { class: 'sw' }, (c.sw || ['#fff', '#e6ecf7', '#7d92b4']).map((x) => h('i', { style: { background: x } }))), c.name,
+      h('small', {}, on ? 'In use' : have ? 'Owned' : c.badge ? '🔒 Badge' : c.price + ' 🪙'));
+  })));
+  return h('div', { class: 'card' }, h('b', {}, 'Themes'), row('board', 'Board'), row('tile', 'Tiles'));
+}
 function albumCard() {
   const n = Object.keys(store.d.album || {}).length;
   return h('div', { class: 'card' }, h('div', { class: 'row-between' }, h('b', {}, 'Verse Album'), h('b', { class: 'blue' }, `${n}/${VERSES.length}`)),
@@ -275,6 +291,7 @@ async function leaderboardModal() {
 
 // ---------- router
 function render() {
+  applyCosmetics();
   const route = (location.hash || '#/').replace(/^#/, '');
   leaveGame();
   app.innerHTML = '';
@@ -286,6 +303,7 @@ function render() {
 }
 window.addEventListener('hashchange', render);
 applyTheme(store.d.settings.theme);
+applyCosmetics(); syncMusic();
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => applyTheme(store.d.settings.theme));
 if (location.search.includes('debug')) window.fwDebug = { game: _debug, store };
 render();

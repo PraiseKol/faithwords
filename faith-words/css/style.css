@@ -294,3 +294,27 @@ hr { border: 0; border-top: 1px solid var(--line); width: 100%; margin: 8px 0; }
 .badge.got { opacity: 1; background: var(--primary-soft); } .badge.worn { outline: 2px solid var(--primary); } .badge .b-e { font-size: 22px; } .badge small { font-size: 10px; text-align: center; font-weight: 700; }
 @media (max-width: 380px) { .badge-grid { grid-template-columns: repeat(3, 1fr); } }
 .lb-title { font-style: normal; font-weight: 700; color: var(--primary); font-size: .85em; }
+
+/* ---- Cosmetics: board and tile themes (scoped to the game screen so menus keep their look) */
+body[data-board="b-parch"] .gamescreen { --cell: #fbf1d8; --cell-ink: #4a3516; --clue: #e8d4a6; --clue-ink: #4a3516; --clue-line: #b08d4c; --grid: #a98a4f; --blank: #eadbb6; --blank-dot: #d9c391; --given: #efdcae; --wsel: #ffe9a8; }
+body[data-board="b-glass"] .gamescreen { --cell: #eaf0ff; --cell-ink: #1f2a66; --clue: #b9a4e6; --clue-ink: #1d1747; --clue-line: #6a4fc0; --grid: #2d2a6b; --blank: #cfd9f7; --blank-dot: #aebde8; --given: #f3d7e4; --wsel: #ffe0a3; }
+body[data-board="b-glass"] .gamescreen .cell.letter { background-image: linear-gradient(135deg, rgba(120, 160, 255, .16), rgba(255, 120, 160, .13) 55%, rgba(255, 200, 90, .16)); }
+body[data-board="b-night"] .gamescreen { --cell: #263662; --cell-ink: #f5e9c2; --clue: #15204a; --clue-ink: #e3c776; --clue-line: #c9a24a; --grid: #0e1631; --blank: #101a3a; --blank-dot: #1d2a55; --given: #31447a; --wsel: #4a4a2a; }
+body[data-board="b-meadow"] .gamescreen { --cell: #f6fbee; --cell-ink: #24401a; --clue: #bfe0a2; --clue-ink: #1f3a14; --clue-line: #6aa04c; --grid: #5c8f45; --blank: #dcedc9; --blank-dot: #c3dcab; --given: #e3f2cf; --wsel: #fff0a8; }
+body[data-tile="t-ivory"] { --tile-a: #fffef9; --tile-b: #ece4cf; --tile-edge: #b9ad8c; --tile-ink: #3a3322; }
+body[data-tile="t-gold"] { --tile-a: #fff0b8; --tile-b: #e5ad33; --tile-edge: #a8761a; --tile-ink: #4a3000; }
+body[data-tile="t-stone"] { --tile-a: #e3e2dd; --tile-b: #a9a8a1; --tile-edge: #6f6e68; --tile-ink: #2b2a27; }
+body[data-tile="t-rose"] { --tile-a: #ffe9ed; --tile-b: #f3a8b8; --tile-edge: #c2566f; --tile-ink: #4a1626; }
+.theme-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.theme-chip { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 6px; border-radius: 12px; background: var(--surface2); min-width: 72px; font-size: 11px; font-weight: 800; }
+.theme-chip.on { outline: 2px solid var(--primary); } .theme-chip .sw { display: flex; height: 18px; width: 52px; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); } .theme-chip .sw i { flex: 1; }
+.theme-chip small { font-weight: 700; color: var(--muted); }
+
+/* ---- celebrations, share */
+.burst i { position: fixed; width: 8px; height: 8px; border-radius: 50%; z-index: 60; pointer-events: none; animation: burstout .8s ease-out forwards; }
+@keyframes burstout { to { transform: translate(var(--dx), var(--dy)) scale(.3); opacity: 0; } }
+.word-banner { position: fixed; left: 50%; top: 22%; transform: translateX(-50%); z-index: 65; pointer-events: none; font-weight: 900; font-size: 34px; letter-spacing: 3px; color: #fff; text-shadow: 0 3px 0 #c98200, 0 0 18px rgba(245, 179, 1, .9); animation: bannerpop 1.4s ease-out forwards; }
+@keyframes bannerpop { 0% { transform: translateX(-50%) scale(.4); opacity: 0; } 18% { transform: translateX(-50%) scale(1.15); opacity: 1; } 75% { transform: translateX(-50%) scale(1); opacity: 1; } 100% { transform: translateX(-50%) translateY(-30px) scale(1); opacity: 0; } }
+.confetti.stars .st { position: absolute; top: -20px; color: #f5b301; font-size: 22px; background: none; width: auto; height: auto; animation-name: fall; animation-timing-function: linear; animation-fill-mode: forwards; }
+.res-emoji.pop { animation: trophypop .9s cubic-bezier(.2, 1.5, .4, 1); } @keyframes trophypop { from { transform: scale(.2) rotate(-25deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.float.combo { color: #ef6a3a; font-size: 22px; } .share-ta { width: 100%; border-radius: 12px; padding: 10px; background: var(--surface2); color: var(--ink); font: 14px/1.4 system-ui; border: 1px solid var(--line); }

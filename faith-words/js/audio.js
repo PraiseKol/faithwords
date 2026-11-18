@@ -101,3 +101,29 @@ export function sfx(name, arg) {
   } catch { /* audio unavailable */ }
 }
 export const _sounds = Object.keys(SOUNDS);
+
+// ---- Optional soft worship-style instrumental: slow pad chords + a sparse bell melody, synthesised (no files).
+// Separate from sound effects; starts only after a tap (browsers require it) and stops when the app is hidden.
+const PROG = [[261.63, 329.63, 392.0], [196.0, 246.94, 392.0], [220.0, 261.63, 329.63], [174.61, 220.0, 261.63]]; // C  G/B  Am  F
+const PENT = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5];
+let mTimer = null, mBar = 0, mGain = null;
+function playBar() {
+  const t0 = 0.05, len = 5.6, ch = PROG[mBar++ % PROG.length];
+  ch.forEach((f, i) => { for (const d of [-4, 4]) tone(f / (i === 0 ? 2 : 1), t0, len, { type: 'sine', vol: 0.028, attack: 1.4, lp: 900, detune: d, pan: (i - 1) * 0.3 }); });
+  for (let i = 0; i < 3; i++) if (Math.random() < 0.8) tone(PENT[Math.floor(Math.random() * PENT.length)], t0 + 0.9 + i * 1.5 + Math.random() * 0.4, 2.6, { type: 'sine', vol: 0.03, attack: 0.02, lp: 2400, pan: Math.random() - 0.5 });
+}
+export function setMusic(on) {
+  if (!on) { clearInterval(mTimer); mTimer = null; return; }
+  if (mTimer) return;
+  try { boot(); if (ctx.state === 'suspended') ctx.resume(); playBar(); mTimer = setInterval(() => { try { playBar(); } catch { /* ignore */ } }, 5600); } catch { /* audio unavailable */ }
+}
+/** Call at start-up and when the setting changes: music runs only while enabled and the app is visible. */
+export function syncMusic() {
+  const want = !!store.d.settings.music && !document.hidden;
+  if (want && !ctx) { // needs a first tap before the browser lets audio start
+    const go = () => { removeEventListener('pointerdown', go); syncMusic(); };
+    addEventListener('pointerdown', go, { once: true }); return;
+  }
+  setMusic(want);
+}
+document.addEventListener('visibilitychange', () => syncMusic());

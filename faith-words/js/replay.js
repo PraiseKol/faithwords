@@ -15,7 +15,7 @@ export function replay(puzzle, log) {
     words: [0, 0], wordTags: [{}, {}], bonus: [0, 0] }; // words each player completed (and their tags), all-tiles rounds
   const fail = (m) => { out.ok = false; out.err = m; return out; };
   if (!Array.isArray(log) || log.length > 600) return fail('bad log');
-  let turn = 0, placed = 0, wrongs = 0, passes = 0, lastTs = null, firstTs = null;
+  let turn = 0, placed = 0, wrongs = 0, streak = 0, passes = 0, lastTs = null, firstTs = null;
   for (const e of log) {
     if (!Array.isArray(e) || e.length < 4) return fail('bad entry');
     const [w, t, k, ts] = e;
@@ -29,6 +29,8 @@ export function replay(puzzle, log) {
       if (++placed + wrongs > CONFIG.tilesPerRack) return fail('too many tiles in a turn');
       have[k] = true; empty--; out.placed[w]++;
       let pts = 1;
+      streak++;
+      if (streak >= CONFIG.comboFrom) pts += Math.min(streak - CONFIG.comboFrom + 1, CONFIG.comboMax);
       for (const id of cellWords[k] || []) {
         const ww = puzzle.words[id];
         if (wordCellsOf(ww).every((c) => have[c])) {
@@ -39,12 +41,12 @@ export function replay(puzzle, log) {
       out.scores[w] += pts;
     } else if (t === 'w') {
       if (!Number.isInteger(k) || k < 1 || placed + wrongs + k > CONFIG.tilesPerRack) return fail('bad wrong count');
-      wrongs += k; out.scores[w] = Math.max(0, out.scores[w] - k);
+      wrongs += k; streak = 0; out.scores[w] = Math.max(0, out.scores[w] - k);
     } else if (t === 'e') {
       if (placed >= CONFIG.tilesPerRack) { out.scores[w] += CONFIG.allTilesBonus; out.bonus[w]++; }
       passes = placed === 0 ? passes + 1 : 0;
       if (empty === 0 || passes >= 6) out.over = true;
-      turn = 1 - turn; placed = 0; wrongs = 0; out.turns++;
+      turn = 1 - turn; placed = 0; wrongs = 0; streak = 0; out.turns++;
     } else if (t === 'r') {
       const ww = puzzle.words[k];
       if (!ww) return fail('bad word');

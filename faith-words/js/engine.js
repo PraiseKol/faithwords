@@ -7,7 +7,7 @@ export function newGame(puzzle, { botLevel = 1 } = {}) {
   puzzle.words.forEach((w) => wordCells(w).forEach((k) => (cellWords[k] ||= []).push(w.id)));
   const st = {
     puzzle, board, cellWords, botLevel,
-    scores: { you: 0, opp: 0 }, turn: 'you', placed: 0, rackAtStart: 0,
+    scores: { you: 0, opp: 0 }, turn: 'you', placed: 0, rackAtStart: 0, streak: 0,
     racks: { you: [], opp: [] }, over: false, quota: 0, passes: 0,
     hints: [], // squares whose letter this player has revealed with Hint (shown faintly, never filled in)
     log: [], // every action: [who, type, arg, time] — the server replays this to verify results
@@ -69,6 +69,9 @@ export function place(st, who, letter, cell) {
   st.racks[who].splice(ri, 1);
   st.placed++;
   let points = 1;
+  st.streak = (st.streak || 0) + 1; // consecutive right tiles; a wrong submit or the end of the turn resets it
+  const combo = st.streak >= CONFIG.comboFrom ? Math.min(st.streak - CONFIG.comboFrom + 1, CONFIG.comboMax) : 0;
+  points += combo;
   const completed = [];
   (st.cellWords[cell] || []).forEach((id) => {
     const w = st.puzzle.words[id];
@@ -76,7 +79,7 @@ export function place(st, who, letter, cell) {
   });
   st.scores[who] += points;
   trimRacks(st);
-  return { ok: true, points, completed };
+  return { ok: true, points, completed, combo, streak: st.streak };
 }
 
 /** The player's Submit: every tile they dropped on the board is checked now. Right ones score, wrong ones
@@ -89,9 +92,9 @@ export function submit(st, who, items) {
     const c = st.puzzle.cells[it.cell];
     const fits = c && c.t === 'l' && !st.board[it.cell].ch && c.ch === it.letter;
     const r = fits ? place(st, who, it.letter, it.cell) : { ok: false };
-    if (r.ok) { right.push({ ...it, points: r.points }); points += r.points; completed.push(...r.completed); } else wrong.push(it);
+    if (r.ok) { right.push({ ...it, points: r.points, combo: r.combo, streak: r.streak }); points += r.points; completed.push(...r.completed); } else wrong.push(it);
   }
-  if (wrong.length) { logMove(st, who, 'w', wrong.length); st.scores[who] = Math.max(0, st.scores[who] - wrong.length); }
+  if (wrong.length) { st.streak = 0; logMove(st, who, 'w', wrong.length); st.scores[who] = Math.max(0, st.scores[who] - wrong.length); }
   return { ok: true, right, wrong, points, penalty: wrong.length, completed };
 }
 
@@ -123,6 +126,7 @@ export function swap(st, who, letters, paid = true) {
 export function endTurn(st) {
   const who = st.turn;
   logMove(st, who, 'e');
+  st.streak = 0;
   let bonus = 0;
   if (st.placed >= CONFIG.tilesPerRack && st.rackAtStart >= CONFIG.tilesPerRack) {
     bonus = CONFIG.allTilesBonus;

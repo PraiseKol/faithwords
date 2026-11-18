@@ -45,6 +45,14 @@ This project is wired to the Supabase project **Faith Words** (`js/env.js`). The
 - **Titles & badges** (`js/achievements.js`): earned automatically from progress; the worn title (server op `setTitle`) shows on Home, the leaderboard and in online matches.
 - Old saves are filled in by `migrate()` in `progress.js`. Tests: `node scripts/test-phase1.mjs`, `scripts/ui-check4.mjs`.
 
+## Combos, themes, music, sharing
+- **Combos**: from the 3rd right tile in a row within a turn (no wrong tile in between) a tile scores +1, then +2 (`CONFIG.comboFrom/comboMax`). Implemented in `engine.js` and mirrored in `replay.js` so the server scores it identically.
+- **Celebrations**: sparkle burst and a big word banner for finished words, star shower for wins (`ui.js`).
+- **Share result** (`js/share.js`): a Wordle-style text (score, a row of squares per turn, the verse) through the device share sheet, or copied.
+- **Worship music** (`audio.js`): optional soft synthesised pads and bells, off by default; toggle in Me and in the game menu.
+- **Themes** (`js/cosmetics.js`): board and tile looks bought with coins or unlocked by a badge; ownership is server-owned (ops `buyCosmetic`, `equipCosmetic`, field `cid`). To add one, append to `COSMETICS` and add its CSS variables in `style.css`.
+- Server op fields: the dedupe id is `op.id`, so op payloads must not use a field called `id` (setTitle now uses `title`).
+
 ## Android / iOS (Capacitor)
     npm run cap:init          # once; use appId com.faithwords.app
     npx cap add android && npx cap add ios
