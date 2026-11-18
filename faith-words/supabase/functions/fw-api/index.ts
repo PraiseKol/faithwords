@@ -2,9 +2,9 @@
 // The game rules are the same files the app uses (faith-words/js/*.js). Deployed version imports them pinned
 // to a commit; to update, change the SHA in the four import lines below and redeploy.
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { handleOp, HttpError, publicColumns } from 'https://raw.githubusercontent.com/PraiseKol/faithwords/SHA/faith-words/js/serverlogic.js';
-import { weekKey } from 'https://raw.githubusercontent.com/PraiseKol/faithwords/SHA/faith-words/js/progress.js';
-import { standings, lastWeekResult, pickBucket, weekProgress, weekEnd, TIERS, SIZE } from 'https://raw.githubusercontent.com/PraiseKol/faithwords/SHA/faith-words/js/leagues.js';
+import { handleOp, HttpError, publicColumns } from 'https://raw.githubusercontent.com/PraiseKol/faithwords/2a46a516129de9edbaa6f8ccc6df08104d00407c/faith-words/js/serverlogic.js';
+import { weekKey } from 'https://raw.githubusercontent.com/PraiseKol/faithwords/2a46a516129de9edbaa6f8ccc6df08104d00407c/faith-words/js/progress.js';
+import { standings, lastWeekResult, pickBucket, weekProgress, weekEnd, TIERS, SIZE } from 'https://raw.githubusercontent.com/PraiseKol/faithwords/2a46a516129de9edbaa6f8ccc6df08104d00407c/faith-words/js/leagues.js';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
