@@ -2,12 +2,13 @@
 import { h, toast, modal, confetti, bigConfetti, burst, wordBanner, icon, buzz, coin } from './ui.js';
 import { shareText, shareOut } from './share.js';
 import { syncMusic } from './audio.js';
+import { A, currentUser, challengeAnswer } from './cloud.js';
+import { randomOnlineSeed } from './spec.js';
 import { CONFIG, BOT_NAMES, EVENT_PUZZLES } from './config.js';
 import { getPuzzle, specMain, specEvent } from './puzzles.js';
 import * as E from './engine.js';
 import { store, todayStr } from './store.js';
 import { sfx } from './audio.js';
-import { A, currentUser } from './cloud.js';
 import { findMatch, waitForOpponent, makeWriter, applyRemoteState } from './online.js';
 import { absLog } from './replay.js';
 import { verseCard } from './verseui.js';
@@ -50,6 +51,29 @@ export function resumeParked(seed) {
   return resumeGame();
 }
 export function discardParked(seed) { if (store.d.parked) { delete store.d.parked[seed]; store.save(); } }
+// ---- friend challenges: play the same puzzle at different times and compare scores
+export const challengeLink = (id) => location.origin + location.pathname + '#/c/' + id;
+export function startChallenge() { // you go first: finish it and a link to send comes up
+  if (!currentUser()) { toast('Sign in to challenge a friend'); location.hash = '#/me'; return; }
+  startGame({ kind: 'challenge', seed: randomOnlineSeed(), label: 'Friend challenge', ch: { create: true } });
+}
+export function startChallengeReply(c) { startGame({ kind: 'challenge', seed: c.seed, label: 'Challenge from ' + c.creator_name, ch: { reply: c.id } }); }
+
+// ---- quick reactions in live matches
+const REACTS = { amen: ['🙏', 'Amen'], praise: ['🙌', 'Praise God'], well: ['👏', 'Well done'], bless: ['❤️', 'Blessed'] };
+let lastReact = 0;
+export function showReaction(key, who) {
+  const r = REACTS[key]; if (!r) return;
+  const el = h('div', { class: 'react-bubble ' + who }, r[0] + ' ' + r[1]); document.body.append(el);
+  if (who === 'opp') sfx('right', 1);
+  setTimeout(() => el.remove(), 2400);
+}
+function sendReaction(key) {
+  const O = G?.online; if (!O || Date.now() - lastReact < 1500) return; lastReact = Date.now();
+  O.sub?.react?.(key); showReaction(key, 'you');
+}
+const reactBar = () => h('div', { class: 'react-bar', id: 'react-bar' }, Object.entries(REACTS).map(([k, [e, t]]) => h('button', { class: 'react-btn', 'data-react': k, 'aria-label': t, title: t, onclick: () => sendReaction(k) }, e)));
+
 export function startGame(spec) {
   if (store.d.parked?.[spec.seed]) return resumeParked(spec.seed); // that puzzle was already in progress: carry on
   parkActive(spec.seed);
@@ -125,7 +149,7 @@ function sync(extra) {
 function startPolling() {
   const O = G.online; if (!O || O.timer) return;
   O.stopped = false; O.live = false;
-  O.sub = A.subscribeMatch(O.id, (row) => handleRow(row), (ok) => { O.live = ok; });
+  O.sub = A.subscribeMatch(O.id, (row) => handleRow(row), (ok) => { O.live = ok; }, (p) => showReaction(p?.k, 'opp'));
   const tick = async () => {
     if (O.stopped) return;
     await pollOnline();
@@ -210,6 +234,7 @@ function paint() {
           h('div', { class: 'sc', id: 'sc-opp' }, G.shown ? G.shown.opp : st.scores.opp),
           h('div', { class: 'nm' }, G.botName, G.online ? null : h('small', {}, ' Lv ' + st.botLevel)),
           h('div', { class: 'av opp' }, oppInit))),
+      G.online ? reactBar() : null,
       boardEl(),
       rackEl(),
       actionsEl(),
@@ -629,6 +654,7 @@ function finish(mode) {
       r.eventCoins ? row('Event reward', '+' + r.eventCoins + ' 🪙', 'gold') : null,
       r.streak > 0 ? row('Win streak', '🔥 ' + r.streak) : null,
       ...(r.questsDone || []).map((id) => row('Quest: ' + questText(questsFor(todayStr()).find((q) => q.id === id)).text, '+' + CONFIG.questCoins + ' 🪙', 'gold'))),
+    spec.kind === 'challenge' ? h('div', { class: 'chal', id: 'chal-box' }, h('small', { class: 'muted' }, currentUser() ? 'Saving your challenge…' : 'Sign in to send challenges')) : null,
     r.leveledUp ? h('div', { class: 'levelup' }, `⬆ Level up! You are now Level ${r.after.level}`) : null,
     h('div', { class: 'lvl-line' }, h('span', {}, 'Level ' + r.after.level), h('div', { class: 'bar' }, fill), h('small', {}, `${r.after.into}/${r.after.need} XP`)),
     h('div', { class: 'btn-row' },
@@ -637,11 +663,26 @@ function finish(mode) {
       h('button', { class: 'btn ghost', id: 'share-btn', onclick: () => shareOut(shareText({ spec, score: r.score, oppScore: r.oppScore, log: st.log, verse: r.verse, url: location.origin + location.pathname })) }, 'Share result'),
       h('button', { class: 'btn ghost', onclick: () => { m.close(); location.hash = '#/'; } }, 'Home'))), { dismiss: false, cls: 'sheet' });
   paint();
+  if (spec.kind === 'challenge') fillChallengeBox(spec, r);
+}
+async function fillChallengeBox(spec, r) {
+  const box = document.getElementById('chal-box'); if (!box) return;
+  const c = await challengeAnswer(); box.innerHTML = '';
+  if (!c) { box.append(h('small', { class: 'muted' }, 'Could not reach the server — your result is saved and will sync.')); return; }
+  if (spec.ch?.create) {
+    const text = `I scored ${r.score} on this Faith Words puzzle. Can you beat me? ${challengeLink(c.id)}`;
+    box.append(h('b', {}, 'Challenge ready!'), h('small', { class: 'muted' }, 'Send the link — your friend plays the same puzzle whenever they like.'),
+      h('button', { class: 'btn', id: 'send-chal', onclick: () => shareOut(text) }, 'Send challenge link'));
+  } else {
+    const you = c.you ?? r.score, them = c.creator_score, res = you > them ? 'You win! 🏆' : you === them ? 'A tie! 🤝' : `${c.creator_name} wins this one`;
+    box.append(h('b', {}, res), h('div', { class: 'res-score' }, h('b', {}, you), ' – ', h('b', {}, them)), h('small', { class: 'muted' }, `You vs ${c.creator_name}`));
+  }
 }
 // Every finished puzzle offers the next one straight away, so nobody has to go back to the home screen.
 function nextAction(spec) {
   const nextLevel = { label: 'Next level', go: () => startGame(specMain(store.d.mainNext)) };
   if (spec.kind === 'main') return nextLevel;
+  if (spec.kind === 'challenge') return { label: 'Rematch — new puzzle', go: () => startChallenge(), alt: nextLevel };
   if (spec.kind === 'online') return { label: 'Play online again', go: () => startOnline(), alt: nextLevel };
   if (spec.kind === 'event') {
     const idx = spec.idx + 1; // the puzzle after the one just played, whatever the saved progress says

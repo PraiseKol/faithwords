@@ -71,6 +71,7 @@ const P = {
   flame: '<path d="M12 22c4 0 7-2.800 7-7 0-3-2-5-3-7-1 1.500-2 2-3 2 0-3-1-6-4-8 0 4-4 6-4 12 0 4.200 3 8 7 8z"/>',
   trophy: '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/>',
   shield: '<path d="M12 3l8 3v6c0 5-3.500 8-8 9-4.500-1-8-4-8-9V6z"/>',
+  users: '<circle cx="9" cy="8" r="3.500"/><path d="M2 20c0-3.500 3-5.500 7-5.500s7 2 7 5.500M16 4.500a3.500 3.500 0 0 1 0 7M18 14.800c2.400.7 4 2.400 4 5.200"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.900 4.900l1.400 1.400M17.700 17.700l1.400 1.400M2 12h2M20 12h2M4.900 19.100l1.400-1.400M17.700 6.300l1.400-1.400"/>',
 };
 export const icon = (name, size = 24) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[name] || ''}</svg>`;

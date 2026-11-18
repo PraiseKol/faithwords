@@ -2,11 +2,14 @@ import { h, $, toast, modal, crossSvg, trophySvg, confetti, icon, coin, applyThe
 import { store, todayStr } from './store.js';
 import { CONFIG, EVENTS, EVENT_PUZZLES } from './config.js';
 import { specMain, specDaily, specEvent, eventStatus, setRemoteContent } from './puzzles.js';
-import { startGame, resumeGame, renderGame, leaveGame, hasActive, activeLabel, hasOnlineActive, startOnline, rejoinOnline, parkedGames, resumeParked, discardParked, _debug } from './game.js';
+import { startChallenge, startChallengeReply, challengeLink, startGame, resumeGame, renderGame, leaveGame, hasActive, activeLabel, hasOnlineActive, startOnline, rejoinOnline, parkedGames, resumeParked, discardParked, _debug } from './game.js';
 import { initCloud, cloudEnabled, currentUser, signIn, signUp, signOut, leaderboard, A } from './cloud.js';
 import { renderAdmin } from './admin.js';
 import { showHowTo } from './howto.js';
 import { sfx, syncMusic } from './audio.js';
+import { weekKey } from './progress.js';
+import { TIERS } from './leagues.js';
+import { shareOut } from './share.js';
 import { COSMETICS, available } from './cosmetics.js';
 import { questText } from './quests.js';
 import { VERSES } from './verses.js';
@@ -27,7 +30,7 @@ function topBar() {
 function navBar(active) {
   const item = (id, ico, label) => h('a', { href: '#/' + (id === 'home' ? '' : id), class: 'nav-i' + (active === id ? ' on' : ''), 'aria-current': active === id ? 'page' : null },
     h('span', { class: 'ni', html: icon(ico, 24) }), label);
-  return h('nav', { class: 'nav' }, item('home', 'home', 'Play'), item('daily', 'calendar', 'Daily'), item('me', 'user', 'Me'));
+  return h('nav', { class: 'nav' }, item('home', 'home', 'Play'), item('daily', 'calendar', 'Daily'), item('together', 'users', 'Together'), item('me', 'user', 'Me'));
 }
 
 // ---------- Home
@@ -229,6 +232,92 @@ function themesCard() {
   })));
   return h('div', { class: 'card' }, h('b', {}, 'Themes'), row('board', 'Board'), row('tile', 'Tiles'));
 }
+// ---------- Together: community goal, weekly league, groups, friend challenges
+const soon = (msg) => h('small', { class: 'muted' }, msg);
+function together() {
+  const user = currentUser(), wk = weekKey(todayStr());
+  const goalBox = h('div', { class: 'card', id: 'goal-card' }, h('b', {}, 'Community goal'), soon('Loading…'));
+  const leagueBox = h('div', { class: 'card', id: 'league-card' }, h('b', {}, 'Weekly league'), soon('Loading…'));
+  const groupBox = h('div', { class: 'card', id: 'group-card' }, h('b', {}, 'Church & small groups'), soon('Loading…'));
+  const chalBox = h('div', { class: 'card', id: 'chal-card' }, h('b', {}, 'Challenge a friend'), soon('Loading…'));
+  const screen = h('div', { class: 'screen together' }, topBar(), goalBox, leagueBox, groupBox, chalBox, navBar('together'));
+  if (!user) {
+    [goalBox, leagueBox, groupBox, chalBox].forEach((b) => { b.lastChild.remove(); b.append(soon('Sign in to take part.')); });
+    const s = h('button', { class: 'btn', onclick: authModal }, 'Sign in / Sign up'); leagueBox.append(s);
+    return screen;
+  }
+  const alive = () => app.contains(screen);
+  fillGoal(goalBox, wk, alive); fillLeague(leagueBox, alive); fillGroups(groupBox, wk, alive); fillChallenges(chalBox, alive);
+  return screen;
+}
+async function fillGoal(box, wk, alive) {
+  let words = 0; try { words = await A.community(wk); } catch { /* offline */ }
+  if (!alive()) return; const d = store.d, goal = CONFIG.communityGoal, mine = d.weekly.key === wk ? d.weekly.words : 0;
+  const reached = words >= goal, can = reached && mine >= CONFIG.communityMinWords && d.communityClaimed !== wk;
+  box.innerHTML = ''; box.append(h('div', { class: 'row-between' }, h('b', {}, 'Community goal'), h('small', { class: 'muted' }, 'This week')),
+    h('div', { class: 'big-line' }, `Together we solved ${words.toLocaleString()} words`), h('div', { class: 'bar' }, h('i', { style: { width: Math.min(100, (words / goal) * 100) + '%' } })),
+    soon(`Goal ${goal.toLocaleString()} words · you added ${mine}. Solve ${CONFIG.communityMinWords}+ to share the reward (${CONFIG.communityReward.coins} 🪙 + ${CONFIG.communityReward.hint} hints).`),
+    d.communityClaimed === wk ? soon('Reward claimed — thank you! 🙏') : h('button', { class: 'btn', id: 'claim-goal', disabled: !can, onclick: async () => {
+      try { await A.claimCommunity(wk); sfx('coin'); confetti(); toast('Community reward claimed!'); render(); } catch (e) { toast(e.message || 'Could not claim'); } } }, reached ? 'Claim reward' : 'Keep solving together'));
+}
+async function fillLeague(box, alive) {
+  let L; try { L = await A.league(); } catch (e) { if (alive()) { box.innerHTML = ''; box.append(h('b', {}, 'Weekly league'), soon('League is unavailable right now.')); } return; }
+  if (!alive()) return; box.innerHTML = '';
+  const days = Math.max(0, Math.ceil((L.endsAt - Date.now()) / 86400000)), me = L.rows.find((r) => r.me);
+  box.append(h('div', { class: 'row-between' }, h('b', {}, `${L.tierName} League`), h('small', { class: 'muted' }, `${days} day${days === 1 ? '' : 's'} left`)),
+    L.last ? soon(`Last week: rank ${L.last.rank} → ${L.last.next > L.last.tier ? 'promoted to ' + TIERS[L.last.next - 1] : L.last.next < L.last.tier ? 'moved down to ' + TIERS[L.last.next - 1] : 'stayed in ' + TIERS[L.last.tier - 1]}`) : null,
+    soon(`Top 5 move up · bottom 5 move down · ${me ? 'you are ' + me.rank + ' of ' + L.size : ''}`));
+  const show = L.rows.filter((r) => r.rank <= 7 || r.me || Math.abs(r.rank - (me?.rank || 0)) <= 1);
+  show.forEach((r) => box.append(h('div', { class: 'tg-row' + (r.me ? ' me' : '') }, h('span', { class: 'tg-rank ' + (r.rank <= 5 ? 'tg-zone-up' : r.rank > L.size - 5 ? 'tg-zone-down' : '') }, r.rank),
+    h('div', { class: 'tg-main' }, r.name, r.title ? h('em', { class: 'lb-title' }, ' · ' + r.title) : null), h('b', {}, r.xp.toLocaleString() + ' XP'))));
+}
+async function fillGroups(box, wk, alive) {
+  let gs = []; try { gs = await A.myGroups(); } catch { /* offline */ }
+  if (!alive()) return; box.innerHTML = ''; box.append(h('b', {}, 'Church & small groups'), soon('A shared leaderboard for your church, youth group or small group.'));
+  gs.forEach((g) => box.append(h('button', { class: 'tg-row', 'data-group': g.id, onclick: () => groupModal(g, wk) }, h('div', { class: 'tg-main' }, h('b', {}, g.name), h('small', { class: 'muted' }, ` ${g.members} member${g.members == 1 ? '' : 's'} · code ${g.code}`)), h('span', {}, '›'))));
+  box.append(h('div', { class: 'btn-row' }, h('button', { class: 'btn', id: 'create-group', onclick: () => groupForm('create', render) }, 'Create a group'), h('button', { class: 'btn ghost', id: 'join-group', onclick: () => groupForm('join', render) }, 'Join with code')));
+}
+function groupForm(kind, done) {
+  const inp = h('input', { id: 'group-in', placeholder: kind === 'create' ? 'e.g. Grace Chapel Youth' : 'Code, e.g. K7M2QX', maxlength: kind === 'create' ? 30 : 8, autocapitalize: kind === 'join' ? 'characters' : 'words' });
+  const msg = h('small', { class: 'err', role: 'alert' });
+  const m = modal(h('div', {}, h('h3', {}, kind === 'create' ? 'Create a group' : 'Join a group'), inp, msg,
+    h('button', { class: 'btn', id: 'group-go', onclick: async () => { try { msg.textContent = ''; const g = kind === 'create' ? await A.createGroup(inp.value) : await A.joinGroup(inp.value); m.close(); toast(kind === 'create' ? `Group created — share code ${g.code}` : 'Joined ' + g.name, 3500); done(); } catch (e) { msg.textContent = e.message || 'Something went wrong'; } } }, kind === 'create' ? 'Create' : 'Join')), { cls: 'sheet' });
+}
+async function groupModal(g, wk) {
+  const body = h('div', {}, soon('Loading…'));
+  const m = modal(h('div', {}, h('h3', {}, g.name), h('div', { class: 'row-between' }, soon('Invite with this code'), h('span', { class: 'code-box', id: 'group-code' }, g.code)),
+    h('button', { class: 'btn ghost sm', onclick: () => shareOut(`Join our group "${g.name}" on Faith Words with code ${g.code}`) }, 'Share invite'), body,
+    h('button', { class: 'btn ghost', onclick: async () => { await A.leaveGroup(g.id); m.close(); render(); } }, 'Leave group')), { cls: 'sheet' });
+  try {
+    const rows = await A.groupBoard(g.id, wk); body.innerHTML = ''; body.append(h('div', { class: 'row-between' }, h('b', {}, 'This week'), h('small', { class: 'muted' }, 'XP')));
+    rows.forEach((r, i) => body.append(h('div', { class: 'tg-row' + (r.me ? ' me' : '') }, h('span', { class: 'tg-rank' }, i + 1), h('div', { class: 'tg-main' }, r.name, r.title ? h('em', { class: 'lb-title' }, ' · ' + r.title) : null, h('small', { class: 'muted' }, ` Lv ${r.level}`)), h('b', {}, r.week_xp.toLocaleString()))));
+  } catch (e) { body.innerHTML = ''; body.append(soon(e.message || 'Could not load the board')); }
+}
+async function fillChallenges(box, alive) {
+  let list = []; try { list = await A.myChallenges(); } catch { /* offline */ }
+  if (!alive()) return; box.innerHTML = ''; box.append(h('b', {}, 'Challenge a friend'), soon('Play a puzzle, send the link — your friend plays the same one whenever they like.'),
+    h('button', { class: 'btn', id: 'new-challenge', onclick: () => startChallenge() }, 'Start a challenge'));
+  list.slice(0, 5).forEach((c) => box.append(h('a', { class: 'tg-row', href: '#/c/' + c.id }, h('div', { class: 'tg-main' }, h('b', {}, c.mine ? 'You vs ' + (c.opp_name || '…waiting') : c.creator_name + ' vs you'),
+    h('small', { class: 'muted' }, c.opp_score == null ? ` · waiting for a reply (${c.creator_score})` : ` · ${c.creator_score} – ${c.opp_score}`)), h('span', {}, '›'))));
+}
+function challengeScreen(id) {
+  const body = h('div', { class: 'card' }, soon('Loading…'));
+  const screen = h('div', { class: 'screen' }, topBar(), body, navBar('together'));
+  (async () => {
+    if (!currentUser()) { body.innerHTML = ''; body.append(h('b', {}, 'A friend challenged you!'), soon('Sign in to play and compare scores.'), h('button', { class: 'btn', onclick: authModal }, 'Sign in / Sign up')); return; }
+    let c; try { c = await A.getChallenge(id); } catch { c = null; }
+    body.innerHTML = '';
+    if (!c) { body.append(h('b', {}, 'Challenge not found'), soon('The link may be mistyped.'), h('a', { class: 'btn', href: '#/together' }, 'Back')); return; }
+    if (c.mine) {
+      body.append(h('b', {}, 'Your challenge'), h('div', { class: 'res-score' }, h('b', {}, c.creator_score), ' – ', h('b', {}, c.opp_score ?? '?')),
+        soon(c.opp_name ? `${c.opp_name} answered.` : 'Waiting for your friend to play.'), h('button', { class: 'btn', onclick: () => shareOut(`Can you beat my score of ${c.creator_score} on Faith Words? ${challengeLink(c.id)}`) }, 'Send the link again'));
+    } else {
+      body.append(h('b', {}, `${c.creator_name} challenges you!`), h('div', { class: 'res-score' }, h('b', {}, c.creator_score), h('small', {}, ' to beat')), soon('Same puzzle, your turn whenever you are ready.'),
+        h('button', { class: 'btn', id: 'accept-chal', onclick: () => startChallengeReply(c) }, 'Accept the challenge'));
+    }
+  })();
+  return screen;
+}
 function albumCard() {
   const n = Object.keys(store.d.album || {}).length;
   return h('div', { class: 'card' }, h('div', { class: 'row-between' }, h('b', {}, 'Verse Album'), h('b', { class: 'blue' }, `${n}/${VERSES.length}`)),
@@ -299,7 +388,8 @@ function render() {
   window.scrollTo(0, 0);
   if (route === '/game') { const root = h('div', { class: 'screen gamescreen' }); app.append(root); renderGame(root); return; }
   if (route === '/admin') { app.append(renderAdmin()); return; }
-  app.append(route === '/daily' ? daily() : route === '/me' ? me() : route === '/album' ? album() : home());
+  if (route.startsWith('/c/')) { app.append(challengeScreen(route.slice(3))); return; }
+  app.append(route === '/daily' ? daily() : route === '/me' ? me() : route === '/album' ? album() : route === '/together' ? together() : home());
 }
 window.addEventListener('hashchange', render);
 applyTheme(store.d.settings.theme);

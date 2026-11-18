@@ -3,7 +3,7 @@
 import { CONFIG } from './config.js';
 import { questsFor, questGain, questState, chestReward } from './quests.js';
 
-export const SERVER_KEYS = ['xp', 'coins', 'inv', 'checkin', 'winStreak', 'bestWinStreak', 'stats', 'mainNext', 'daily', 'events', 'album', 'quests', 'title', 'cosmetics'];
+export const SERVER_KEYS = ['xp', 'coins', 'inv', 'checkin', 'winStreak', 'bestWinStreak', 'stats', 'mainNext', 'daily', 'events', 'album', 'quests', 'title', 'cosmetics', 'weekly', 'communityClaimed'];
 
 export const freshProgress = () => ({
   xp: 0, coins: CONFIG.startCoins,
@@ -12,13 +12,20 @@ export const freshProgress = () => ({
   stats: { games: 0, wins: 0, losses: 0, draws: 0, bestScore: 0, totalWords: 0, quests: 0, chests: 0 },
   mainNext: 1, daily: {}, events: {}, album: {}, quests: null, title: '',
   cosmetics: { own: [], board: 'b-classic', tile: 't-classic' },
+  weekly: { key: '', xp: 0, words: 0 }, communityClaimed: '',
 });
+
+/** The Monday of the week a date (YYYY-MM-DD) falls in: the week's name for leagues and community goals. */
+export function weekKey(date) {
+  const d = new Date(date + 'T00:00:00Z'); const back = (d.getUTCDay() + 6) % 7;
+  return new Date(d.getTime() - back * 86400000).toISOString().slice(0, 10);
+}
 
 /** Fill in anything an older save is missing (new fields added by later versions). */
 export function migrate(d) {
   const f = freshProgress();
   d.inv = { ...f.inv, ...d.inv }; d.stats = { ...f.stats, ...d.stats }; d.checkin = { ...f.checkin, ...d.checkin };
-  d.album ||= {}; d.title ||= ''; d.cosmetics = { ...f.cosmetics, ...d.cosmetics, own: [...(d.cosmetics?.own || [])] }; if (d.quests === undefined) d.quests = null;
+  d.album ||= {}; d.title ||= ''; d.weekly = { ...f.weekly, ...d.weekly }; d.communityClaimed ||= ''; d.cosmetics = { ...f.cosmetics, ...d.cosmetics, own: [...(d.cosmetics?.own || [])] }; if (d.quests === undefined) d.quests = null;
   return d;
 }
 
@@ -101,10 +108,15 @@ export function applyResult(d, { spec, score, oppScore, rep = null, idx = 0, ver
       if (q.prog[qu.id] >= qu.need) { q.done.push(qu.id); d.coins += CONFIG.questCoins; s.quests++; questsDone.push(qu.id); }
     }
   }
+  if (today) { // weekly xp and words (leagues, group boards, community goal)
+    const wk = weekKey(today);
+    if (d.weekly.key !== wk) d.weekly = { key: wk, xp: 0, words: 0 };
+    d.weekly.xp += xpGain; d.weekly.words += rep?.words?.[idx] || 0;
+  }
   let newVerse = false;
   if (verse) { d.album ||= {}; newVerse = !d.album[verse]; d.album[verse] = d.album[verse] ? { ...d.album[verse], n: d.album[verse].n + 1 } : { n: 1, on: today || '' }; }
   const after = levelFromXp(d.xp);
-  return { verse, newVerse, questsDone, won, draw, score, oppScore, winBonus, dailyBonus, xpGain, coins, mult, streak: d.winStreak, before, after, leveledUp: after.level > before.level, eventCoins };
+  return { seed: spec.seed, words: rep?.words?.[idx] || 0, verse, newVerse, questsDone, won, draw, score, oppScore, winBonus, dailyBonus, xpGain, coins, mult, streak: d.winStreak, before, after, leveledUp: after.level > before.level, eventCoins };
 }
 
 /** The day's chest, once all three quests are done. Returns the reward or null. */

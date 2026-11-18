@@ -76,7 +76,7 @@ export const store = {
     try { const puzzle = buildPuzzle(spec); const x = replay(puzzle, log); if (x.ok) rep = x; if (mode !== 'concede') verse = verseFor(puzzle, spec); } catch { /* the server recounts anyway */ }
     const r = P.applyResult(data, { spec, score, oppScore, rep, idx: role, verse, today: todayStr() });
     data.active = null;
-    this.queueOp({ op: 'result', spec, log, role, matchId, mode, today: todayStr() });
+    this.queueOp({ op: 'result', spec, log, role, matchId, mode, today: todayStr(), challenge: spec.ch || null });
     this.save();
     return r;
   },

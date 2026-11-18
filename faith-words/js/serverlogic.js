@@ -36,6 +36,8 @@ function canonicalSpec(g, s, now) {
     if (!EVENTS.some((e) => e.id === s.id) || !Number.isInteger(s.idx) || s.idx < 0 || s.idx >= EVENT_PUZZLES || s.idx > (g.events[s.id] || 0)) bad(400, 'bad event');
     return specEvent(s.id, s.idx);
   }
+  if (s.kind === 'challenge') { if (!validOnlineSeed(s.seed)) bad(400, 'bad challenge'); return { kind: 'challenge', seed: s.seed, label: 'Friend challenge' }; }
+  if (s.kind === 'challenge') { if (!validOnlineSeed(s.seed || '')) bad(400, 'bad challenge'); return { kind: 'challenge', seed: s.seed, label: 'Friend challenge' }; }
   return bad(400, 'bad kind');
 }
 
@@ -61,6 +63,15 @@ export async function handleOp(game, op, ctx) {
   }
   if (op.op === 'buyCosmetic') { if (!buyCosmetic(g, op.cid)) bad(402, 'cannot buy'); return done(); }
   if (op.op === 'equipCosmetic') { if (!equipCosmetic(g, op.cid)) bad(403, 'not yours'); return done(); }
+  if (op.op === 'claimCommunity') { // everyone who helped gets the reward once the week's shared goal is reached
+    const wk = P.weekKey(new Date(now).toISOString().slice(0, 10)), prev = P.weekKey(new Date(now - 7 * DAY).toISOString().slice(0, 10));
+    if (op.week !== wk && op.week !== prev) bad(400, 'bad week');
+    if (g.communityClaimed === op.week) bad(409, 'already claimed');
+    if (g.weekly.key !== op.week || g.weekly.words < CONFIG.communityMinWords) bad(403, 'not enough words from you that week');
+    if ((await ctx.loadCommunity(op.week)) < CONFIG.communityGoal) bad(409, 'goal not reached');
+    g.communityClaimed = op.week; g.coins += CONFIG.communityReward.coins; g.inv.hint += CONFIG.communityReward.hint;
+    return done({ reward: CONFIG.communityReward });
+  }
   if (op.op === 'setTitle') {
     const b = op.title ? badgeById(op.title) : null;
     if (op.title && !(b && b.test(g))) bad(403, 'title not earned');
@@ -108,10 +119,11 @@ export async function handleOp(game, op, ctx) {
   const today = dateOk(op.today, now) ? op.today : new Date(now).toISOString().slice(0, 10);
   const concede = !op.matchId && mode === 'concede';
   const summary = P.applyResult(g, { spec, score: you, oppScore: opp, rep, idx, today, verse: concede ? null : verseFor(puzzle, spec) });
+  summary.seed = spec.seed;
   g.recent.push(now);
   if (op.matchId) g.rewarded = [...(g.rewarded || []), op.matchId].slice(-50);
   return done(summary);
 }
 
 /** Flat columns kept in step with the game for the leaderboard. */
-export const publicColumns = (g) => ({ xp: g.xp, coins: g.coins, level: P.levelFromXp(g.xp).level, wins: g.stats.wins, games: g.stats.games, best_streak: g.bestWinStreak, title: (badgeById(g.title)?.test(g) ? badgeById(g.title).name : '') });
+export const publicColumns = (g) => ({ week_key: g.weekly?.key || '', week_xp: g.weekly?.xp || 0, xp: g.xp, coins: g.coins, level: P.levelFromXp(g.xp).level, wins: g.stats.wins, games: g.stats.games, best_streak: g.bestWinStreak, title: (badgeById(g.title)?.test(g) ? badgeById(g.title).name : '') });

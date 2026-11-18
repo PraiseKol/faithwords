@@ -53,6 +53,14 @@ This project is wired to the Supabase project **Faith Words** (`js/env.js`). The
 - **Themes** (`js/cosmetics.js`): board and tile looks bought with coins or unlocked by a badge; ownership is server-owned (ops `buyCosmetic`, `equipCosmetic`, field `cid`). To add one, append to `COSMETICS` and add its CSS variables in `style.css`.
 - Server op fields: the dedupe id is `op.id`, so op payloads must not use a field called `id` (setTitle now uses `title`).
 
+## Together: community goal, leagues, groups, challenges, reactions
+- **Community goal**: every finished puzzle adds its solved words to this week's shared counter (`community` table, bumped by fw-api). Reaching `CONFIG.communityGoal` lets anyone who solved `communityMinWords`+ that week claim coins and hints once (op `claimCommunity`).
+- **Weekly leagues** (`js/leagues.js`, glue in `fw-api`): ~30 per group, ranked by weekly XP, top 5 up / bottom 5 down each Monday; groups are topped up with deterministic companion players. The week rolls over lazily when you open the league.
+- **Church / group codes**: create a group, share its 6-letter code, members see a weekly XP board (RPCs `create_group`, `join_group`, `group_board`; a player can be in 5 groups).
+- **Challenge a friend**: play a puzzle, send `#/c/<id>`; the friend plays the same puzzle later and sees both scores; Rematch starts a new challenge. Scores are verified by replay like any result.
+- **Quick reactions**: Amen / Praise God / Well done / Blessed over Realtime broadcast in live matches (no database writes).
+- fw-api imports `serverlogic.js`, `progress.js` and `leagues.js`; bump the commit SHA in all three when shared logic changes.
+
 ## Android / iOS (Capacitor)
     npm run cap:init          # once; use appId com.faithwords.app
     npx cap add android && npx cap add ios

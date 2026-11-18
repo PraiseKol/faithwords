@@ -18,6 +18,7 @@ export const CONFIG = {
   eventCoinReward: 30,
   // XP needed to go from level L to L+1
   xpForLevel: (L) => 100 + 50 * (L - 1),
+  communityGoal: 5000, communityMinWords: 10, communityReward: { coins: 60, hint: 2 }, // together-goal: words solved by everyone in a week
   adminPin: 'faith',
 };
 export const BOT_NAMES = ['Grace_K', 'Pastor Dami', 'Sister Joy', 'Tunde B.', 'David_M', 'Hannah O.', 'Elder Samuel', 'Faith_O', 'Esther J.', 'Bro. Caleb', 'Mercy A.', 'Joshua_21', 'Ruth N.', 'Daniel K.', 'Lydia P.', 'Emmanuel_T'];

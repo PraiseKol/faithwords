@@ -88,6 +88,7 @@ export async function flush(force = false) {
         const res = await callOp(op);
         store.d.pendingOps.shift();
         if (op.op === 'result' && res.summary) store.lastServerSummary = res.summary;
+        if (res.challenge) store.lastChallenge = res.challenge;
         if (!store.d.pendingOps.length) settle(res.game, force);
         else store.save();
       } catch (e) {
@@ -117,6 +118,17 @@ export async function syncProgress(force = false) {
 
 // ---- data API used by the game (replaceable in tests via window.__fwMock)
 export const api = {
+  // ---- Phase 3: leagues, groups, challenges, community goal (answers come from the server)
+  league() { return callOp({ op: 'league' }); },
+  async claimCommunity(week) { const res = await callOp({ op: 'claimCommunity', week, id: uid() }); settle(res.game, true); return res.summary; },
+  async community(week) { const { data } = await client.rpc('get_community', { p_week: week }); return Number(data) || 0; },
+  async myGroups() { const { data, error } = await client.rpc('my_groups'); if (error) throw error; return data || []; },
+  async createGroup(name) { const { data, error } = await client.rpc('create_group', { p_name: name }); if (error) throw error; return data?.[0]; },
+  async joinGroup(code) { const { data, error } = await client.rpc('join_group', { p_code: code }); if (error) throw error; return data?.[0]; },
+  async leaveGroup(id) { const { error } = await client.rpc('leave_group', { p_id: id }); if (error) throw error; },
+  async groupBoard(id, week) { const { data, error } = await client.rpc('group_board', { p_id: id, p_week: week }); if (error) throw error; return data || []; },
+  async getChallenge(id) { const { data, error } = await client.rpc('get_challenge', { p_id: id }); if (error) throw error; return data?.[0] || null; },
+  async myChallenges() { const { data, error } = await client.rpc('my_challenges'); if (error) throw error; return data || []; },
   async leaderboard() { if (!client) return []; const { data } = await client.rpc('get_leaderboard'); return data || []; },
   async matchmake(spec, state, name) {
     const { data, error } = await client.rpc('matchmake', { p_spec: spec, p_state: state, p_name: name });
@@ -131,12 +143,13 @@ export const api = {
     if (error) throw error;
   },
   /** Live updates of a match row. Returns {stop}. onStatus gets true when the realtime channel is connected. */
-  subscribeMatch(id, onRow, onStatus) {
-    if (!client) return { stop() {} };
+  subscribeMatch(id, onRow, onStatus, onReact) {
+    if (!client) return { stop() {}, react() {} };
     const ch = client.channel('match-' + id)
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'matches', filter: `id=eq.${id}` }, (p) => onRow(p.new))
+      .on('broadcast', { event: 'react' }, (p) => onReact?.(p.payload))
       .subscribe((status) => onStatus?.(status === 'SUBSCRIBED'));
-    return { stop() { client.removeChannel(ch); } };
+    return { stop() { client.removeChannel(ch); }, react(key) { try { ch.send({ type: 'broadcast', event: 'react', payload: { k: key } }); } catch { /* offline */ } } };
   },
   async cancelMatch(id) { await client.from('matches').update({ status: 'cancelled' }).eq('id', id).eq('status', 'waiting'); },
   async loadContent() {
@@ -156,3 +169,10 @@ export const api = {
 };
 export const A = new Proxy(api, { get: (t, k) => (mock() && mock()[k]) || t[k] });
 export const leaderboard = () => A.leaderboard();
+
+/** After a challenge game: make sure the result reached the server, then return the challenge answer ({id, ...}). */
+export async function challengeAnswer() {
+  store.lastChallenge = null;
+  for (let i = 0; i < 8 && !store.lastChallenge; i++) { await flush(true); if (store.lastChallenge) break; await new Promise((r) => setTimeout(r, 700)); }
+  return store.lastChallenge;
+}
