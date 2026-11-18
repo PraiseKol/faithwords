@@ -4,6 +4,8 @@ import * as P from './progress.js';
 import { CONFIG, EVENTS, EVENT_PUZZLES } from './config.js';
 import { specMain, specDaily, specEvent, buildPuzzle, validOnlineSeed } from './spec.js';
 import { replay } from './replay.js';
+import { verseFor } from './verses.js';
+import { badgeById } from './achievements.js';
 
 export class HttpError extends Error { constructor(status, msg) { super(msg); this.status = status; } }
 const bad = (status, msg) => { throw new HttpError(status, msg); };
@@ -39,7 +41,7 @@ function canonicalSpec(g, s, now) {
 /** op: { op, id, ...payload }. ctx: { uid, now, loadMatch(id), loadCustom() }. Returns { game, summary? } and mutates `game`. */
 export async function handleOp(game, op, ctx) {
   const now = ctx.now ?? Date.now();
-  let g = game && game.v ? structuredClone(game) : null;
+  let g = game && game.v ? P.migrate(structuredClone(game)) : null;
   if (op.op === 'sync') return { game: g || startState(op.local) };
   g ||= startState(null);
   if (op.id && g.ops.includes(op.id)) return { game: g, repeat: true }; // the phone retried an action we already did
@@ -51,6 +53,16 @@ export async function handleOp(game, op, ctx) {
     return done();
   }
   if (op.op === 'buy') { if (!P.buy(g, op.kind)) bad(402, 'cannot buy'); return done(); }
+  if (op.op === 'openChest') {
+    if (!dateOk(op.today, now)) bad(400, 'bad date');
+    const r = P.openChest(g, op.today); if (!r) bad(409, 'chest not ready');
+    return done({ chest: r });
+  }
+  if (op.op === 'setTitle') {
+    const b = op.id ? badgeById(op.id) : null;
+    if (op.id && !(b && b.test(g))) bad(403, 'title not earned');
+    g.title = op.id || ''; return done();
+  }
   if (op.op !== 'result') bad(400, 'unknown op');
 
   // ---- a finished match
@@ -90,11 +102,13 @@ export async function handleOp(game, op, ctx) {
   const pw = rep.power[idx];
   for (const [n, kind] of [[pw.h, 'hint'], [pw.r, 'word'], [pw.s, 'swap']]) for (let i = 0; i < n; i++) if (!P.spend(g, kind)) bad(402, 'could not afford power-ups');
 
-  const summary = P.applyResult(g, { spec, score: you, oppScore: opp });
+  const today = dateOk(op.today, now) ? op.today : new Date(now).toISOString().slice(0, 10);
+  const concede = !op.matchId && mode === 'concede';
+  const summary = P.applyResult(g, { spec, score: you, oppScore: opp, rep, idx, today, verse: concede ? null : verseFor(puzzle, spec) });
   g.recent.push(now);
   if (op.matchId) g.rewarded = [...(g.rewarded || []), op.matchId].slice(-50);
   return done(summary);
 }
 
 /** Flat columns kept in step with the game for the leaderboard. */
-export const publicColumns = (g) => ({ xp: g.xp, coins: g.coins, level: P.levelFromXp(g.xp).level, wins: g.stats.wins, games: g.stats.games, best_streak: g.bestWinStreak });
+export const publicColumns = (g) => ({ xp: g.xp, coins: g.coins, level: P.levelFromXp(g.xp).level, wins: g.stats.wins, games: g.stats.games, best_streak: g.bestWinStreak, title: (badgeById(g.title)?.test(g) ? badgeById(g.title).name : '') });

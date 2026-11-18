@@ -3,6 +3,10 @@
 import { CONFIG } from './config.js';
 import { levelFromXp } from './engine.js';
 import * as P from './progress.js';
+import { buildPuzzle } from './spec.js';
+import { replay } from './replay.js';
+import { verseFor } from './verses.js';
+import { wornTitle } from './achievements.js';
 
 const KEY = 'fw.v1';
 export const todayStr = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -16,9 +20,8 @@ const fresh = () => ({
 
 let data;
 try { data = { ...fresh(), ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { data = fresh(); }
-data.inv = { ...fresh().inv, ...data.inv };
+P.migrate(data);
 data.settings = { ...fresh().settings, ...data.settings };
-data.stats = { ...fresh().stats, ...data.stats };
 
 const listeners = new Set();
 export const store = {
@@ -57,8 +60,18 @@ export const store = {
   },
 
   /** Called once when a match ends. log/role/matchId let the server re-check the result. */
+  openChest() {
+    const r = P.openChest(data, todayStr());
+    if (r) { this.queueOp({ op: 'openChest', today: todayStr() }); this.save(); }
+    return r;
+  },
+  setTitle(id) { data.title = id; this.queueOp({ op: 'setTitle', id }); this.save(); },
+  quests() { return P.questView(data, todayStr()); },
+  titleName() { return wornTitle(data); },
   recordResult({ spec, score, oppScore, log = [], role = 0, matchId = null, mode = null }) {
-    const r = P.applyResult(data, { spec, score, oppScore });
+    let rep = null, verse = null;
+    try { const puzzle = buildPuzzle(spec); const x = replay(puzzle, log); if (x.ok) rep = x; if (mode !== 'concede') verse = verseFor(puzzle, spec); } catch { /* the server recounts anyway */ }
+    const r = P.applyResult(data, { spec, score, oppScore, rep, idx: role, verse, today: todayStr() });
     data.active = null;
     this.queueOp({ op: 'result', spec, log, role, matchId, mode, today: todayStr() });
     this.save();

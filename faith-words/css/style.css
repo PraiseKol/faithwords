@@ -271,3 +271,26 @@ hr { border: 0; border-top: 1px solid var(--line); width: 100%; margin: 8px 0; }
 @keyframes hintnew { 0% { background: #ffe58a; transform: scale(1.12); } 100% { background: color-mix(in srgb, var(--primary) 9%, var(--cell)); transform: scale(1); } }
 .parked { display: flex; align-items: center; justify-content: center; gap: 6px; }
 .parked .link.x { color: var(--muted); padding: 4px 8px; }
+
+/* ---- Phase 1: quests, chest, verse cards, album, badges */
+.quests .quest { display: flex; align-items: center; gap: 10px; }
+.quest .q-ico { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; background: var(--primary-soft); flex: none; font-size: 17px; }
+.quest.done .q-ico { background: var(--green, #27ae60); color: #fff; font-weight: 900; }
+.quest .q-main { flex: 1; display: flex; flex-direction: column; gap: 5px; min-width: 0; } .quest .q-text { font-weight: 700; font-size: 14px; }
+.quest.done .q-text { text-decoration: line-through; opacity: .65; } .quest .q-n { font-weight: 800; color: var(--muted); }
+.chest { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border-radius: 14px; background: var(--surface2); font-weight: 800; text-align: left; }
+.chest.ready { background: linear-gradient(120deg, #ffd45e, #f5a300); color: #4a2f00; animation: glow 1.4s ease-in-out infinite alternate; }
+.chest .ch-ico { font-size: 24px; } .chest.opened { color: var(--muted); font-size: 13px; }
+.vcard { position: relative; margin: 8px 0; padding: 18px 16px 14px; border-radius: 18px; text-align: center; background: linear-gradient(160deg, #fff6dc, #f3e1b0); color: #3b2a0d; border: 2px solid #d8b45a; box-shadow: inset 0 0 0 4px #fff6dc, inset 0 0 0 5px #d8b45a; }
+.vcard .vc-cross { color: #b8892b; font-size: 18px; } .vcard .vc-text { margin: 6px 0; font-family: Georgia, 'Times New Roman', serif; font-size: 16px; line-height: 1.45; font-style: italic; }
+.vcard .vc-ref { font-weight: 900; color: #8a5b12; } .vcard .vc-note { font-size: 13px; line-height: 1.4; margin: 8px 0 0; color: #5a4420; } .vcard .vc-count { color: #8a5b12; }
+.vcard.new { animation: vpop .6s cubic-bezier(.2, 1.4, .4, 1); } .vc-new { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #e5484d; color: #fff; font-size: 11px; font-weight: 900; letter-spacing: 1px; padding: 3px 10px; border-radius: 99px; }
+@keyframes vpop { from { transform: scale(.6) rotate(-4deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.album .top-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; } .album .top-row h2 { flex: 1; margin: 0; }
+.al-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin: 12px 0 90px; }
+.al-card { display: flex; flex-direction: column; gap: 4px; text-align: left; padding: 11px; border-radius: 14px; background: var(--surface2); color: var(--muted); min-height: 84px; }
+.al-card.got { background: linear-gradient(160deg, #fff6dc, #f3e1b0); color: #3b2a0d; border: 1px solid #d8b45a; } .al-card small { line-height: 1.3; }
+.badge-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; } .badge { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 2px; border-radius: 12px; background: var(--surface2); opacity: .55; }
+.badge.got { opacity: 1; background: var(--primary-soft); } .badge.worn { outline: 2px solid var(--primary); } .badge .b-e { font-size: 22px; } .badge small { font-size: 10px; text-align: center; font-weight: 700; }
+@media (max-width: 380px) { .badge-grid { grid-template-columns: repeat(3, 1fr); } }
+.lb-title { font-style: normal; font-weight: 700; color: var(--primary); font-size: .85em; }

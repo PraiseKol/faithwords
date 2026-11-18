@@ -1,16 +1,25 @@
 // Player progress rules (XP, levels, coins, check-in, streaks, shop). Pure functions on a plain
 // data object, used by the phone (instant feedback) and by the server (the real source of truth).
 import { CONFIG } from './config.js';
+import { questsFor, questGain, questState, chestReward } from './quests.js';
 
-export const SERVER_KEYS = ['xp', 'coins', 'inv', 'checkin', 'winStreak', 'bestWinStreak', 'stats', 'mainNext', 'daily', 'events'];
+export const SERVER_KEYS = ['xp', 'coins', 'inv', 'checkin', 'winStreak', 'bestWinStreak', 'stats', 'mainNext', 'daily', 'events', 'album', 'quests', 'title'];
 
 export const freshProgress = () => ({
   xp: 0, coins: CONFIG.startCoins,
-  inv: { hint: CONFIG.startHints, word: CONFIG.startWords },
-  checkin: { last: null, streak: 0 }, winStreak: 0, bestWinStreak: 0,
-  stats: { games: 0, wins: 0, losses: 0, draws: 0, bestScore: 0, totalWords: 0 },
-  mainNext: 1, daily: {}, events: {},
+  inv: { hint: CONFIG.startHints, word: CONFIG.startWords, freeze: 0 },
+  checkin: { last: null, streak: 0, best: 0 }, winStreak: 0, bestWinStreak: 0,
+  stats: { games: 0, wins: 0, losses: 0, draws: 0, bestScore: 0, totalWords: 0, quests: 0, chests: 0 },
+  mainNext: 1, daily: {}, events: {}, album: {}, quests: null, title: '',
 });
+
+/** Fill in anything an older save is missing (new fields added by later versions). */
+export function migrate(d) {
+  const f = freshProgress();
+  d.inv = { ...f.inv, ...d.inv }; d.stats = { ...f.stats, ...d.stats }; d.checkin = { ...f.checkin, ...d.checkin };
+  d.album ||= {}; d.title ||= ''; if (d.quests === undefined) d.quests = null;
+  return d;
+}
 
 const dayDiff = (a, b) => Math.round((new Date(a + 'T00:00:00Z') - new Date(b + 'T00:00:00Z')) / 86400000);
 export const checkinReward = (n) => Math.round(CONFIG.checkin.base * (1 + CONFIG.checkin.step * (Math.min(n, CONFIG.checkin.maxDay) - 1)));
@@ -18,22 +27,26 @@ export const winMultiplier = (streak) => Math.min(CONFIG.win.maxMult, 1 + CONFIG
 
 export function checkinInfo(d, today) {
   const c = d.checkin, claimed = c.last === today;
-  let day;
+  let day, used = 0, lost = false;
   if (claimed) day = c.streak;
   else if (c.last && dayDiff(today, c.last) === 1) day = c.streak + 1;
-  else day = 1;
-  return { claimed, day, reward: checkinReward, today: checkinReward(day) };
+  else if (c.last && c.streak > 0) { // missed day(s): streak freezes cover them, one per day
+    const missed = dayDiff(today, c.last) - 1, have = d.inv.freeze || 0;
+    if (missed >= 1 && missed <= have) { day = c.streak + 1; used = missed; } else { day = 1; lost = c.streak > 1; }
+  } else day = 1;
+  return { claimed, day, reward: checkinReward, today: checkinReward(day), usedFreezes: used, lost };
 }
 export function claimCheckin(d, today) {
   const i = checkinInfo(d, today);
   if (i.claimed) return 0;
-  d.coins += i.today;
-  d.checkin = { last: today, streak: i.day };
+  d.coins += i.today; d.inv.freeze = (d.inv.freeze || 0) - i.usedFreezes;
+  d.checkin = { last: today, streak: i.day, best: Math.max(d.checkin.best || 0, i.day) };
   return i.today;
 }
 
 /** Pay for a power-up: an owned item first (hint/word), otherwise coins. */
 export function spend(d, kind) {
+  if (kind === 'freeze') return false;
   if (kind !== 'swap' && d.inv[kind] > 0) { d.inv[kind]--; return true; }
   const p = CONFIG.price[kind];
   if (d.coins >= p) { d.coins -= p; return true; }
@@ -42,7 +55,8 @@ export function spend(d, kind) {
 export function buy(d, kind) {
   const p = CONFIG.price[kind];
   if (!(kind in CONFIG.price) || kind === 'swap' || d.coins < p) return false;
-  d.coins -= p; d.inv[kind]++; return true;
+  if (kind === 'freeze' && (d.inv.freeze || 0) >= CONFIG.maxFreezes) return false;
+  d.coins -= p; d.inv[kind] = (d.inv[kind] || 0) + 1; return true;
 }
 
 export function levelFromXp(xp) {
@@ -52,7 +66,7 @@ export function levelFromXp(xp) {
 }
 
 /** A match ended: points, win bonus, streak coins, progress. Returns the summary for the result screen. */
-export function applyResult(d, { spec, score, oppScore }) {
+export function applyResult(d, { spec, score, oppScore, rep = null, idx = 0, verse = null, today = null }) {
   const before = levelFromXp(d.xp);
   const won = score > oppScore, draw = score === oppScore;
   const s = d.stats;
@@ -75,6 +89,37 @@ export function applyResult(d, { spec, score, oppScore }) {
     d.events[spec.id] = Math.max(d.events[spec.id] || 0, spec.idx + 1);
     if (won) { eventCoins = CONFIG.eventCoinReward; coins += eventCoins; d.coins += eventCoins; }
   }
+  // words, quests, verse
+  if (rep) s.totalWords = (s.totalWords || 0) + (rep.words?.[idx] || 0);
+  const questsDone = [];
+  if (today && rep) {
+    const q = questState(d, today);
+    for (const qu of questsFor(today)) {
+      if (q.done.includes(qu.id)) continue;
+      q.prog[qu.id] = Math.min(qu.need, (q.prog[qu.id] || 0) + questGain(qu.id, { spec, won, rep, idx }));
+      if (q.prog[qu.id] >= qu.need) { q.done.push(qu.id); d.coins += CONFIG.questCoins; s.quests++; questsDone.push(qu.id); }
+    }
+  }
+  let newVerse = false;
+  if (verse) { d.album ||= {}; newVerse = !d.album[verse]; d.album[verse] = d.album[verse] ? { ...d.album[verse], n: d.album[verse].n + 1 } : { n: 1, on: today || '' }; }
   const after = levelFromXp(d.xp);
-  return { won, draw, score, oppScore, winBonus, dailyBonus, xpGain, coins, mult, streak: d.winStreak, before, after, leveledUp: after.level > before.level, eventCoins };
+  return { verse, newVerse, questsDone, won, draw, score, oppScore, winBonus, dailyBonus, xpGain, coins, mult, streak: d.winStreak, before, after, leveledUp: after.level > before.level, eventCoins };
+}
+
+/** The day's chest, once all three quests are done. Returns the reward or null. */
+export function openChest(d, today) {
+  const q = questState(d, today);
+  if (q.opened || q.done.length < 3) return null;
+  q.opened = true; d.stats.chests = (d.stats.chests || 0) + 1;
+  const r = chestReward(today);
+  d.coins += r.coins;
+  if (r.kind === 'freeze') { if ((d.inv.freeze || 0) < CONFIG.maxFreezes) d.inv.freeze = (d.inv.freeze || 0) + 1; else d.coins += 30, r.coins += 30; }
+  else d.inv[r.kind] = (d.inv[r.kind] || 0) + r.qty;
+  return r;
+}
+
+/** Today's quests with progress, for the home screen: [{id, need, have, done}] and chest state. */
+export function questView(d, today) {
+  const q = questState(d, today), list = questsFor(today).map((x) => ({ ...x, have: q.prog[x.id] || 0, done: q.done.includes(x.id) }));
+  return { list, doneCount: q.done.length, opened: q.opened, ready: !q.opened && q.done.length >= 3, reward: chestReward(today) };
 }

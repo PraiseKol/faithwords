@@ -11,7 +11,8 @@ export function replay(puzzle, log) {
   const cellWords = {};
   puzzle.words.forEach((w) => wordCellsOf(w).forEach((k) => (cellWords[k] ||= []).push(w.id)));
   let empty = cells.reduce((n, c, k) => n + (c.t === 'l' && !have[k] ? 1 : 0), 0);
-  const out = { ok: true, err: null, scores: [0, 0], over: false, power: [{ h: 0, r: 0, s: 0 }, { h: 0, r: 0, s: 0 }], placed: [0, 0], turns: 0, spanMs: 0 };
+  const out = { ok: true, err: null, scores: [0, 0], over: false, power: [{ h: 0, r: 0, s: 0 }, { h: 0, r: 0, s: 0 }], placed: [0, 0], turns: 0, spanMs: 0,
+    words: [0, 0], wordTags: [{}, {}], bonus: [0, 0] }; // words each player completed (and their tags), all-tiles rounds
   const fail = (m) => { out.ok = false; out.err = m; return out; };
   if (!Array.isArray(log) || log.length > 600) return fail('bad log');
   let turn = 0, placed = 0, wrongs = 0, passes = 0, lastTs = null, firstTs = null;
@@ -30,14 +31,17 @@ export function replay(puzzle, log) {
       let pts = 1;
       for (const id of cellWords[k] || []) {
         const ww = puzzle.words[id];
-        if (wordCellsOf(ww).every((c) => have[c])) pts += ww.len;
+        if (wordCellsOf(ww).every((c) => have[c])) {
+          pts += ww.len; out.words[w]++;
+          for (const tg of ww.tags || []) out.wordTags[w][tg] = (out.wordTags[w][tg] || 0) + 1;
+        }
       }
       out.scores[w] += pts;
     } else if (t === 'w') {
       if (!Number.isInteger(k) || k < 1 || placed + wrongs + k > CONFIG.tilesPerRack) return fail('bad wrong count');
       wrongs += k; out.scores[w] = Math.max(0, out.scores[w] - k);
     } else if (t === 'e') {
-      if (placed >= CONFIG.tilesPerRack) out.scores[w] += CONFIG.allTilesBonus;
+      if (placed >= CONFIG.tilesPerRack) { out.scores[w] += CONFIG.allTilesBonus; out.bonus[w]++; }
       passes = placed === 0 ? passes + 1 : 0;
       if (empty === 0 || passes >= 6) out.over = true;
       turn = 1 - turn; placed = 0; wrongs = 0; out.turns++;

@@ -4,7 +4,10 @@ export const CONFIG = {
   allTilesBonus: 5,              // +5 when all 5 tiles are used in one round
   givenLetters: 4,
   startCoins: 50, startHints: 3, startWords: 1,
-  price: { hint: 20, word: 40, swap: 15 },
+  price: { hint: 20, word: 40, swap: 15, freeze: 60 },
+  maxFreezes: 2,                 // streak freezes you can hold at once
+  questCoins: 10,                // paid for each finished daily quest
+  chestCoins: [40, 80],          // chest coin range (the day picks the amount)
   // Daily check-in: coins = base * (1 + step*(day-1)), day capped at maxDay
   checkin: { base: 10, step: 0.5, maxDay: 7 },
   // Win streak coins: coins = base * (1 + step*(streak-1)), multiplier capped
