@@ -318,3 +318,13 @@ body[data-tile="t-rose"] { --tile-a: #ffe9ed; --tile-b: #f3a8b8; --tile-edge: #c
 .confetti.stars .st { position: absolute; top: -20px; color: #f5b301; font-size: 22px; background: none; width: auto; height: auto; animation-name: fall; animation-timing-function: linear; animation-fill-mode: forwards; }
 .res-emoji.pop { animation: trophypop .9s cubic-bezier(.2, 1.5, .4, 1); } @keyframes trophypop { from { transform: scale(.2) rotate(-25deg); opacity: 0; } to { transform: none; opacity: 1; } }
 .float.combo { color: #ef6a3a; font-size: 22px; } .share-ta { width: 100%; border-radius: 12px; padding: 10px; background: var(--surface2); color: var(--ink); font: 14px/1.4 system-ui; border: 1px solid var(--line); }
+
+/* ---- Phase 3: together screen, challenges, reactions */
+.react-bar { display: flex; justify-content: center; gap: 8px; padding: 4px 0; } .react-btn { font-size: 20px; width: 42px; height: 34px; border-radius: 12px; background: var(--surface2); }
+.react-bubble { position: fixed; z-index: 70; left: 50%; transform: translateX(-50%); padding: 8px 14px; border-radius: 99px; font-weight: 800; background: var(--surface); box-shadow: 0 6px 20px rgba(0, 0, 0, .25); animation: bubble 2.4s ease-out forwards; pointer-events: none; }
+.react-bubble.opp { top: 120px; border: 2px solid #e5484d; } .react-bubble.you { bottom: 200px; border: 2px solid var(--primary); }
+@keyframes bubble { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.8); } 12% { opacity: 1; transform: translate(-50%, 0) scale(1.05); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -16px); } }
+.chal { display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 10px; border-radius: 14px; background: var(--surface2); margin: 8px 0; }
+.tg-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); } .tg-row:first-of-type { border-top: 0; } .tg-row .tg-main { flex: 1; min-width: 0; } .tg-row.me { background: var(--primary-soft); border-radius: 10px; padding: 6px 8px; }
+.tg-rank { width: 26px; font-weight: 900; color: var(--muted); } .tg-zone-up { color: #27ae60; } .tg-zone-down { color: #e5484d; }
+.code-box { font: 900 22px/1 ui-monospace, monospace; letter-spacing: 4px; padding: 8px 12px; border-radius: 10px; background: var(--surface2); }

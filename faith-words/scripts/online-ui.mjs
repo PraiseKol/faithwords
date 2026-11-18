@@ -44,6 +44,8 @@ await p.click('text=Play online'); await p.waitForTimeout(600);
 await p.screenshot({path:out+'finding.png'});
 await p.waitForSelector('.g-title .live',{timeout:15000});
 console.log('in live match vs', await p.$eval('.side.opp .nm',e=>e.textContent));
+await p.click('[data-react="amen"]'); await p.waitForTimeout(200); console.log('reaction bubble shown:', !!(await p.$('.react-bubble.you')), '| buttons:', (await p.$$('.react-btn')).length);
+await p.evaluate(async () => { const g = await import('/js/game.js'); g.showReaction('praise', 'opp'); }); await p.waitForTimeout(150); console.log('opponent reaction shown:', !!(await p.$('.react-bubble.opp')));
 let turns=0;
 while(!(await p.$('.result')) && turns++<80){
   const mine = await p.evaluate(()=>{const G=fwDebug.game();return G.st.turn==='you'&&!G.busy&&!G.st.over});
