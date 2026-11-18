@@ -86,3 +86,22 @@ export function applyTheme(theme) {
   const dark = theme === 'dark' || (theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0e1630' : '#3566e8');
 }
+
+/** A burst of sparkles from a square (a finished word) and a banner with the word. */
+export function burst(el, n = 14) {
+  if (!el) return; const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  const box = h('div', { class: 'burst' });
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2 + Math.random() * 0.4, d = 40 + Math.random() * 60;
+    box.append(h('i', { style: { left: cx + 'px', top: cy + 'px', '--dx': Math.cos(a) * d + 'px', '--dy': Math.sin(a) * d + 'px', background: ['#f5b301', '#ffd86b', '#fff', '#2f80ed'][i % 4] } }));
+  }
+  document.body.append(box); setTimeout(() => box.remove(), 1000);
+}
+export function wordBanner(text) {
+  const b = h('div', { class: 'word-banner' }, text); document.body.append(b); setTimeout(() => b.remove(), 1500);
+}
+/** Win celebration: a long shower of confetti and stars. */
+export function bigConfetti() { confetti(); setTimeout(confetti, 450); setTimeout(confetti, 1000);
+  const box = h('div', { class: 'confetti stars' });
+  for (let i = 0; i < 18; i++) box.append(h('i', { class: 'st', style: { left: Math.random() * 100 + '%', animationDelay: Math.random() * 1.2 + 's', animationDuration: 2.2 + Math.random() * 1.6 + 's' } }, '★'));
+  document.body.append(box); setTimeout(() => box.remove(), 5200); }

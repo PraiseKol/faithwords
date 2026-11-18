@@ -6,6 +6,7 @@ import { specMain, specDaily, specEvent, buildPuzzle, validOnlineSeed } from './
 import { replay } from './replay.js';
 import { verseFor } from './verses.js';
 import { badgeById } from './achievements.js';
+import { buyCosmetic, equipCosmetic } from './cosmetics.js';
 
 export class HttpError extends Error { constructor(status, msg) { super(msg); this.status = status; } }
 const bad = (status, msg) => { throw new HttpError(status, msg); };
@@ -58,10 +59,12 @@ export async function handleOp(game, op, ctx) {
     const r = P.openChest(g, op.today); if (!r) bad(409, 'chest not ready');
     return done({ chest: r });
   }
+  if (op.op === 'buyCosmetic') { if (!buyCosmetic(g, op.cid)) bad(402, 'cannot buy'); return done(); }
+  if (op.op === 'equipCosmetic') { if (!equipCosmetic(g, op.cid)) bad(403, 'not yours'); return done(); }
   if (op.op === 'setTitle') {
-    const b = op.id ? badgeById(op.id) : null;
-    if (op.id && !(b && b.test(g))) bad(403, 'title not earned');
-    g.title = op.id || ''; return done();
+    const b = op.title ? badgeById(op.title) : null;
+    if (op.title && !(b && b.test(g))) bad(403, 'title not earned');
+    g.title = op.title || ''; return done();
   }
   if (op.op !== 'result') bad(400, 'unknown op');
 

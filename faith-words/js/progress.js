@@ -3,7 +3,7 @@
 import { CONFIG } from './config.js';
 import { questsFor, questGain, questState, chestReward } from './quests.js';
 
-export const SERVER_KEYS = ['xp', 'coins', 'inv', 'checkin', 'winStreak', 'bestWinStreak', 'stats', 'mainNext', 'daily', 'events', 'album', 'quests', 'title'];
+export const SERVER_KEYS = ['xp', 'coins', 'inv', 'checkin', 'winStreak', 'bestWinStreak', 'stats', 'mainNext', 'daily', 'events', 'album', 'quests', 'title', 'cosmetics'];
 
 export const freshProgress = () => ({
   xp: 0, coins: CONFIG.startCoins,
@@ -11,13 +11,14 @@ export const freshProgress = () => ({
   checkin: { last: null, streak: 0, best: 0 }, winStreak: 0, bestWinStreak: 0,
   stats: { games: 0, wins: 0, losses: 0, draws: 0, bestScore: 0, totalWords: 0, quests: 0, chests: 0 },
   mainNext: 1, daily: {}, events: {}, album: {}, quests: null, title: '',
+  cosmetics: { own: [], board: 'b-classic', tile: 't-classic' },
 });
 
 /** Fill in anything an older save is missing (new fields added by later versions). */
 export function migrate(d) {
   const f = freshProgress();
   d.inv = { ...f.inv, ...d.inv }; d.stats = { ...f.stats, ...d.stats }; d.checkin = { ...f.checkin, ...d.checkin };
-  d.album ||= {}; d.title ||= ''; if (d.quests === undefined) d.quests = null;
+  d.album ||= {}; d.title ||= ''; d.cosmetics = { ...f.cosmetics, ...d.cosmetics, own: [...(d.cosmetics?.own || [])] }; if (d.quests === undefined) d.quests = null;
   return d;
 }
 

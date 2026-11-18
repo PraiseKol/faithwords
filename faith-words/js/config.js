@@ -1,7 +1,8 @@
 // Tunable game economy & rules — edit freely.
 export const CONFIG = {
   tilesPerRack: 5,
-  allTilesBonus: 5,              // +5 when all 5 tiles are used in one round
+  allTilesBonus: 5,
+  comboFrom: 3, comboMax: 2,     // combo: from the 3rd right tile in a row (no wrong tile between) +1, then +2 (capped)              // +5 when all 5 tiles are used in one round
   givenLetters: 4,
   startCoins: 50, startHints: 3, startWords: 1,
   price: { hint: 20, word: 40, swap: 15, freeze: 60 },

@@ -79,8 +79,8 @@ const old = { v: 1, ops: [], rewarded: [], recent: [], xp: 10, coins: 90, inv: {
 const mg = (await handleOp(old, { op: 'buy', kind: 'freeze' }, ctx())).game; assert.equal(mg.inv.freeze, 1); assert.deepEqual(mg.album, {});
 
 // titles: only earned ones can be worn
-s.stats.totalWords = 10; await rejects(s, { op: 'setTitle', id: 'scribe' }, 403);
-s.stats.totalWords = 100; const w = (await handleOp(s, { op: 'setTitle', id: 'scribe' }, ctx())).game; assert.equal(w.title, 'scribe'); assert.equal(publicColumns(w).title, 'Scribe');
+s.stats.totalWords = 10; await rejects(s, { op: 'setTitle', title: 'scribe' }, 403);
+s.stats.totalWords = 100; const w = (await handleOp(s, { op: 'setTitle', title: 'scribe' }, ctx())).game; assert.equal(w.title, 'scribe'); assert.equal(publicColumns(w).title, 'Scribe');
 w.stats.totalWords = 0; assert.equal(publicColumns(w).title, '', 'a title no longer earned is not shown');
 assert.equal(new Set(BADGES.map((b) => b.id)).size, BADGES.length); assert.ok(VERSES.length >= 100);
 console.log('phase 1 checks passed');

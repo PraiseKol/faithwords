@@ -7,13 +7,14 @@ import { buildPuzzle } from './spec.js';
 import { replay } from './replay.js';
 import { verseFor } from './verses.js';
 import { wornTitle } from './achievements.js';
+import { buyCosmetic, equipCosmetic } from './cosmetics.js';
 
 const KEY = 'fw.v1';
 export const todayStr = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 const fresh = () => ({
   name: 'Believer', ...P.freshProgress(), active: null,
-  settings: { sound: true, haptics: true, theme: 'system', unlockEvents: false },
+  settings: { sound: true, music: false, haptics: true, theme: 'system', unlockEvents: false },
   onboarded: false, activeOnline: null,
   clueOverrides: {}, customBank: [], dirty: 0, pendingOps: [],
 });
@@ -65,7 +66,9 @@ export const store = {
     if (r) { this.queueOp({ op: 'openChest', today: todayStr() }); this.save(); }
     return r;
   },
-  setTitle(id) { data.title = id; this.queueOp({ op: 'setTitle', id }); this.save(); },
+  buyCosmetic(id) { const ok = buyCosmetic(data, id); if (ok) { this.queueOp({ op: 'buyCosmetic', cid: id }); this.save(); } return ok; },
+  equipCosmetic(id) { const ok = equipCosmetic(data, id); if (ok) { this.queueOp({ op: 'equipCosmetic', cid: id }); this.save(); } return ok; },
+  setTitle(id) { data.title = id; this.queueOp({ op: 'setTitle', title: id }); this.save(); },
   quests() { return P.questView(data, todayStr()); },
   titleName() { return wornTitle(data); },
   recordResult({ spec, score, oppScore, log = [], role = 0, matchId = null, mode = null }) {

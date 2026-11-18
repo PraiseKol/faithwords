@@ -1,5 +1,7 @@
 // The game screen: board, tiles (tap or drag), turns, power-ups, bot or live opponent, result.
-import { h, toast, modal, confetti, icon, buzz, coin } from './ui.js';
+import { h, toast, modal, confetti, bigConfetti, burst, wordBanner, icon, buzz, coin } from './ui.js';
+import { shareText, shareOut } from './share.js';
+import { syncMusic } from './audio.js';
 import { CONFIG, BOT_NAMES, EVENT_PUZZLES } from './config.js';
 import { getPuzzle, specMain, specEvent } from './puzzles.js';
 import * as E from './engine.js';
@@ -407,7 +409,7 @@ async function submitTurn() {
   if (!res.ok) return paint();
   const r = E.endTurn(G.st);
   persist();
-  const ptsOf = new Map(res.right.map((x) => [x.cell, x.points]));
+  const ptsOf = new Map(res.right.map((x) => [x.cell, x.points])), comboOf = new Map(res.right.filter((x) => x.combo).map((x) => [x.cell, x.streak]));
   const doneBy = new Map(); // which tile completed which word
   res.completed.forEach((id) => { const w = G.st.puzzle.words[id]; const last = [...res.right].reverse().find((x) => w.cells.includes(x.cell)); if (last) doneBy.set(last.cell, w); });
   let rightN = 0;
@@ -425,6 +427,8 @@ async function submitTurn() {
       rightN++;
       if (w) { G.flash = new Set(w.cells); sfx('word', rightN); hap([25, 40, 25]); } else { sfx('right', rightN); hap(10); }
       G.floats.push({ cell: it.cell, text: '+' + pts, cls: w ? 'big' : '' });
+      if (comboOf.has(it.cell)) G.floats.push({ cell: it.cell, text: `COMBO ×${comboOf.get(it.cell)}`, cls: 'combo' });
+      if (w) { paint(); setTimeout(() => { burst(document.querySelector(`.cell[data-k="${it.cell}"]`)); if (w.len >= 4) wordBanner(w.ans); }, 30); }
     } else {
       target = Math.max(0, G.shown.you - 1); G.badShow.set(it.cell, it.letter);
       sfx('wrong'); hap(60);
@@ -486,6 +490,7 @@ async function runBot(lead = 900) {
     if (res.completed.length) { G.flash = new Set(); res.completed.forEach((id) => E.wordCells(G.st.puzzle.words[id]).forEach((c) => G.flash.add(c))); }
     G.floats.push({ cell: s.cell, text: '+' + res.points, cls: 'opp ' + (res.completed.length ? 'big' : '') });
     paint();
+    if (res.completed.length) burst(document.querySelector(`.cell[data-k="${s.cell}"]`), 8);
     await sleep(260); if (G !== g) return;
     await countTo(g, 'opp', G.st.scores.opp, COUNT_STEP); if (G !== g) return; // the bot's points are counted up too
     await sleep(BOT_TILE_MS - 260);
@@ -573,9 +578,11 @@ function settingsPopup() {
   const s = store.d.settings;
   const snd = h('button', { class: 'btn ghost' }, 'Sound: ' + (s.sound ? 'On' : 'Off'));
   snd.onclick = () => { s.sound = !s.sound; store.save(); snd.textContent = 'Sound: ' + (s.sound ? 'On' : 'Off'); };
+  const mu = h('button', { class: 'btn ghost' }, 'Worship music: ' + (s.music ? 'On' : 'Off'));
+  mu.onclick = () => { s.music = !s.music; store.save(); syncMusic(); mu.textContent = 'Worship music: ' + (s.music ? 'On' : 'Off'); };
   const hp = h('button', { class: 'btn ghost' }, 'Vibration: ' + (s.haptics ? 'On' : 'Off'));
   hp.onclick = () => { s.haptics = !s.haptics; store.save(); hp.textContent = 'Vibration: ' + (s.haptics ? 'On' : 'Off'); };
-  const m = modal(h('div', {}, h('h3', {}, 'Game'), snd, hp,
+  const m = modal(h('div', {}, h('h3', {}, 'Game'), snd, mu, hp,
     h('button', { class: 'btn ghost', onclick: () => { m.close(); location.hash = '#/'; } }, G.online ? 'Back to menu (match continues)' : 'Save & exit'),
     h('button', { class: 'btn danger', onclick: () => { m.close(); concede(); } }, 'Give up this match')), { cls: 'sheet' });
 }
@@ -600,7 +607,7 @@ function finish(mode) {
   if (mode === 'claim') you = Math.max(you, opp + 1);
   const role = G.online?.role === 'p2' ? 1 : 0;
   const r = store.recordResult({ spec, score: you, oppScore: opp, log: absLog(st.log, role), role, matchId: G.online?.id || null, mode: mode || null });
-  sfx(r.won ? 'win' : 'lose'); if (r.won) { confetti(); hap([30, 50, 30, 50, 80]); }
+  sfx(r.won ? 'win' : 'lose'); if (r.won) { bigConfetti(); hap([30, 50, 30, 50, 80]); }
   const title = r.won ? 'Victory!' : r.draw ? 'Draw' : 'Good game';
   const verse = r.won ? '“Well done, good and faithful servant.” — Matthew 25:21' : r.draw ? '“Iron sharpens iron.” — Proverbs 27:17' : '“Do not grow weary in doing good.” — Galatians 6:9';
   const row = (a, b, cls = '') => h('div', { class: 'res-row ' + cls }, h('span', {}, a), h('b', {}, b));
@@ -610,7 +617,7 @@ function finish(mode) {
   setTimeout(() => { fill.style.width = endPct + '%'; }, 350);
   const next = nextAction(spec);
   const m = modal(h('div', { class: 'result' },
-    h('div', { class: 'res-emoji' }, r.won ? '🏆' : r.draw ? '🤝' : '🙏'),
+    h('div', { class: 'res-emoji pop' }, r.won ? '🏆' : r.draw ? '🤝' : '🙏'),
     h('h2', {}, title),
     h('div', { class: 'res-score' }, h('b', {}, r.score), ' – ', h('b', {}, r.oppScore)),
     r.verse ? verseCard(r.verse, { isNew: r.newVerse, count: store.d.album[r.verse]?.n }) : h('p', { class: 'verse' }, verse),
@@ -627,6 +634,7 @@ function finish(mode) {
     h('div', { class: 'btn-row' },
       h('button', { class: 'btn', onclick: () => { m.close(); next.go(); } }, next.label),
       next.alt ? h('button', { class: 'btn ghost', onclick: () => { m.close(); next.alt.go(); } }, next.alt.label) : null,
+      h('button', { class: 'btn ghost', id: 'share-btn', onclick: () => shareOut(shareText({ spec, score: r.score, oppScore: r.oppScore, log: st.log, verse: r.verse, url: location.origin + location.pathname })) }, 'Share result'),
       h('button', { class: 'btn ghost', onclick: () => { m.close(); location.hash = '#/'; } }, 'Home'))), { dismiss: false, cls: 'sheet' });
   paint();
 }
