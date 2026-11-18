@@ -2,7 +2,7 @@
 // The game rules are the same files the app uses (faith-words/js/serverlogic.js). Deployed version imports
 // them pinned to a commit; to update, change the SHA below to the new commit and redeploy.
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { handleOp, HttpError, publicColumns } from 'https://raw.githubusercontent.com/PraiseKol/faithwords/2f6af4e6936776e3ae60a93b2abe9e92ad39985f/faith-words/js/serverlogic.js';
+import { handleOp, HttpError, publicColumns } from 'https://raw.githubusercontent.com/PraiseKol/faithwords/67d994acec3693404aa27d5b136f8ad3705e8e2d/faith-words/js/serverlogic.js';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
