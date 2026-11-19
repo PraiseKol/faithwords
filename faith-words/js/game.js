@@ -1,5 +1,5 @@
 // The game screen: board, tiles (tap or drag), turns, power-ups, bot or live opponent, result.
-import { h, toast, modal, confetti, bigConfetti, burst, wordBanner, icon, buzz, coin } from './ui.js';
+import { turnBanner, h, toast, modal, confetti, bigConfetti, burst, wordBanner, icon, buzz, coin } from './ui.js';
 import { shareText, shareOut } from './share.js';
 import { syncMusic } from './audio.js';
 import { A, currentUser, challengeAnswer } from './cloud.js';
@@ -153,6 +153,9 @@ function tickTurn() {
   const O = G?.online; if (!O || O.stopped || G.finished) return;
   const left = Math.ceil(turnLeft()), el = document.getElementById('turn-clock');
   if (el) { el.textContent = G.st.over ? '' : left + 's'; el.classList.toggle('low', left <= 8); el.classList.toggle('mine', G.st.turn === 'you'); }
+  const urgent = G.st.turn === 'you' && !G.st.over && left <= 8 && left > 0;
+  document.body.classList.toggle('urgent', urgent);
+  if (urgent && O.lastTick !== left) { O.lastTick = left; sfx('pick'); buzz?.(6); }
   if (G.st.turn === 'you' && !G.busy && !G.st.over && left <= 0 && !O.expiring && O.pending === 0) {
     O.expiring = true;
     document.querySelectorAll('.modal-back').forEach((e) => e.remove());
@@ -173,6 +176,7 @@ function startPolling() {
   O.timer = setTimeout(tick, 1300);
 }
 function stopOnline() {
+  document.body.classList.remove('urgent');
   const O = G?.online; if (!O) return;
   O.stopped = true; clearTimeout(O.timer); O.timer = null; clearInterval(O.clock);
   try { O.sub?.stop(); } catch { /* already closed */ } O.sub = null;
@@ -226,6 +230,10 @@ export function leaveGame() { stopOnline(); }
 
 function paint() {
   const { st, spec } = G;
+  if (G.bannerTurn !== undefined && G.bannerTurn !== st.turn && !st.over && !G.finished) {
+    if (st.turn === 'you') { turnBanner('Your turn', 'you'); sfx('turn'); } else turnBanner((G.botName || 'Opponent') + (G.online ? "'s turn" : ' is thinking…'), 'opp');
+  }
+  G.bannerTurn = st.turn;
   const root = G.root; root.innerHTML = '';
   const total = st.puzzle.letterCount, filled = st.board.filter((b) => b.ch).length;
   const oppInit = (G.botName || '?').trim()[0].toUpperCase();
@@ -314,8 +322,10 @@ function boardEl() {
 function rackEl() {
   const { st } = G;
   const out = new Set(G.pend.values());
+  const key = st.racks.you.join(''), fresh = G.rackKey !== key && !G.pend.size; G.rackKey = key;
   const tiles = st.racks.you.map((l, i) => h('button', {
-    class: 'tile' + (G.sel.tile === i ? ' sel' : '') + (mine() && !G.wordMode ? '' : ' dim') + (out.has(i) ? ' out' : ''), 'aria-label': 'Tile ' + l,
+    style: fresh ? { '--i': i } : null,
+    class: 'tile' + (fresh ? ' enter' : '') + (G.sel.tile === i ? ' sel' : '') + (mine() && !G.wordMode ? '' : ' dim') + (out.has(i) ? ' out' : ''), 'aria-label': 'Tile ' + l,
     onpointerdown: (e) => startDrag(e, i),
     onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onTile(i); } },
   }, l));
