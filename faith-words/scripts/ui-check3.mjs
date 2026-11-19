@@ -11,7 +11,7 @@ await p.evaluate(() => { fwDebug.store.d.settings.unlockEvents = true; fwDebug.s
 const title = () => p.$eval('.g-title', (e) => e.firstChild.textContent.trim());
 const home = async () => { await p.evaluate(() => { location.hash = '#/'; }); await p.waitForTimeout(400); };
 const ctas = () => p.$$eval('.cta-stack .cta, .cta-stack .parked .link:not(.x)', (e) => e.map((x) => x.textContent.replace(/\s+/g, ' ').trim()));
-const giveUp = async () => { await p.click('.g-tools .icon-btn >> nth=1'); await p.waitForTimeout(250); await p.click('text=Give up this match'); await p.waitForTimeout(600); };
+const giveUp = async () => { await p.evaluate(() => { const s = fwDebug.store; if (!s.__won) { s.__won = 1; const o = s.recordResult.bind(s); s.recordResult = (a) => ({ ...o(a), won: true }); } }); await p.click('.g-tools .icon-btn >> nth=1'); await p.waitForTimeout(250); await p.click('text=Give up this match'); await p.waitForTimeout(600); };
 
 // 1. Next puzzle inside an event shows the NEXT puzzle (screen redrawn, not the old board)
 await p.locator('.ev-play').first().click(); await p.waitForTimeout(700);
@@ -43,6 +43,6 @@ await p.click('.parked .link.x'); await p.waitForTimeout(300);
 (await ctas()).some((x) => x.startsWith('Resume:')) ? fail('discard failed') : ok('✕ discards a parked game');
 // 4. Next level from a main puzzle redraws too
 await p.click('.cta >> text=Main game'); await p.waitForTimeout(600);
-const m1 = await title(); await giveUp(); await p.click('.result .btn >> text=Next level'); await p.waitForTimeout(800);
+const m1 = await title(); await giveUp(); await p.evaluate(() => { fwDebug.store.d.mainNext = Math.max(fwDebug.store.d.mainNext, 2); }); await p.click('.result .btn >> text=Next level'); await p.waitForTimeout(800);
 const m2 = await title(); m1 !== m2 ? ok(`main: Next level ${m1} → ${m2}`) : fail('main next level stayed on ' + m1);
 console.log(errs.join('\n') || 'no errors'); await b.close(); process.exit(errs.length ? 1 : 0);

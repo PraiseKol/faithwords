@@ -106,6 +106,8 @@ console.log('   your score display:', seq.you.join('→'), ' bot:', seq.opp.join
 seq.you.length >= 3 && stepped(seq.you) ? ok('your score counted up one point at a time') : fail('your count not stepped: ' + seq.you);
 stepped(seq.opp) && seq.opp.length >= 2 ? ok("the bot's score counted up one point at a time") : fail("bot count not stepped: " + seq.opp);
 
+// a level has to be WON to unlock Next, so pretend this one was
+await p.evaluate(() => { const s = fwDebug.store; if (!s.__won) { s.__won = 1; const o = s.recordResult.bind(s); s.recordResult = (a) => ({ ...o(a), won: true }); } });
 // ---- 4. Next level button after a daily puzzle
 await p.click('.g-tools .icon-btn >> nth=1'); await p.waitForTimeout(250);
 await p.click('text=Give up this match'); await p.waitForTimeout(600);
