@@ -74,3 +74,6 @@ Store submissions also need icons/splash screens, a privacy policy, and a Google
     node scripts/test-engine.mjs   # plays 25 full simulated games
     node scripts/test-server.mjs   # server replay + cheating attempts
     node scripts/test-online.mjs   # two clients syncing a live match (15 games)
+
+### Online turn timer
+Every online turn lasts 30 seconds (`TURN_SECONDS` in `js/game.js`). The clock shows between the two scores; when it hits 0 the game submits whatever tiles are on the board (or passes if none), so nobody waits long. "Opponent is away" now appears after 50 s of silence.
