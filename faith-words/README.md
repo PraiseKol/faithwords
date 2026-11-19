@@ -77,3 +77,6 @@ Store submissions also need icons/splash screens, a privacy policy, and a Google
 
 ### Online turn timer
 Every online turn lasts 30 seconds (`TURN_SECONDS` in `js/game.js`). The clock shows between the two scores; when it hits 0 the game submits whatever tiles are on the board (or passes if none), so nobody waits long. "Opponent is away" now appears after 50 s of silence.
+
+### Game feel
+Living background, splash, "Your turn" banner, red urgency glow in the last 8 s of an online turn, tile deal-in, press feedback, staged result reveal. All pure CSS/JS, respects reduced-motion.

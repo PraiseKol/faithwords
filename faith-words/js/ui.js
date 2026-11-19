@@ -106,3 +106,28 @@ export function bigConfetti() { confetti(); setTimeout(confetti, 450); setTimeou
   const box = h('div', { class: 'confetti stars' });
   for (let i = 0; i < 18; i++) box.append(h('i', { class: 'st', style: { left: Math.random() * 100 + '%', animationDelay: Math.random() * 1.2 + 's', animationDuration: 2.2 + Math.random() * 1.6 + 's' } }, '★'));
   document.body.append(box); setTimeout(() => box.remove(), 5200); }
+
+// ---- immersive layer: slow drifting light behind everything, plus a short splash the first time the app opens
+function ambient() {
+  if (document.getElementById('ambient')) return;
+  const a = document.createElement('div'); a.id = 'ambient'; a.setAttribute('aria-hidden', 'true');
+  for (let i = 0; i < 12; i++) {
+    const o = document.createElement('i'), sz = 40 + Math.random() * 120;
+    o.style.cssText = `left:${Math.random() * 100}%;width:${sz}px;height:${sz}px;animation-duration:${18 + Math.random() * 22}s;animation-delay:${-Math.random() * 30}s;--dx:${(Math.random() - .5) * 90}px`;
+    a.append(o);
+  }
+  document.body.prepend(a);
+  let seen = false; try { seen = sessionStorage.getItem('fw-splash'); sessionStorage.setItem('fw-splash', '1'); } catch { /* private mode */ }
+  if (!seen) {
+    const sp = document.createElement('div'); sp.id = 'splash';
+    sp.innerHTML = '<div class="sp-cross"></div><div class="sp-name">Faith <b>Words</b></div><div class="sp-sub">Selah · Play · Grow</div>';
+    document.body.append(sp); setTimeout(() => sp.classList.add('out'), 900); setTimeout(() => sp.remove(), 1500);
+  }
+}
+if (typeof document !== 'undefined') { if (document.body) ambient(); else addEventListener('DOMContentLoaded', ambient); }
+/** A short banner that slides across the middle of the screen ("Your turn", "Round 2"…). */
+export function turnBanner(text, cls = '') {
+  document.querySelectorAll('.turn-banner').forEach((e) => e.remove());
+  const b = document.createElement('div'); b.className = 'turn-banner ' + cls; b.textContent = text; document.body.append(b);
+  setTimeout(() => b.remove(), 1300);
+}
