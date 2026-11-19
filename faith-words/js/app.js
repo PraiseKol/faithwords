@@ -168,7 +168,7 @@ function daily() {
 }
 
 // ---------- Me
-function me() {
+function meParts() {
   const d = store.d, lv = store.level(), ci = store.checkinInfo();
   const strip = h('div', { class: 'ci-strip' }, Array.from({ length: CONFIG.checkin.maxDay }, (_, i) => {
     const n = i + 1, got = ci.claimed ? n <= ci.day : n < ci.day, now = !ci.claimed && n === ci.day;
@@ -181,41 +181,68 @@ function me() {
     h('button', { class: 'btn sm', onclick: () => { if (store.buy(kind)) { sfx('coin'); toast(`${name} added`); render(); } else toast('Not enough coins'); } }, coin(CONFIG.price[kind])));
   const seg = (label, key, opts) => h('div', { class: 'seg-row' }, h('span', {}, label),
     h('div', { class: 'seg' }, opts.map(([v, txt]) => h('button', { class: d.settings[key] === v ? 'on' : '', onclick: () => { d.settings[key] = v; store.save(); if (key === 'theme') applyTheme(v); if (key === 'music') syncMusic(); render(); } }, txt))));
-  return h('div', { class: 'screen me' },
-    topBar(),
-    h('div', { class: 'card prof' },
+  const P = {};
+  P.prof = h('div', { class: 'card prof hero' },
       h('div', { class: 'avatar lg' }, initial()),
       h('div', { class: 'pname' }, h('input', { class: 'name-in', id: 'player-name', 'aria-label': 'Your name', value: d.name, maxlength: 16, onchange: (e) => { d.name = e.target.value.trim() || 'Believer'; store.save(); } }),
         h('small', {}, user ? 'Signed in · ' + user.email : 'Guest · progress saved on this device')),
-      h('div', { class: 'lv-big' }, 'Level ', h('b', {}, lv.level))),
-    h('div', { class: 'card' },
+      h('div', { class: 'lv-big' }, 'Level ', h('b', {}, lv.level))  );
+  P.level = h('div', { class: 'card' },
       h('div', { class: 'row-between' }, h('b', {}, 'Total points'), h('b', { class: 'blue' }, d.xp.toLocaleString())),
       h('div', { class: 'bar' }, h('i', { style: { width: (lv.into / lv.need) * 100 + '%' } })),
-      h('small', { class: 'muted' }, `${lv.need - lv.into} points to Level ${lv.level + 1}`)),
-    h('div', { class: 'card' },
+      h('small', { class: 'muted' }, `${lv.need - lv.into} points to Level ${lv.level + 1}`)  );
+  P.checkin = h('div', { class: 'card' },
       h('div', { class: 'row-between' }, h('b', {}, 'Daily check-in'), h('small', { class: 'muted' }, ci.claimed ? 'Come back tomorrow' : 'Keep your streak for bigger rewards')),
       h('small', { class: 'muted' }, `🧊 Streak freezes: ${d.inv.freeze || 0}/${CONFIG.maxFreezes}${ci.usedFreezes ? ` — ${ci.usedFreezes} will be used to save your streak` : ''}`),
       strip,
-      h('button', { class: 'btn', disabled: ci.claimed, onclick: claimCheckin }, ci.claimed ? 'Claimed today ✓' : h('span', {}, 'Check in  +', coin(ci.today)))),
-    h('div', { class: 'card' },
+      h('button', { class: 'btn', disabled: ci.claimed, onclick: claimCheckin }, ci.claimed ? 'Claimed today ✓' : h('span', {}, 'Check in  +', coin(ci.today)))  );
+  P.streak = h('div', { class: 'card' },
       h('div', { class: 'row-between' }, h('b', {}, 'Win streak'), h('b', { class: 'flame' }, h('span', { html: icon('flame', 18) }), d.winStreak)),
-      h('small', { class: 'muted' }, `Win coins: ${CONFIG.win.base} × streak multiplier. Your next win pays ×${nextMult} (${Math.round(CONFIG.win.base * nextMult)} coins).`)),
-    h('div', { class: 'card' }, h('b', {}, 'Shop'),
+      h('small', { class: 'muted' }, `Win coins: ${CONFIG.win.base} × streak multiplier. Your next win pays ×${nextMult} (${Math.round(CONFIG.win.base * nextMult)} coins).`)  );
+  P.shop = h('div', { class: 'card' }, h('b', {}, 'Shop'),
       shopRow('hint', 'bulb', 'Hint', 'Shows one square\'s letter faintly'),
       shopRow('word', 'eye', 'Word', 'Shows a whole word faintly'),
-      shopRow('freeze', 'shield', 'Streak freeze', `Saves your check-in streak for a missed day (max ${CONFIG.maxFreezes})`)),
-    themesCard(), albumCard(), badgesCard(),
-    h('div', { class: 'card stats' }, stat('Games', d.stats.games), stat('Wins', d.stats.wins), stat('Best score', d.stats.bestScore), stat('Best streak', d.bestWinStreak)),
-    accountCard(user),
-    h('div', { class: 'card' }, h('b', {}, 'Settings'),
+      shopRow('freeze', 'shield', 'Streak freeze', `Saves your check-in streak for a missed day (max ${CONFIG.maxFreezes})`)  );
+  P.themes = themesCard(); P.album = albumCard(); P.badges = badgesCard();
+  P.stats = h('div', { class: 'card stats' }, stat('Games', d.stats.games), stat('Wins', d.stats.wins), stat('Best score', d.stats.bestScore), stat('Best streak', d.bestWinStreak)  );
+  P.account = accountCard(user);
+  P.settings = h('div', { class: 'card' }, h('b', {}, 'Settings'),
       seg('Theme', 'theme', [['system', 'Auto'], ['light', 'Light'], ['dark', 'Dark']]),
       seg('Sound', 'sound', [[true, 'On'], [false, 'Off']]),
       seg('Worship music', 'music', [[true, 'On'], [false, 'Off']]),
       seg('Vibration', 'haptics', [[true, 'On'], [false, 'Off']]),
       h('button', { class: 'btn ghost', onclick: () => showHowTo() }, 'How to play'),
       DEBUG ? h('button', { class: 'btn ghost', onclick: () => { d.settings.unlockEvents = !d.settings.unlockEvents; store.save(); render(); } }, 'Unlock all events (testing): ' + (d.settings.unlockEvents ? 'On' : 'Off')) : null,
-      h('a', { class: 'link', href: '#/admin' }, 'Admin panel')),
-    navBar('me'));
+      h('a', { class: 'link', href: '#/admin' }, 'Admin panel'));
+  return { P, ci, lv, d, user };
+}
+
+// ---------- Me: a hub of tiles; each opens its own page (#/me/<id>)
+const ME_SECTIONS = [
+  { id: 'checkin', icon: '🔥', tone: 'ember', title: 'Daily check-in', parts: ['checkin', 'streak'], sub: ({ ci }) => (ci.claimed ? 'Claimed today ✓' : `Claim +${ci.today} coins`), dot: ({ ci }) => !ci.claimed },
+  { id: 'shop', icon: '🛍️', tone: 'gold', title: 'Shop', parts: ['shop'], sub: ({ d }) => `${d.inv.hint} hints · ${d.inv.word} words` },
+  { id: 'album', icon: '📖', tone: 'parch', title: 'Verse Album', href: '#/album', sub: ({ d }) => `${Object.keys(d.album || {}).length}/${VERSES.length} collected` },
+  { id: 'badges', icon: '🏅', tone: 'royal', title: 'Titles & badges', parts: ['badges'], sub: ({ d }) => `${earnedBadges(d).length}/${BADGES.length} earned` },
+  { id: 'themes', icon: '🎨', tone: 'rose', title: 'Themes', parts: ['themes'], sub: () => 'Boards & tiles' },
+  { id: 'stats', icon: '📊', tone: 'sky', title: 'Stats', parts: ['level', 'stats'], sub: ({ d }) => `${d.stats.wins} wins · best streak ${d.bestWinStreak}` },
+  { id: 'account', icon: '👤', tone: 'mint', title: 'Account', parts: ['account'], sub: ({ user }) => (user ? 'Signed in' : 'Sign in & play online') },
+  { id: 'settings', icon: '⚙️', tone: 'slate', title: 'Settings', parts: ['settings'], sub: () => 'Sound, theme, help' },
+];
+function me() {
+  const M = meParts(), { P } = M, d = M.d;
+  const tile = (t) => h('a', { class: 'hub-tile tone-' + t.tone, href: t.href || '#/me/' + t.id, 'data-sec': t.id },
+    h('span', { class: 'ht-ic' }, t.icon, t.dot && t.dot(M) ? h('i', { class: 'ht-dot' }) : null),
+    h('b', {}, t.title), h('small', {}, t.sub(M)));
+  return h('div', { class: 'screen me' }, topBar(), P.prof,
+    h('div', { class: 'card lvl-mini' }, h('div', { class: 'row-between' }, h('b', {}, `Level ${M.lv.level}`), h('small', { class: 'muted' }, `${M.lv.need - M.lv.into} pts to Level ${M.lv.level + 1}`)),
+      h('div', { class: 'bar' }, h('i', { style: { width: (M.lv.into / M.lv.need) * 100 + '%' } }))),
+    h('div', { class: 'hub-grid' }, ME_SECTIONS.map(tile)), navBar('me'));
+}
+function meSection(id) {
+  const sec = ME_SECTIONS.find((x) => x.id === id && x.parts); if (!sec) { location.hash = '#/me'; return h('div'); }
+  const M = meParts();
+  return h('div', { class: 'screen me sec tone-' + sec.tone }, h('div', { class: 'top-row' }, h('a', { class: 'back-btn', href: '#/me', 'aria-label': 'Back', html: icon('back', 22) }), h('h2', {}, sec.icon + ' ' + sec.title)),
+    ...sec.parts.map((k) => M.P[k]), navBar('me'));
 }
 
 function applyCosmetics() { const c = store.d.cosmetics || {}; document.body.dataset.board = c.board || ''; document.body.dataset.tile = c.tile || ''; }
@@ -386,10 +413,16 @@ function render() {
   app.innerHTML = '';
   document.body.dataset.route = route;
   window.scrollTo(0, 0);
+  document.querySelectorAll('body > .nav').forEach((n) => n.remove());
   if (route === '/game') { const root = h('div', { class: 'screen gamescreen' }); app.append(root); renderGame(root); return; }
-  if (route === '/admin') { app.append(renderAdmin()); return; }
-  if (route.startsWith('/c/')) { app.append(challengeScreen(route.slice(3))); return; }
-  app.append(route === '/daily' ? daily() : route === '/me' ? me() : route === '/album' ? album() : route === '/together' ? together() : home());
+  if (route === '/admin') { mount(renderAdmin()); return; }
+  if (route.startsWith('/c/')) { mount(challengeScreen(route.slice(3))); return; }
+  mount(route === '/daily' ? daily() : route === '/me' ? me() : route.startsWith('/me/') ? meSection(route.slice(4)) : route === '/album' ? album() : route === '/together' ? together() : home());
+}
+/** The bottom bar is lifted out of the (animated) screen and pinned to the viewport, so it never scrolls away. */
+function mount(screen) {
+  const nav = screen.querySelector(':scope > .nav'); if (nav) nav.remove();
+  app.append(screen); if (nav) document.body.append(nav);
 }
 window.addEventListener('hashchange', render);
 applyTheme(store.d.settings.theme);

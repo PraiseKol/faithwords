@@ -24,7 +24,7 @@ await p.screenshot({ path: out + 'p2-combo.png' });
 await p.waitForTimeout(5500);
 
 // 2. themes + music in Me
-await p.evaluate(() => { const s = fwDebug.store; s.d.coins = 900; s.d.stats.totalWords = 150; s.save(); location.hash = '#/me'; }); await p.waitForTimeout(500);
+await p.evaluate(() => { const s = fwDebug.store; s.d.coins = 900; s.d.stats.totalWords = 150; s.save(); location.hash = '#/me/themes'; }); await p.waitForTimeout(500);
 await p.click('[data-cos="b-parch"]'); await p.waitForTimeout(300);
 (await p.evaluate(() => fwDebug.store.d.cosmetics.own.includes('b-parch'))) ? ok('bought Parchment') : fail('not bought');
 (await p.evaluate(() => document.body.dataset.board)) === 'b-parch' ? ok('board theme applied') : fail('theme not applied');
@@ -32,9 +32,10 @@ await p.click('[data-cos="t-stone"]'); await p.waitForTimeout(300);
 (await p.evaluate(() => document.body.dataset.tile)) === 't-stone' ? ok('badge-unlocked Stone tablet equipped') : fail('stone tile');
 await p.click('[data-cos="b-glass"]'); await p.waitForTimeout(300);
 await p.screenshot({ path: out + 'p2-themes.png', fullPage: true });
+await p.evaluate(() => { location.hash = '#/me/settings'; }); await p.waitForTimeout(500);
 await p.locator('.seg-row:has-text("Worship music") button:has-text("On")').click(); await p.waitForTimeout(300);
 (await p.evaluate(() => fwDebug.store.d.settings.music)) === true ? ok('music setting on (starts after first tap)') : fail('music setting');
-await p.click('body'); await p.waitForTimeout(400);
+await p.mouse.click(3, 3); await p.waitForTimeout(400);
 await p.locator('.seg-row:has-text("Worship music") button:has-text("Off")').click();
 
 // 3. themed game board + win celebration + share
