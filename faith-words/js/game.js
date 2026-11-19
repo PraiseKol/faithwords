@@ -248,7 +248,7 @@ function paint() {
   G.last = null; G.flash = null;
 }
 
-const mine = () => G.st.turn === 'you' && !G.busy && !G.st.over;
+const mine = () => G.st.turn === 'you' && !G.busy && !G.st.over && !G.finished;
 const ARROW = { 'a-s': '→', 'd-s': '↓', 'a-u': '↳', 'a-v': '↱', 'd-u': '↴', 'd-v': '↲' };
 function clueNode(w) {
   const long = (w.clue || '').length;
@@ -660,10 +660,20 @@ function finish(mode) {
     h('div', { class: 'btn-row' },
       h('button', { class: 'btn', onclick: () => { m.close(); next.go(); } }, next.label),
       next.alt ? h('button', { class: 'btn ghost', onclick: () => { m.close(); next.alt.go(); } }, next.alt.label) : null,
+      h('button', { class: 'btn ghost', id: 'selah-btn', onclick: () => selah(m) }, '🕊️ Selah'),
       h('button', { class: 'btn ghost', id: 'share-btn', onclick: () => shareOut(shareText({ spec, score: r.score, oppScore: r.oppScore, log: st.log, verse: r.verse, url: location.origin + location.pathname })) }, 'Share result'),
       h('button', { class: 'btn ghost', onclick: () => { m.close(); location.hash = '#/'; } }, 'Home'))), { dismiss: false, cls: 'sheet' });
   paint();
   if (spec.kind === 'challenge') fillChallengeBox(spec, r);
+}
+/** "Selah": pause and look back over the finished board, as it was filled (mine in blue, theirs in the other colour). */
+function selah(m) {
+  m.back.style.display = 'none';
+  G.root.classList.add('reviewing');
+  const bar = h('div', { class: 'selah-bar', id: 'selah-bar' },
+    h('div', { class: 'selah-legend' }, h('span', { class: 'lg you' }, 'You'), h('span', { class: 'lg opp' }, G.botName || 'Opponent'), h('small', {}, 'Selah — pause and reflect')),
+    h('button', { class: 'btn', id: 'selah-back', onclick: () => { bar.remove(); G.root.classList.remove('reviewing'); m.back.style.display = ''; } }, 'Back to results'));
+  document.body.append(bar);
 }
 async function fillChallengeBox(spec, r) {
   const box = document.getElementById('chal-box'); if (!box) return;

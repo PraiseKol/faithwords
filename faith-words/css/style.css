@@ -328,3 +328,41 @@ body[data-tile="t-rose"] { --tile-a: #ffe9ed; --tile-b: #f3a8b8; --tile-edge: #c
 .tg-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); } .tg-row:first-of-type { border-top: 0; } .tg-row .tg-main { flex: 1; min-width: 0; } .tg-row.me { background: var(--primary-soft); border-radius: 10px; padding: 6px 8px; }
 .tg-rank { width: 26px; font-weight: 900; color: var(--muted); } .tg-zone-up { color: #27ae60; } .tg-zone-down { color: #e5484d; }
 .code-box { font: 900 22px/1 ui-monospace, monospace; letter-spacing: 4px; padding: 8px 12px; border-radius: 10px; background: var(--surface2); }
+
+/* Selah: read-only review of the finished board */
+.reviewing .rack-wrap, .reviewing .rack, .reviewing .actions, .reviewing .g-foot, .reviewing .react-bar { display: none !important; }
+.reviewing .grid-wrap { pointer-events: none; }
+.selah-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; display: flex; flex-direction: column; gap: 8px; align-items: stretch;
+  padding: 10px max(16px, env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  background: var(--card, #fff); box-shadow: 0 -6px 20px rgba(0,0,0,.15); }
+.selah-legend { display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.selah-legend .lg { font-weight: 700; font-size: 14px; padding: 2px 10px; border-radius: 999px; }
+.selah-legend .lg.you { background: #2f80ed22; color: #2f80ed; } .selah-legend .lg.opp { background: #e5484d22; color: #e5484d; }
+.selah-bar .btn { min-height: 48px; }
+
+/* ---- mobile polish ---- */
+html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+button, .btn, .cta, .nav a { touch-action: manipulation; }
+.ev-play, .seg button { min-height: 44px; }
+.ev-play.lock { min-height: 44px; }
+.d-grid { column-gap: 2px; } .d-cell.day { width: min(40px, 11.5vw); height: min(40px, 11.5vw); font-size: clamp(14px, 4.4vw, 17px); }
+@media (max-width: 360px) {
+  .actions { gap: 4px; padding-inline: 4px; }
+  .act { width: 58px; font-size: 12px; } .act .ico { width: 48px; height: 48px; }
+  .rack { gap: 6px; }
+  .modal { padding-inline: 14px; }
+  .modal .btn-row { gap: 8px; }
+}
+@media (max-height: 640px) {
+  .modal .res-emoji { font-size: 40px; } .modal .res-rows { margin-block: 6px; }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  .modal { max-height: 96dvh; width: min(100%, 560px); }
+  .selah-bar { flex-direction: row; align-items: center; justify-content: space-between; } .selah-bar .btn { min-height: 44px; flex: 0 0 auto; }
+}
+.nav a { min-height: 48px; }
+.modal-back { padding-top: env(safe-area-inset-top); }
+button.pill.coin { min-height: 44px; }
+.selah-bar .btn { width: auto; min-width: 160px; }
+@media (orientation: portrait) { .selah-bar .btn { width: 100%; } }
+.btn.sm { min-height: 44px; }
