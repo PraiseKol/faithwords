@@ -19,6 +19,7 @@ let G = null; // current game
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const hap = (p) => buzz(p, store.d.settings);
 const TILE_MS = 280, COUNT_STEP = 70, BOT_TILE_MS = 700; // pace of the point count: a little slower than before
+export const TURN_SECONDS = 30; // online: each turn lasts this long, then the game plays it for the player
 const BOT_PAUSE = 1700; // ms between the player's score count and the bot's first move
 
 export const _debug = () => G;
@@ -146,8 +147,22 @@ function sync(extra) {
 }
 // Live updates: Supabase Realtime pushes the opponent's move the moment it is saved; a slow poll
 // is the safety net (and the fast fallback if the realtime connection is not available).
+function turnLeft() { const O = G.online; return O ? Math.max(0, TURN_SECONDS - (Date.now() - O.lastActive) / 1000) : TURN_SECONDS; }
+/** Once a second: show the countdown, and when my 30 seconds are up submit what is on the board (or pass). */
+function tickTurn() {
+  const O = G?.online; if (!O || O.stopped || G.finished) return;
+  const left = Math.ceil(turnLeft()), el = document.getElementById('turn-clock');
+  if (el) { el.textContent = G.st.over ? '' : left + 's'; el.classList.toggle('low', left <= 8); el.classList.toggle('mine', G.st.turn === 'you'); }
+  if (G.st.turn === 'you' && !G.busy && !G.st.over && left <= 0 && !O.expiring && O.pending === 0) {
+    O.expiring = true;
+    document.querySelectorAll('.modal-back').forEach((e) => e.remove());
+    G.hintMode = false; G.wordMode = false;
+    (G.pend.size ? submitTurn() : Promise.resolve(passTurn())).finally(() => { O.expiring = false; O.lastActive = Date.now(); });
+  }
+}
 function startPolling() {
   const O = G.online; if (!O || O.timer) return;
+  O.clock = setInterval(tickTurn, 500);
   O.stopped = false; O.live = false;
   O.sub = A.subscribeMatch(O.id, (row) => handleRow(row), (ok) => { O.live = ok; }, (p) => showReaction(p?.k, 'opp'));
   const tick = async () => {
@@ -159,7 +174,7 @@ function startPolling() {
 }
 function stopOnline() {
   const O = G?.online; if (!O) return;
-  O.stopped = true; clearTimeout(O.timer); O.timer = null;
+  O.stopped = true; clearTimeout(O.timer); O.timer = null; clearInterval(O.clock);
   try { O.sub?.stop(); } catch { /* already closed */ } O.sub = null;
 }
 async function pollOnline() {
@@ -188,7 +203,7 @@ function handleRow(row) {
 }
 function checkIdle() {
   const O = G.online;
-  if (G.st.turn === 'opp' && !O.idle && Date.now() - O.lastActive > 90000) { O.idle = true; paint(); }
+  if (G.st.turn === 'opp' && !O.idle && Date.now() - O.lastActive > (TURN_SECONDS + 20) * 1000) { O.idle = true; paint(); }
 }
 
 // ---------- saving
@@ -229,7 +244,7 @@ function paint() {
         h('div', { class: 'side you' + (st.turn === 'you' && !st.over ? ' on' : '') },
           h('div', { class: 'av you' }, (store.d.name || 'Y')[0].toUpperCase()),
           h('div', { class: 'nm' }, 'You'), h('div', { class: 'sc', id: 'sc-you' }, G.shown ? G.shown.you : st.scores.you)),
-        h('span', { class: 'vs' }, 'vs'),
+        h('span', { class: 'vs' }, G.online ? h('b', { id: 'turn-clock', class: 'turn-clock' }, Math.ceil(turnLeft()) + 's') : 'vs'),
         h('div', { class: 'side opp' + (st.turn === 'opp' && !st.over ? ' on' : '') },
           h('div', { class: 'sc', id: 'sc-opp' }, G.shown ? G.shown.opp : st.scores.opp),
           h('div', { class: 'nm' }, G.botName, G.online ? null : h('small', {}, ' Lv ' + st.botLevel)),
@@ -433,6 +448,7 @@ async function submitTurn() {
   const res = E.submit(G.st, 'you', items);
   if (!res.ok) return paint();
   const r = E.endTurn(G.st);
+  if (G.online) G.online.lastActive = Date.now();
   persist();
   const ptsOf = new Map(res.right.map((x) => [x.cell, x.points])), comboOf = new Map(res.right.filter((x) => x.combo).map((x) => [x.cell, x.streak]));
   const doneBy = new Map(); // which tile completed which word
@@ -493,6 +509,7 @@ function passTurn() {
   if (!mine()) return;
   G.pend.clear(); G.sel.tile = null; G.sel.cell = null;
   E.endTurn(G.st);
+  if (G.online) G.online.lastActive = Date.now();
   persist(); paint();
   if (G.st.over) return finish();
   if (!G.online) runBot();

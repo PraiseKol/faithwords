@@ -366,3 +366,7 @@ button.pill.coin { min-height: 44px; }
 .selah-bar .btn { width: auto; min-width: 160px; }
 @media (orientation: portrait) { .selah-bar .btn { width: 100%; } }
 .btn.sm { min-height: 44px; }
+.turn-clock { display: inline-block; min-width: 40px; padding: 3px 8px; border-radius: 999px; background: var(--surface2); color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+.turn-clock.mine { background: color-mix(in srgb, var(--primary) 16%, transparent); color: var(--primary); }
+.turn-clock.low { background: #e5484d; color: #fff; animation: clockpulse .8s infinite alternate; }
+@keyframes clockpulse { to { transform: scale(1.08); } }

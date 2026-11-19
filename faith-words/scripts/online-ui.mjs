@@ -54,7 +54,7 @@ while(!(await p.$('.result')) && turns++<80){
   for(let i=0;i<k;i++){
     const kk = await p.evaluate(()=>{const G=fwDebug.game();const l=G.st.racks.you[0];if(!l||G.st.over)return null;return G.st.puzzle.cells.findIndex((c,i)=>c.t==='l'&&c.ch===l&&!G.st.board[i].ch)});
     if(kk==null||kk<0)break;
-    await (await p.$('.tile')).click(); await p.click(`[data-k="${kk}"]`); await p.waitForTimeout(60);
+    await p.locator('.rack .tile').first().click(); await p.click(`[data-k="${kk}"]`); await p.waitForTimeout(60);
     if(await p.$('.result'))break;
   }
   if(await p.$('.result'))break;
