@@ -16,8 +16,8 @@ for (const [w, h] of [[320, 568], [360, 740], [390, 844], [430, 932], [667, 375]
   for (const [n, hash] of [['home', '#/'], ['daily', '#/daily'], ['together', '#/together'], ['me', '#/me'], ['album', '#/album'], ['admin', '#/admin']]) { await p.evaluate((x) => { location.hash = x; }, hash); await check(n); }
   await p.evaluate(() => { location.hash = '#/'; }); await p.waitForTimeout(300); await p.evaluate(() => document.querySelectorAll('.modal-back').forEach((e) => e.remove())); await p.click('.cta'); await p.waitForSelector('.grid'); await check('welcome'); await p.evaluate(() => document.querySelectorAll('.modal-back').forEach((e) => e.remove())); await check('game');
   await p.click('[aria-label="How to play"]'); await check('howto'); await p.keyboard.press('Escape'); await p.evaluate(() => document.querySelectorAll('.modal-back').forEach((e) => e.remove()));
-  await p.click('[aria-label=Menu]'); await check('menu'); await p.click('.btn.danger'); await p.waitForSelector('#selah-btn'); await check('result');
-  await p.click('#selah-btn'); await check('selah');
+  await p.click('[aria-label=Menu]'); await check('menu'); await p.click('.btn.danger'); await p.waitForSelector('.result .btn-row'); await check('result');
+
   await p.close();
 }
 console.log(issues.join('\n') || 'no issues'); await b.close();

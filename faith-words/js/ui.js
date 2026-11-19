@@ -75,7 +75,7 @@ const P = {
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.900 4.900l1.400 1.400M17.700 17.700l1.400 1.400M2 12h2M20 12h2M4.900 19.100l1.400-1.400M17.700 6.300l1.400-1.400"/>',
 };
 export const icon = (name, size = 24) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[name] || ''}</svg>`;
-export const coinSvg = (s = 16) => `<svg width="${s}" height="${s}" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#f5b301"/><circle cx="10" cy="10" r="6.500" fill="none" stroke="#c98200" stroke-width="1.500"/><path d="M10 6v8M7.500 8.500h5" stroke="#c98200" stroke-width="1.600" stroke-linecap="round"/></svg>`;
+export const coinSvg = (s = 16) => `<svg width="${s}" height="${s}" viewBox="0 0 20 20" aria-hidden="true"><defs><radialGradient id="cg" cx=".35" cy=".28" r=".9"><stop offset="0" stop-color="#fff3a8"/><stop offset=".45" stop-color="#ffc21f"/><stop offset="1" stop-color="#d98a00"/></radialGradient></defs><circle cx="10" cy="10" r="9.2" fill="url(#cg)" stroke="#b97500" stroke-width=".8"/><circle cx="10" cy="10" r="6.6" fill="none" stroke="#b97500" stroke-opacity=".55" stroke-width="1.2"/><path d="M10 5.8v8.4M7.2 8.4h5.6" stroke="#8a5400" stroke-width="1.7" stroke-linecap="round"/><path d="M4.4 6.2A6.6 6.6 0 0 1 9 3.6" stroke="#fff" stroke-opacity=".8" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>`;
 export const coin = (n, cls = '') => h('span', { class: 'coin-amt ' + cls }, h('i', { html: coinSvg() }), String(n));
 
 export function buzz(pattern, settings) {

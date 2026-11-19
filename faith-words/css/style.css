@@ -43,7 +43,7 @@ button:disabled { cursor: default; }
 :focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; border-radius: 8px; }
 input, select { font: inherit; width: 100%; padding: 11px 13px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); margin: 4px 0; }
 small, .muted { color: var(--muted); } .blue { color: var(--primary); }
-.screen { padding: 14px 14px 100px; animation: screenIn .28s ease both; }
+.screen { padding: 14px 14px 110px; animation: screenIn .28s ease backwards; }
 @keyframes screenIn { from { opacity: 0; transform: translateY(8px); } }
 .card { background: var(--surface); border-radius: 20px; padding: 15px; margin: 12px 0; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 9px; }
 .row-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
@@ -429,3 +429,87 @@ body.urgent::after { content: ''; position: fixed; inset: 0; z-index: 110; point
 @keyframes sheen { to { transform: translateX(120%); } }
 .nav-i.on svg { animation: bump .4s; }
 @media (prefers-reduced-motion: reduce) { #ambient i, #splash, .turn-banner, body.urgent::after { animation: none !important; } #ambient i { display: none; } }
+
+
+/* ================= fixed bottom bar (lives on <body>, never scrolls) ================= */
+.nav { position: fixed !important; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 520px); z-index: 80; gap: 2px;
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom)); border-top: 0; border-radius: 22px 22px 0 0;
+  background: color-mix(in srgb, var(--surface) 86%, transparent); -webkit-backdrop-filter: blur(16px) saturate(1.4); backdrop-filter: blur(16px) saturate(1.4);
+  box-shadow: 0 -8px 28px rgba(20, 35, 80, .16), 0 -1px 0 var(--line); }
+.nav-i { position: relative; gap: 3px; font-size: 11.5px; letter-spacing: .2px; }
+.nav-i .ni { display: grid; place-items: center; width: 44px; height: 30px; border-radius: 15px; transition: background .25s, transform .25s cubic-bezier(.3, 1.6, .5, 1); }
+.nav-i.on { background: transparent; color: var(--primary); }
+.nav-i.on .ni { background: linear-gradient(135deg, var(--primary), var(--primary-d)); color: #fff; transform: translateY(-3px); box-shadow: 0 6px 14px color-mix(in srgb, var(--primary) 45%, transparent); }
+.nav-i.on svg { animation: none; }
+body[data-route="/game"] > .nav { display: none; }
+
+/* ================= clue arrows: bright, glowing, unmissable ================= */
+:root { --arrow: #ff6a00; --arrow-halo: rgba(255, 255, 255, .95); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --arrow: #ffe14d; --arrow-halo: rgba(8, 14, 36, .95); } }
+:root[data-theme="dark"] { --arrow: #ffe14d; --arrow-halo: rgba(8, 14, 36, .95); }
+body[data-board="b-glass"] .gamescreen, body[data-board="b-night"] .gamescreen { --arrow: #ffe14d; --arrow-halo: rgba(8, 14, 36, .95); }
+body[data-board="b-parch"] .gamescreen, body[data-board="b-meadow"] .gamescreen { --arrow: #ff5a00; --arrow-halo: rgba(255, 255, 255, .95); }
+.cl .arr { color: var(--arrow); font-size: calc(var(--cs) * .3); font-weight: 900; z-index: 3;
+  text-shadow: 0 0 1px var(--arrow-halo), 1px 0 0 var(--arrow-halo), -1px 0 0 var(--arrow-halo), 0 1px 0 var(--arrow-halo), 0 -1px 0 var(--arrow-halo), 0 0 6px var(--arrow), 0 0 12px color-mix(in srgb, var(--arrow) 70%, transparent);
+  animation: arrowGlow 1.8s ease-in-out infinite alternate; }
+@keyframes arrowGlow { from { filter: brightness(1) drop-shadow(0 0 1px var(--arrow)); } to { filter: brightness(1.25) drop-shadow(0 0 4px var(--arrow)); } }
+.cl.pick .arr { color: var(--arrow); }
+@media (prefers-reduced-motion: reduce) { .cl .arr { animation: none; } }
+
+/* ================= Me hub ================= */
+.card.hero { position: relative; overflow: hidden; flex-direction: row; align-items: center; gap: 14px; padding: 18px 16px; color: #fff;
+  background: radial-gradient(120% 140% at 0% 0%, #5b8cff, transparent 55%), linear-gradient(135deg, #2e4fc9, #1b2f78 70%); box-shadow: 0 14px 32px rgba(37, 70, 190, .35); }
+.card.hero::after { content: '✝'; position: absolute; right: -8px; bottom: -22px; font-size: 110px; opacity: .09; transform: rotate(12deg); }
+.card.hero .avatar.lg { width: 66px; height: 66px; font-size: 28px; background: linear-gradient(135deg, #ffe08a, #f2a900); color: #4a3000; box-shadow: 0 0 0 3px rgba(255, 255, 255, .85), 0 8px 18px rgba(0, 0, 0, .3); }
+.card.hero .name-in { color: #fff; border-bottom: 1px dashed rgba(255, 255, 255, .5); font-weight: 900; font-size: 20px; background: transparent; }
+.card.hero small { color: rgba(255, 255, 255, .78); } .card.hero .lv-big { background: rgba(255, 255, 255, .16); border-radius: 14px; padding: 8px 12px; color: #fff; }
+.lvl-mini { gap: 6px; }
+.hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px; }
+.hub-tile { position: relative; display: flex; flex-direction: column; gap: 2px; padding: 14px 14px 13px; border-radius: 22px; text-decoration: none; color: var(--ink); min-height: 118px; overflow: hidden;
+  background: var(--surface); box-shadow: var(--shadow), inset 0 0 0 1px var(--line); transition: transform .15s cubic-bezier(.3, 1.6, .5, 1), box-shadow .2s; }
+.hub-tile::before { content: ''; position: absolute; inset: 0; opacity: .14; background: var(--tg); }
+.hub-tile:active { transform: scale(.95); } .hub-tile b { font-size: 15.5px; margin-top: auto; position: relative; } .hub-tile small { color: var(--muted); font-weight: 700; line-height: 1.25; position: relative; }
+.ht-ic { position: relative; display: grid; place-items: center; width: 50px; height: 50px; border-radius: 16px; font-size: 26px; background: var(--tg); box-shadow: 0 8px 16px color-mix(in srgb, var(--tc) 40%, transparent), inset 0 1px 0 rgba(255, 255, 255, .5); }
+.ht-dot { position: absolute; top: -3px; right: -3px; width: 13px; height: 13px; border-radius: 50%; background: #ff3b47; box-shadow: 0 0 0 3px var(--surface), 0 0 10px #ff3b47; animation: pulseDot 1.4s ease-in-out infinite; }
+@keyframes pulseDot { 50% { transform: scale(1.25); } }
+.tone-ember { --tg: linear-gradient(135deg, #ffb347, #ff5f3d); --tc: #ff5f3d; } .tone-gold { --tg: linear-gradient(135deg, #ffe27a, #f0a500); --tc: #f0a500; }
+.tone-parch { --tg: linear-gradient(135deg, #f7e2b0, #d9a954); --tc: #c98f2e; } .tone-royal { --tg: linear-gradient(135deg, #9a7bff, #5436d6); --tc: #5436d6; }
+.tone-rose { --tg: linear-gradient(135deg, #ff9fc0, #e0457b); --tc: #e0457b; } .tone-sky { --tg: linear-gradient(135deg, #7cc8ff, #2f7be8); --tc: #2f7be8; }
+.tone-mint { --tg: linear-gradient(135deg, #7ee8b8, #1f9d63); --tc: #1f9d63; } .tone-slate { --tg: linear-gradient(135deg, #b4c0d8, #5e6f93); --tc: #5e6f93; }
+.me.sec .top-row { display: flex; align-items: center; gap: 10px; margin: 6px 0 4px; } .me.sec .top-row h2 { margin: 0; font-size: 22px; }
+.back-btn { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); color: var(--ink); text-decoration: none; }
+
+/* ================= badges: little medals ================= */
+.badge-grid { grid-template-columns: repeat(3, 1fr); gap: 12px 8px; }
+.badge { position: relative; padding: 4px 2px 2px; background: transparent !important; opacity: 1; gap: 6px; outline: none !important; }
+.badge .b-e { position: relative; display: grid; place-items: center; width: 62px; height: 62px; border-radius: 50%; font-size: 29px; filter: grayscale(1) brightness(.9); opacity: .55;
+  background: radial-gradient(circle at 35% 28%, var(--surface), var(--surface2)); box-shadow: inset 0 0 0 3px var(--line), inset 0 -6px 10px rgba(0, 0, 0, .08); }
+.badge.got .b-e { filter: none; opacity: 1; color: #3b2a0d;
+  background: radial-gradient(circle at 32% 25%, #fff8d6 0 18%, #ffd95a 45%, #d99a12 100%);
+  box-shadow: 0 0 0 3px #fff2b3, 0 0 0 5px #d99a12, 0 10px 18px rgba(217, 154, 18, .45), inset 0 -6px 10px rgba(150, 90, 0, .3); }
+.badge.got .b-e::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: linear-gradient(120deg, rgba(255, 255, 255, .7), transparent 40%); pointer-events: none; }
+.badge.worn .b-e { animation: medalGlow 2s ease-in-out infinite alternate; } .badge.worn::before { content: '👑'; position: absolute; top: -9px; left: 50%; transform: translateX(-50%) rotate(-8deg); font-size: 18px; z-index: 2; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .3)); }
+@keyframes medalGlow { to { box-shadow: 0 0 0 3px #fff2b3, 0 0 0 5px #d99a12, 0 0 26px 6px rgba(255, 200, 40, .75), inset 0 -6px 10px rgba(150, 90, 0, .3); } }
+.badge small { font-size: 11px; font-weight: 800; line-height: 1.15; color: var(--ink); } .badge:not(.got) small { color: var(--muted); }
+
+/* ================= verse album: collectible cards ================= */
+.al-grid { gap: 12px; grid-template-columns: repeat(2, 1fr); }
+.al-card { position: relative; min-height: 104px; border-radius: 18px; padding: 14px 12px 12px; background: repeating-linear-gradient(135deg, var(--surface2) 0 8px, color-mix(in srgb, var(--surface2) 80%, var(--line)) 8px 16px); box-shadow: inset 0 0 0 1px var(--line); overflow: hidden; }
+.al-card:not(.got)::before { content: '✝'; position: absolute; right: 8px; top: 2px; font-size: 44px; opacity: .13; }
+.al-card.got { border: 0; color: #3b2a0d; background: radial-gradient(120% 90% at 20% 0%, #fffbe9, transparent 60%), linear-gradient(160deg, #fff3cf, #efd48e);
+  box-shadow: 0 8px 18px rgba(170, 120, 20, .28), inset 0 0 0 2px #d8b45a, inset 0 0 0 5px #fff6dc, inset 0 0 0 6px #d8b45a; }
+.al-card.got::before { content: '✦'; position: absolute; right: 12px; top: 8px; color: #c98f2e; font-size: 16px; text-shadow: 0 0 8px #ffd95a; }
+.al-card.got b { font-family: Georgia, serif; font-size: 15px; color: #8a5b12; } .al-card.got small { font-family: Georgia, serif; font-style: italic; color: #4a3516; }
+
+/* ================= verse card: illuminated manuscript ================= */
+.vcard { padding: 22px 18px 16px; border-radius: 20px; border: 0; background: radial-gradient(100% 70% at 50% 0%, #fffdf0, transparent 70%), linear-gradient(165deg, #fff6d9, #f0d890);
+  box-shadow: 0 12px 26px rgba(160, 110, 20, .3), inset 0 0 0 2px #d8b45a, inset 0 0 0 6px #fff7de, inset 0 0 0 7px #d8b45a; }
+.vcard::before, .vcard::after { position: absolute; font-size: 20px; color: #c98f2e; line-height: 1; } .vcard::before { content: '❦'; left: 12px; top: 10px; } .vcard::after { content: '❦'; right: 12px; bottom: 8px; transform: rotate(180deg); }
+.vcard .vc-cross { font-size: 26px; text-shadow: 0 0 12px rgba(255, 210, 80, .9); } .vcard .vc-text { font-size: 17px; }
+
+/* ================= theme chips: mini previews ================= */
+.theme-chip { position: relative; border-radius: 16px; padding: 10px 8px; background: var(--surface2); box-shadow: inset 0 0 0 1px var(--line); transition: transform .15s; } .theme-chip:active { transform: scale(.95); }
+.theme-chip .sw { height: 26px; width: 64px; border-radius: 9px; box-shadow: 0 4px 10px rgba(0, 0, 0, .18), inset 0 0 0 2px rgba(255, 255, 255, .6); }
+.theme-chip.on { outline: 0; background: var(--primary-soft); box-shadow: 0 0 0 2.5px var(--primary), 0 8px 18px color-mix(in srgb, var(--primary) 30%, transparent); }
+.theme-chip.on::after { content: '✓'; position: absolute; top: -7px; right: -5px; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 12px; font-weight: 900; display: grid; place-items: center; }
+.avatar { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px #ffd95a; }

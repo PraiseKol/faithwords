@@ -44,15 +44,15 @@ await p.click('.result .btn'); await p.waitForTimeout(400);
 (await p.$('.chest.opened')) ? ok('chest shows opened') : fail('chest not marked opened');
 
 // 4. Me: freeze in shop, album, badges; wear a title
-await p.evaluate(() => { const s = fwDebug.store; s.d.coins = 500; s.d.stats.totalWords = 120; s.save(); location.hash = '#/me'; });
+await p.evaluate(() => { const s = fwDebug.store; s.d.coins = 500; s.d.stats.totalWords = 120; s.save(); location.hash = '#/me/shop'; });
 await p.waitForTimeout(500);
 await p.locator('.shop-row:has-text("Streak freeze") .btn').click(); await p.waitForTimeout(300);
 (await p.evaluate(() => fwDebug.store.d.inv.freeze)) >= 1 ? ok('bought a streak freeze') : fail('freeze not bought');
-await p.click('[data-badge="scribe"]'); await p.waitForTimeout(300);
+await p.evaluate(() => { location.hash = '#/me/badges'; }); await p.waitForTimeout(400); await p.click('[data-badge="scribe"]'); await p.waitForTimeout(300);
 (await p.evaluate(() => fwDebug.store.d.title)) === 'scribe' ? ok('Scribe title worn') : fail('title not set');
 (await p.$eval('.hello-name, .badge.worn', (e) => !!e)) ? ok('badge shows as worn') : fail('worn');
 await p.screenshot({ path: out + 'p1-me.png', fullPage: true });
-await p.click('#open-album'); await p.waitForTimeout(500);
+await p.evaluate(() => { location.hash = '#/me'; }); await p.waitForTimeout(400); await p.click('[data-sec=album]'); await p.waitForTimeout(500);
 const got = await p.$$('.al-card.got'); got.length >= 1 ? ok('album shows ' + got.length + ' collected card(s)') : fail('album empty');
 await p.locator('.al-card.got').first().click(); await p.waitForTimeout(300);
 (await p.$('.modal .vcard')) ? ok('tapping a card opens its story') : fail('card modal');
