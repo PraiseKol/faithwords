@@ -90,11 +90,11 @@ export function applyResult(d, { spec, score, oppScore, rep = null, idx = 0, ver
   else { s.losses++; d.winStreak = 0; }
   const xpGain = score + winBonus + dailyBonus;
   d.xp += xpGain; d.coins += coins;
-  if (spec.kind === 'main') d.mainNext = Math.max(d.mainNext, spec.n + 1);
+  if (spec.kind === 'main' && won) d.mainNext = Math.max(d.mainNext, spec.n + 1); // a lost level has to be played again
   if (spec.kind === 'daily') d.daily[spec.date] = { score, won };
   let eventCoins = 0;
   if (spec.kind === 'event') {
-    d.events[spec.id] = Math.max(d.events[spec.id] || 0, spec.idx + 1);
+    if (won) d.events[spec.id] = Math.max(d.events[spec.id] || 0, spec.idx + 1);
     if (won) { eventCoins = CONFIG.eventCoinReward; coins += eventCoins; d.coins += eventCoins; }
   }
   // words, quests, verse

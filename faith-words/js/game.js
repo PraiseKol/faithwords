@@ -667,7 +667,10 @@ function finish(mode) {
   const endPct = Math.round((r.after.into / r.after.need) * 100);
   const fill = h('i', { style: { width: startPct + '%' } });
   setTimeout(() => { fill.style.width = endPct + '%'; }, 350);
-  const next = nextAction(spec);
+  const lost = !r.won; // a level that was not won must be played again: no next puzzle, no Selah
+  const retry = { label: 'Try again', go: () => startGame(spec) };
+  const next = lost && ['main', 'daily', 'event'].includes(spec.kind) ? retry : nextAction(spec);
+  if (lost && next !== retry) { delete next.alt; }
   const m = modal(h('div', { class: 'result' },
     h('div', { class: 'res-emoji pop' }, r.won ? '🏆' : r.draw ? '🤝' : '🙏'),
     h('h2', {}, title),
@@ -687,8 +690,8 @@ function finish(mode) {
     h('div', { class: 'btn-row' },
       h('button', { class: 'btn', onclick: () => { m.close(); next.go(); } }, next.label),
       next.alt ? h('button', { class: 'btn ghost', onclick: () => { m.close(); next.alt.go(); } }, next.alt.label) : null,
-      h('button', { class: 'btn ghost', id: 'selah-btn', onclick: () => selah(m) }, '🕊️ Selah'),
-      h('button', { class: 'btn ghost', id: 'share-btn', onclick: () => shareOut(shareText({ spec, score: r.score, oppScore: r.oppScore, log: st.log, verse: r.verse, url: location.origin + location.pathname })) }, 'Share result'),
+      lost ? null : h('button', { class: 'btn ghost', id: 'selah-btn', onclick: () => selah(m) }, '🕊️ Selah'),
+      lost && ['main', 'daily', 'event'].includes(spec.kind) ? null : h('button', { class: 'btn ghost', id: 'share-btn', onclick: () => shareOut(shareText({ spec, score: r.score, oppScore: r.oppScore, log: st.log, verse: r.verse, url: location.origin + location.pathname })) }, 'Share result'),
       h('button', { class: 'btn ghost', onclick: () => { m.close(); location.hash = '#/'; } }, 'Home'))), { dismiss: false, cls: 'sheet' });
   paint();
   if (spec.kind === 'challenge') fillChallengeBox(spec, r);
