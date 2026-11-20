@@ -67,6 +67,7 @@ Deno.serve(async (req: Request) => {
       uid: user.id,
       now,
       loadMatch: async (id: string) => (await admin.from('matches').select('*').eq('id', id).maybeSingle()).data,
+      loadContent: async () => (await admin.from('app_content').select('data').eq('id', 1).maybeSingle()).data?.data || {},
       loadCustom: async () => (await admin.from('app_content').select('data').eq('id', 1).maybeSingle()).data?.data?.customBank || [],
       loadCommunity: async (week: string) => Number((await admin.from('community').select('words').eq('week', week).maybeSingle()).data?.words || 0),
     };

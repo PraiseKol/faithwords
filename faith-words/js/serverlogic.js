@@ -2,7 +2,7 @@
 // Pure (no network, no storage) so it is tested in Node and runs unchanged inside the Edge Function.
 import * as P from './progress.js';
 import { CONFIG, EVENTS, EVENT_PUZZLES } from './config.js';
-import { specMain, specDaily, specEvent, buildPuzzle, validOnlineSeed } from './spec.js';
+import { specMain, specDaily, specEvent, specDrop, findDrop, dropOpen, buildPuzzle, validOnlineSeed } from './spec.js';
 import { replay } from './replay.js';
 import { verseFor } from './verses.js';
 import { badgeById } from './achievements.js';
@@ -28,7 +28,7 @@ function startState(local) {
   return g;
 }
 
-function canonicalSpec(g, s, now) {
+async function canonicalSpec(g, s, now, ctx) {
   s = s || {};
   if (s.kind === 'main') { const n = s.n; if (!Number.isInteger(n) || n < 1 || n > g.mainNext) bad(400, 'bad puzzle'); return specMain(n); }
   if (s.kind === 'daily') { if (!dateOk(s.date, now)) bad(400, 'bad date'); return specDaily(s.date); }
@@ -36,8 +36,13 @@ function canonicalSpec(g, s, now) {
     if (!EVENTS.some((e) => e.id === s.id) || !Number.isInteger(s.idx) || s.idx < 0 || s.idx >= EVENT_PUZZLES || s.idx > (g.events[s.id] || 0)) bad(400, 'bad event');
     return specEvent(s.id, s.idx);
   }
-  if (s.kind === 'challenge') { if (!validOnlineSeed(s.seed)) bad(400, 'bad challenge'); return { kind: 'challenge', seed: s.seed, label: 'Friend challenge' }; }
   if (s.kind === 'challenge') { if (!validOnlineSeed(s.seed || '')) bad(400, 'bad challenge'); return { kind: 'challenge', seed: s.seed, label: 'Friend challenge' }; }
+  if (s.kind === 'drop') { // an admin-published pack: the server reads the published copy, never the phone's
+    const content = (ctx.loadContent ? await ctx.loadContent() : null) || { drops: [] }, drop = findDrop(content, s.id);
+    if (!drop || !Number.isInteger(s.idx) || s.idx < 0 || s.idx >= drop.puzzles.length || s.idx > (g.drops[s.id] || 0)) bad(400, 'bad drop');
+    if (!dropOpen(drop, new Date(now).toISOString().slice(0, 10), 2)) bad(400, 'this pack has closed');
+    return { ...specDrop(drop, s.idx), content };
+  }
   return bad(400, 'bad kind');
 }
 
@@ -95,10 +100,11 @@ export async function handleOp(game, op, ctx) {
     log = row.state?.log; winner = row.winner ?? null;
     wallMs = Date.parse(row.updated_at) - Date.parse(row.created_at);
   } else {
-    spec = canonicalSpec(g, op.spec, now);
+    spec = await canonicalSpec(g, op.spec, now, ctx);
     log = op.log; mode = op.mode === 'concede' ? 'concede' : null;
   }
-  const puzzle = buildPuzzle(spec);
+  const content = spec.content; delete spec.content;
+  let puzzle; try { puzzle = buildPuzzle(spec, content); } catch (e) { bad(400, 'bad puzzle'); }
   const rep = replay(puzzle, log);
   if (!rep.ok) bad(422, 'match did not replay: ' + rep.err);
   if (!op.matchId && idx !== 0) bad(400, 'bad seat');

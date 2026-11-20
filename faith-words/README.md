@@ -80,3 +80,8 @@ Every online turn lasts 30 seconds (`TURN_SECONDS` in `js/game.js`). The clock s
 
 ### Game feel
 Living background, splash, "Your turn" banner, red urgency glow in the last 8 s of an online turn, tile deal-in, press feedback, staged result reveal. All pure CSS/JS, respects reduced-motion.
+
+### Phase 4: new puzzle packs and verse reminders
+- **Content drops (new puzzles without an app update).** `node tools/make-drop.mjs words.txt --id advent-2026 --title "Advent Specials" --icon 🕯️ --count 6 --from 2026-12-01 --to 2026-12-26` builds a pack of puzzles around your own words (`ANSWER|clue|emoji`). Paste the JSON in **Admin → New puzzle packs → Check & add → Publish now**. The pack appears on every player's Home screen as a "NEW PACK" card, with its own progress and coins. Packs are stored in `app_content.data.drops`; the server reads the *published* copy to verify every result (replay), so packs are as cheat-proof as built-in puzzles. Publish a new `id` for a new pack; republishing an id replaces it (avoid changing a pack people are mid-way through). Opening window `from`/`to` is optional.
+- **Verse of the day.** A card on Home on every platform. In the mobile app (Capacitor + `@capacitor/local-notifications`) Settings gets a **Daily verse reminder** switch and time; it schedules the next 30 days of notifications (one verse each) and tops the window up whenever the app opens. On the web the row says it needs the app. All through `js/reminders.js`, which does nothing when the plugin is absent.
+- Tests: `node scripts/test-phase4.mjs` (server + reminder plan), `node scripts/ui-check9.mjs`.

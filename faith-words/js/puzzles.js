@@ -1,15 +1,20 @@
 // Puzzle provider. Puzzles are generated from a seed, so there are endless main puzzles,
 // one daily puzzle for every date, and themed event puzzles.
-import { buildPuzzle, specMain, specDaily, specEvent } from './spec.js';
+import { buildPuzzle, specMain, specDaily, specEvent, specDrop, REMOTE, dropOpen } from './spec.js';
 import { store } from './store.js';
 import { EVENTS, EVENT_PUZZLES } from './config.js';
 
-export { specMain, specDaily, specEvent };
+export { specMain, specDaily, specEvent, specDrop };
 
 const cache = new Map();
 // clue edits published by admins to every player (loaded from Supabase at start-up)
 export const remote = { clueOverrides: {}, customBank: [] };
-export function setRemoteContent(c) { remote.clueOverrides = c?.clueOverrides || {}; remote.customBank = c?.customBank || []; }
+export function setRemoteContent(c) {
+  remote.clueOverrides = c?.clueOverrides || {}; remote.customBank = c?.customBank || [];
+  REMOTE.drops = Array.isArray(c?.drops) ? c.drops : []; cache.clear();
+}
+/** Packs that are open today, for the home screen. */
+export const openDrops = (today) => REMOTE.drops.filter((d) => d.puzzles?.length && dropOpen(d, today));
 export function getPuzzle(spec) {
   let p = cache.get(spec.seed);
   if (!p) { p = buildPuzzle(spec); cache.set(spec.seed, p); }
