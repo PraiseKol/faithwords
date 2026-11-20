@@ -14,7 +14,7 @@ export const todayStr = (d = new Date()) => `${d.getFullYear()}-${String(d.getMo
 
 const fresh = () => ({
   name: 'Believer', ...P.freshProgress(), active: null,
-  settings: { sound: true, music: false, haptics: true, theme: 'system', unlockEvents: false },
+  settings: { sound: true, music: false, haptics: true, theme: 'system', unlockEvents: false, remind: { on: false, h: 8 } },
   onboarded: false, activeOnline: null,
   clueOverrides: {}, customBank: [], dirty: 0, pendingOps: [],
 });
