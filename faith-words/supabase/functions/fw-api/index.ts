@@ -62,6 +62,17 @@ Deno.serve(async (req: Request) => {
     const op = await req.json();
     const now = Date.now();
     if (op.op === 'league') return json(await leagueOp(admin, user.id, now));
+    if (op.op === 'delete_account') {
+      // Store rule: players can delete their account and data inside the app. Rows tied to the user
+      // (profile, groups they own, memberships, league entries, challenges they created, matches they started)
+      // are removed by ON DELETE CASCADE; names left behind in other people's rows are blanked first.
+      if (op.confirm !== 'DELETE') return json({ error: 'confirmation required' }, 400);
+      await admin.from('matches').update({ p2_name: null, p2_title: '' }).eq('p2', user.id);
+      await admin.from('challenges').update({ opp_name: null }).eq('opp', user.id);
+      const { error } = await admin.auth.admin.deleteUser(user.id);
+      if (error) { console.error('delete failed', error); return json({ error: 'could not delete account' }, 500); }
+      return json({ deleted: true });
+    }
 
     const ctx = {
       uid: user.id,

@@ -521,3 +521,9 @@ body[data-board="b-parch"] .gamescreen, body[data-board="b-meadow"] .gamescreen 
 .ev-card.drop { box-shadow: 0 0 0 2px #ffe27a, 0 10px 24px rgba(255, 200, 40, .35); } .ev-card.drop .ev-kind { color: #ffe27a; }
 .seg-row.remind { flex-wrap: wrap; gap: 8px; } .seg-row.remind select { min-height: 44px; border-radius: 12px; padding: 0 10px; background: var(--surface2); color: var(--ink); border: 1px solid var(--line); font: inherit; }
 .a-json { width: 100%; font-family: ui-monospace, Menlo, monospace; font-size: 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface2); color: var(--ink); padding: 8px; }
+
+/* account deletion + privacy link */
+.btn.danger { background: #e5484d; color: #fff; border-color: transparent; }
+.btn.ghost.danger { background: transparent; color: #e5484d; border: 1.5px solid color-mix(in srgb, #e5484d 55%, transparent); }
+.btn.danger:disabled { opacity: .45; }
+.privacy-link { display: block; text-align: center; font-size: 13px; color: var(--muted, #6b7a90); padding: 6px; text-decoration: underline; }
