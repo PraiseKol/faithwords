@@ -5,7 +5,8 @@ import { syncMusic } from './audio.js';
 import { A, currentUser, challengeAnswer } from './cloud.js';
 import { randomOnlineSeed } from './spec.js';
 import { CONFIG, BOT_NAMES, EVENT_PUZZLES } from './config.js';
-import { getPuzzle, specMain, specEvent } from './puzzles.js';
+import { getPuzzle, specMain, specEvent, specDrop } from './puzzles.js';
+import { findDrop } from './spec.js';
 import * as E from './engine.js';
 import { store, todayStr } from './store.js';
 import { sfx } from './audio.js';
@@ -669,7 +670,7 @@ function finish(mode) {
   setTimeout(() => { fill.style.width = endPct + '%'; }, 350);
   const lost = !r.won; // a level that was not won must be played again: no next puzzle, no Selah
   const retry = { label: 'Try again', go: () => startGame(spec) };
-  const next = lost && ['main', 'daily', 'event'].includes(spec.kind) ? retry : nextAction(spec);
+  const next = lost && ['main', 'daily', 'event', 'drop'].includes(spec.kind) ? retry : nextAction(spec);
   if (lost && next !== retry) { delete next.alt; }
   const m = modal(h('div', { class: 'result' },
     h('div', { class: 'res-emoji pop' }, r.won ? '🏆' : r.draw ? '🤝' : '🙏'),
@@ -691,7 +692,7 @@ function finish(mode) {
       h('button', { class: 'btn', onclick: () => { m.close(); next.go(); } }, next.label),
       next.alt ? h('button', { class: 'btn ghost', onclick: () => { m.close(); next.alt.go(); } }, next.alt.label) : null,
       lost ? null : h('button', { class: 'btn ghost', id: 'selah-btn', onclick: () => selah(m) }, '🕊️ Selah'),
-      lost && ['main', 'daily', 'event'].includes(spec.kind) ? null : h('button', { class: 'btn ghost', id: 'share-btn', onclick: () => shareOut(shareText({ spec, score: r.score, oppScore: r.oppScore, log: st.log, verse: r.verse, url: location.origin + location.pathname })) }, 'Share result'),
+      lost && ['main', 'daily', 'event', 'drop'].includes(spec.kind) ? null : h('button', { class: 'btn ghost', id: 'share-btn', onclick: () => shareOut(shareText({ spec, score: r.score, oppScore: r.oppScore, log: st.log, verse: r.verse, url: location.origin + location.pathname })) }, 'Share result'),
       h('button', { class: 'btn ghost', onclick: () => { m.close(); location.hash = '#/'; } }, 'Home'))), { dismiss: false, cls: 'sheet' });
   paint();
   if (spec.kind === 'challenge') fillChallengeBox(spec, r);
@@ -727,6 +728,10 @@ function nextAction(spec) {
   if (spec.kind === 'event') {
     const idx = spec.idx + 1; // the puzzle after the one just played, whatever the saved progress says
     return idx < EVENT_PUZZLES ? { label: 'Next puzzle', go: () => startGame(specEvent(spec.id, idx)), alt: nextLevel } : nextLevel;
+  }
+  if (spec.kind === 'drop') {
+    const drop = findDrop(null, spec.id), idx = spec.idx + 1;
+    return drop && idx < drop.puzzles.length ? { label: 'Next puzzle', go: () => startGame(specDrop(drop, idx)), alt: nextLevel } : nextLevel;
   }
   return { ...nextLevel, alt: { label: 'Daily calendar', go: () => { location.hash = '#/daily'; } } };
 }

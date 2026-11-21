@@ -2,9 +2,9 @@
 // The game rules are the same files the app uses (faith-words/js/*.js). Deployed version imports them pinned
 // to a commit; to update, change the SHA in the four import lines below and redeploy.
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { handleOp, HttpError, publicColumns } from 'https://raw.githubusercontent.com/PraiseKol/faithwords/42228a51428b237c00209a647169820f9422793e/faith-words/js/serverlogic.js';
-import { weekKey } from 'https://raw.githubusercontent.com/PraiseKol/faithwords/42228a51428b237c00209a647169820f9422793e/faith-words/js/progress.js';
-import { standings, lastWeekResult, pickBucket, weekProgress, weekEnd, TIERS, SIZE } from 'https://raw.githubusercontent.com/PraiseKol/faithwords/42228a51428b237c00209a647169820f9422793e/faith-words/js/leagues.js';
+import { handleOp, HttpError, publicColumns } from 'https://raw.githubusercontent.com/PraiseKol/faithwords/2ac52b48b2a7ebf5d654fbc28a6bdb794aa86549/faith-words/js/serverlogic.js';
+import { weekKey } from 'https://raw.githubusercontent.com/PraiseKol/faithwords/2ac52b48b2a7ebf5d654fbc28a6bdb794aa86549/faith-words/js/progress.js';
+import { standings, lastWeekResult, pickBucket, weekProgress, weekEnd, TIERS, SIZE } from 'https://raw.githubusercontent.com/PraiseKol/faithwords/2ac52b48b2a7ebf5d654fbc28a6bdb794aa86549/faith-words/js/leagues.js';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -62,11 +62,23 @@ Deno.serve(async (req: Request) => {
     const op = await req.json();
     const now = Date.now();
     if (op.op === 'league') return json(await leagueOp(admin, user.id, now));
+    if (op.op === 'delete_account') {
+      // Store rule: players can delete their account and data inside the app. Rows tied to the user
+      // (profile, groups they own, memberships, league entries, challenges they created, matches they started)
+      // are removed by ON DELETE CASCADE; names left behind in other people's rows are blanked first.
+      if (op.confirm !== 'DELETE') return json({ error: 'confirmation required' }, 400);
+      await admin.from('matches').update({ p2_name: null, p2_title: '' }).eq('p2', user.id);
+      await admin.from('challenges').update({ opp_name: null }).eq('opp', user.id);
+      const { error } = await admin.auth.admin.deleteUser(user.id);
+      if (error) { console.error('delete failed', error); return json({ error: 'could not delete account' }, 500); }
+      return json({ deleted: true });
+    }
 
     const ctx = {
       uid: user.id,
       now,
       loadMatch: async (id: string) => (await admin.from('matches').select('*').eq('id', id).maybeSingle()).data,
+      loadContent: async () => (await admin.from('app_content').select('data').eq('id', 1).maybeSingle()).data?.data || {},
       loadCustom: async () => (await admin.from('app_content').select('data').eq('id', 1).maybeSingle()).data?.data?.customBank || [],
       loadCommunity: async (week: string) => Number((await admin.from('community').select('words').eq('week', week).maybeSingle()).data?.words || 0),
     };

@@ -3,14 +3,14 @@
 import { CONFIG } from './config.js';
 import { questsFor, questGain, questState, chestReward } from './quests.js';
 
-export const SERVER_KEYS = ['xp', 'coins', 'inv', 'checkin', 'winStreak', 'bestWinStreak', 'stats', 'mainNext', 'daily', 'events', 'album', 'quests', 'title', 'cosmetics', 'weekly', 'communityClaimed'];
+export const SERVER_KEYS = ['xp', 'coins', 'inv', 'checkin', 'winStreak', 'bestWinStreak', 'stats', 'mainNext', 'daily', 'events', 'drops', 'album', 'quests', 'title', 'cosmetics', 'weekly', 'communityClaimed'];
 
 export const freshProgress = () => ({
   xp: 0, coins: CONFIG.startCoins,
   inv: { hint: CONFIG.startHints, word: CONFIG.startWords, freeze: 0 },
   checkin: { last: null, streak: 0, best: 0 }, winStreak: 0, bestWinStreak: 0,
   stats: { games: 0, wins: 0, losses: 0, draws: 0, bestScore: 0, totalWords: 0, quests: 0, chests: 0 },
-  mainNext: 1, daily: {}, events: {}, album: {}, quests: null, title: '',
+  mainNext: 1, daily: {}, events: {}, drops: {}, album: {}, quests: null, title: '',
   cosmetics: { own: [], board: 'b-classic', tile: 't-classic' },
   weekly: { key: '', xp: 0, words: 0 }, communityClaimed: '',
 });
@@ -25,7 +25,7 @@ export function weekKey(date) {
 export function migrate(d) {
   const f = freshProgress();
   d.inv = { ...f.inv, ...d.inv }; d.stats = { ...f.stats, ...d.stats }; d.checkin = { ...f.checkin, ...d.checkin };
-  d.album ||= {}; d.title ||= ''; d.weekly = { ...f.weekly, ...d.weekly }; d.communityClaimed ||= ''; d.cosmetics = { ...f.cosmetics, ...d.cosmetics, own: [...(d.cosmetics?.own || [])] }; if (d.quests === undefined) d.quests = null;
+  d.drops ||= {}; d.album ||= {}; d.title ||= ''; d.weekly = { ...f.weekly, ...d.weekly }; d.communityClaimed ||= ''; d.cosmetics = { ...f.cosmetics, ...d.cosmetics, own: [...(d.cosmetics?.own || [])] }; if (d.quests === undefined) d.quests = null;
   return d;
 }
 
@@ -93,6 +93,7 @@ export function applyResult(d, { spec, score, oppScore, rep = null, idx = 0, ver
   if (spec.kind === 'main' && won) d.mainNext = Math.max(d.mainNext, spec.n + 1); // a lost level has to be played again
   if (spec.kind === 'daily') d.daily[spec.date] = { score, won };
   let eventCoins = 0;
+  if (spec.kind === 'drop' && won) { d.drops[spec.id] = Math.max(d.drops[spec.id] || 0, spec.idx + 1); eventCoins = CONFIG.eventCoinReward; coins += eventCoins; d.coins += eventCoins; }
   if (spec.kind === 'event') {
     if (won) d.events[spec.id] = Math.max(d.events[spec.id] || 0, spec.idx + 1);
     if (won) { eventCoins = CONFIG.eventCoinReward; coins += eventCoins; d.coins += eventCoins; }

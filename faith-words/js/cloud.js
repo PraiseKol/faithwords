@@ -42,6 +42,16 @@ export async function signIn(email, password) {
   if (error) throw error;
   user = data.user; await pull(); await syncProgress(); return user;
 }
+/** Permanently deletes the account and its data on the server, then clears this device. */
+export async function deleteAccount() {
+  if (mock()?.deleteAccount) { await mock().deleteAccount(); }
+  else {
+    const { data, error } = await client.functions.invoke('fw-api', { body: { op: 'delete_account', confirm: 'DELETE' } });
+    if (error || !data?.deleted) throw new Error('Could not delete your account. Check your connection and try again.');
+  }
+  try { await client?.auth.signOut(); } catch {}
+  user = null; store.d.pendingOps = []; store.d.activeOnline = null; store.save();
+}
 export async function signOut() { await client?.auth.signOut(); user = null; store.d.pendingOps = []; store.save(); }
 
 // Cosmetic profile data (name, settings, admin edits) is saved by the app. Everything that counts

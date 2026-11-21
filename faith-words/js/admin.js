@@ -3,7 +3,8 @@
 // admin writes with a Supabase role (see README) — never trust a client-side PIN for real security.
 import { h, toast } from './ui.js';
 import { A, currentUser, cloudEnabled } from './cloud.js';
-import { remote, setRemoteContent } from './puzzles.js';
+import { remote, setRemoteContent, specDrop } from './puzzles.js';
+import { REMOTE, checkDrop } from './spec.js';
 import { BANK } from './bank.js';
 import { CONFIG, EVENTS, EVENT_PUZZLES } from './config.js';
 import { store, todayStr } from './store.js';
@@ -109,13 +110,14 @@ function dataTab(draw) {
       const blob = new Blob([JSON.stringify({ clueOverrides: store.d.clueOverrides, customBank: store.d.customBank }, null, 2)], { type: 'application/json' });
       const a = h('a', { href: URL.createObjectURL(blob), download: 'faith-words-content.json' }); a.click();
     } }, 'Export content'), file,
+    dropsCard(),
     cloudEnabled() ? h('div', { class: 'card' }, h('b', {}, 'Publish to all players'),
       h('small', { class: 'muted' }, sessionStorage.getItem('fw.admin.db') === '1'
         ? 'Sends your clue edits and custom words to every player. Players get them next time they open the app.'
         : 'Only accounts marked as admin in Supabase can publish. Sign in with an admin account first.'),
       h('button', { class: 'btn', disabled: sessionStorage.getItem('fw.admin.db') !== '1', onclick: async () => {
         try {
-          const content = { clueOverrides: { ...remote.clueOverrides, ...store.d.clueOverrides }, customBank: [...remote.customBank, ...store.d.customBank] };
+          const content = { clueOverrides: { ...remote.clueOverrides, ...store.d.clueOverrides }, customBank: [...remote.customBank, ...store.d.customBank], drops: REMOTE.drops };
           await A.publishContent(content); setRemoteContent(content);
           store.d.clueOverrides = {}; store.d.customBank = []; store.save();
           toast('Published to all players'); draw();
@@ -123,4 +125,23 @@ function dataTab(draw) {
       } }, 'Publish now')) : null,
     h('hr'), h('b', {}, 'Player data (this device)'),
     h('button', { class: 'btn danger', onclick: () => { if (confirm('Reset ALL progress on this device?')) { store.reset(); toast('Reset'); location.hash = '#/'; } } }, 'Reset my progress'));
+}
+
+/** Content drops: paste a pack made with tools/make-drop.mjs, check it, then publish it to every player. */
+function dropsCard() {
+  const ta = h('textarea', { class: 'a-json', rows: 5, placeholder: 'Paste a pack (JSON) here…' });
+  const list = REMOTE.drops.map((dr) => h('div', { class: 'a-word' }, h('b', {}, dr.title), h('small', {}, `${dr.id} · ${dr.puzzles.length} puzzles · ${dr.from || 'now'} → ${dr.to || 'always'}`),
+    h('button', { class: 'link', onclick: () => startGame(specDrop(dr, 0)) }, 'Test play'),
+    h('button', { class: 'link', onclick: () => { REMOTE.drops = REMOTE.drops.filter((x) => x.id !== dr.id); toast('Removed — press Publish now to apply'); window.dispatchEvent(new Event('hashchange')); } }, 'Remove')));
+  return h('div', { class: 'card' }, h('b', {}, 'New puzzle packs'),
+    h('small', { class: 'muted' }, 'Packs appear on every player\'s home screen with no app update. Publish a new id to add one; publishing an existing id replaces it.'),
+    ...(list.length ? list : [h('small', { class: 'muted' }, 'No packs published yet.')]),
+    ta, h('button', { class: 'btn ghost', onclick: () => {
+      try {
+        const j = JSON.parse(ta.value); const arr = Array.isArray(j) ? j : j.drops ? j.drops : [j];
+        for (const dr of arr) { const e = checkDrop(dr); if (e) return toast(`"${dr.id || '?'}": ${e}`, 4000); }
+        for (const dr of arr) REMOTE.drops = [...REMOTE.drops.filter((x) => x.id !== dr.id), dr];
+        toast(arr.length + ' pack(s) checked and added — press Publish now'); window.dispatchEvent(new Event('hashchange'));
+      } catch (e) { toast('Not valid JSON'); }
+    } }, 'Check & add'));
 }

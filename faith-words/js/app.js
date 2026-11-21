@@ -1,9 +1,10 @@
 import { h, $, toast, modal, crossSvg, trophySvg, confetti, icon, coin, applyTheme } from './ui.js';
 import { store, todayStr } from './store.js';
 import { CONFIG, EVENTS, EVENT_PUZZLES } from './config.js';
-import { specMain, specDaily, specEvent, eventStatus, setRemoteContent } from './puzzles.js';
+import { specMain, specDaily, specEvent, specDrop, eventStatus, setRemoteContent, openDrops } from './puzzles.js';
+import { verseOfDay, localDate, remindersSupported, applyReminders } from './reminders.js';
 import { startChallenge, startChallengeReply, challengeLink, startGame, resumeGame, renderGame, leaveGame, hasActive, activeLabel, hasOnlineActive, startOnline, rejoinOnline, parkedGames, resumeParked, discardParked, _debug } from './game.js';
-import { initCloud, cloudEnabled, currentUser, signIn, signUp, signOut, leaderboard, A } from './cloud.js';
+import { initCloud, cloudEnabled, currentUser, signIn, signUp, signOut, deleteAccount, leaderboard, A } from './cloud.js';
 import { renderAdmin } from './admin.js';
 import { showHowTo } from './howto.js';
 import { sfx, syncMusic } from './audio.js';
@@ -63,6 +64,17 @@ function home() {
       h('button', { class: 'ev-play' + (open ? '' : ' lock'), onclick: () => (open ? startGame(specEvent(ev.id, idx)) : toast(`${ev.name} opens soon — ${st.label.toLowerCase()}`)) }, open ? (done >= EVENT_PUZZLES ? 'Replay' : 'Play') : 'Locked'));
   });
 
+  const dropCards = openDrops(t).map((dr) => {
+    const done = d.drops?.[dr.id] || 0, n = dr.puzzles.length, idx = Math.min(done, n - 1), c = dr.colors || ['#2f80ed', '#1c4fb8'];
+    return h('div', { class: 'ev-card drop', style: { background: `linear-gradient(160deg, ${c[0]}, ${c[1]})` } },
+      h('div', { class: 'ev-time' }, dr.to ? 'Until ' + new Date(dr.to + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'New'),
+      h('div', { class: 'ev-emoji' }, dr.icon || '✨'), h('div', { class: 'ev-kind' }, 'NEW PACK'), h('div', { class: 'ev-name' }, dr.title),
+      h('div', { class: 'ev-dots' }, Array.from({ length: Math.min(n, 12) }, (_, i) => h('i', { class: i < done ? 'on' : '' }))),
+      h('button', { class: 'ev-play', 'data-drop': dr.id, onclick: () => startGame(specDrop(dr, idx)) }, done >= n ? 'Replay' : 'Play'));
+  });
+  const vod = verseOfDay(t);
+  const vodCard = h('div', { class: 'card vod' }, h('small', { class: 'vod-k' }, '📖 Verse of the day'), h('p', { class: 'vod-t' }, '“' + vod.text + '”'), h('b', { class: 'vod-r' }, vod.ref));
+
   return h('div', { class: 'screen home' },
     topBar(),
     h('div', { class: 'card hello' },
@@ -72,9 +84,9 @@ function home() {
         h('div', { class: 'hello-sub' }, `Level ${lv.level} · ${d.xp.toLocaleString()} points`),
         h('div', { class: 'bar' }, h('i', { style: { width: (lv.into / lv.need) * 100 + '%' } }))),
       h('div', { class: 'streak', title: 'Win streak' }, h('span', { html: icon('flame', 20) }), h('b', {}, d.winStreak))),
-    checkin, dailyCard, questsCard(),
+    checkin, dailyCard, vodCard, questsCard(),
     h('div', { class: 'sec-title' }, 'Events'),
-    h('div', { class: 'ev-row' }, cards),
+    h('div', { class: 'ev-row' }, dropCards, cards),
     h('div', { class: 'spacer' }),
     h('div', { class: 'cta-stack' },
       h('button', { class: 'cta', onclick: () => (cont ? resumeGame() : startGame(specMain(d.mainNext))) },
@@ -168,6 +180,14 @@ function daily() {
 }
 
 // ---------- Me
+function reminderRow() {
+  const d = store.d, r = d.settings.remind || (d.settings.remind = { on: false, h: 8 });
+  if (!remindersSupported()) return h('div', { class: 'seg-row' }, h('span', {}, 'Daily verse reminder'), h('small', { class: 'muted' }, 'Available in the mobile app'));
+  const apply = async () => { const res = await applyReminders(r); if (res === 'denied') { r.on = false; store.save(); toast('Allow notifications in your phone settings to get reminders'); render(); } };
+  return h('div', { class: 'seg-row remind' }, h('span', {}, 'Daily verse reminder'),
+    h('div', { class: 'seg' }, [[true, 'On'], [false, 'Off']].map(([v, t]) => h('button', { class: r.on === v ? 'on' : '', onclick: () => { r.on = v; store.save(); apply(); render(); } }, t))),
+    r.on ? h('select', { 'aria-label': 'Reminder time', onchange: (e) => { r.h = +e.target.value; store.save(); apply(); } }, [6, 7, 8, 9, 12, 18, 20, 21].map((x) => h('option', { value: x, selected: r.h === x }, (x % 12 || 12) + (x < 12 ? ' am' : ' pm')))) : null);
+}
 function meParts() {
   const d = store.d, lv = store.level(), ci = store.checkinInfo();
   const strip = h('div', { class: 'ci-strip' }, Array.from({ length: CONFIG.checkin.maxDay }, (_, i) => {
@@ -211,6 +231,7 @@ function meParts() {
       seg('Sound', 'sound', [[true, 'On'], [false, 'Off']]),
       seg('Worship music', 'music', [[true, 'On'], [false, 'Off']]),
       seg('Vibration', 'haptics', [[true, 'On'], [false, 'Off']]),
+      reminderRow(),
       h('button', { class: 'btn ghost', onclick: () => showHowTo() }, 'How to play'),
       DEBUG ? h('button', { class: 'btn ghost', onclick: () => { d.settings.unlockEvents = !d.settings.unlockEvents; store.save(); render(); } }, 'Unlock all events (testing): ' + (d.settings.unlockEvents ? 'On' : 'Off')) : null,
       h('a', { class: 'link', href: '#/admin' }, 'Admin panel'));
@@ -380,11 +401,29 @@ function accountCard(user) {
     return h('div', { class: 'card' }, h('b', {}, 'Account'),
       h('button', { class: 'btn', onclick: () => startOnline() }, 'Play online'),
       h('button', { class: 'btn ghost', onclick: leaderboardModal }, 'Leaderboard'),
-      h('button', { class: 'btn ghost', onclick: async () => { await signOut(); render(); } }, 'Sign out'));
+      h('button', { class: 'btn ghost', onclick: async () => { await signOut(); render(); } }, 'Sign out'),
+      h('button', { class: 'btn ghost danger', 'data-act': 'delete-account', onclick: deleteAccountModal }, 'Delete my account'),
+      h('a', { class: 'privacy-link', href: 'privacy.html', target: '_blank', rel: 'noopener' }, 'Privacy policy'));
   }
   return h('div', { class: 'card' }, h('b', {}, 'Save your progress & play online'), h('small', { class: 'muted' }, 'Sign in to keep points, coins and levels on every device and to play live matches.'),
     h('button', { class: 'btn', onclick: authModal }, 'Sign in / Sign up'),
-    h('button', { class: 'btn ghost', onclick: leaderboardModal }, 'Leaderboard'));
+    h('button', { class: 'btn ghost', onclick: leaderboardModal }, 'Leaderboard'),
+    h('a', { class: 'privacy-link', href: 'privacy.html', target: '_blank', rel: 'noopener' }, 'Privacy policy'));
+}
+function deleteAccountModal() {
+  const box = h('input', { id: 'del-confirm', type: 'text', placeholder: 'Type DELETE', autocomplete: 'off', autocapitalize: 'characters' });
+  const msg = h('small', { class: 'err', role: 'alert' });
+  const go = h('button', { class: 'btn danger', disabled: true, 'data-act': 'delete-confirm' }, 'Delete everything');
+  box.addEventListener('input', () => { go.disabled = box.value.trim() !== 'DELETE'; });
+  const m = modal(h('div', { class: 'auth' }, h('h3', {}, 'Delete your account?'),
+    h('p', { class: 'muted' }, 'This permanently removes your account, progress, coins, verse album, groups you own and leaderboard entry from our servers. It cannot be undone.'),
+    box, msg, go,
+    h('button', { class: 'btn ghost', onclick: () => m.close() }, 'Keep my account')), { cls: 'sheet' });
+  go.addEventListener('click', async () => {
+    go.disabled = true; go.textContent = 'Deleting…'; msg.textContent = '';
+    try { await deleteAccount(); m.close(); toast('Your account was deleted', 3000); location.hash = '#/'; render(); }
+    catch (e) { msg.textContent = e.message || 'Something went wrong'; go.disabled = false; go.textContent = 'Delete everything'; }
+  });
 }
 function authModal() {
   const email = h('input', { id: 'auth-email', type: 'email', placeholder: 'Email', autocomplete: 'email' });
@@ -430,6 +469,7 @@ applyCosmetics(); syncMusic();
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => applyTheme(store.d.settings.theme));
 if (location.search.includes('debug')) window.fwDebug = { game: _debug, store };
 render();
+applyReminders(store.d.settings.remind || {}); // top up the next 30 days of verse reminders (does nothing on the web)
 if (!store.d.onboarded) {
   showHowTo({ first: true, name: store.d.name, onDone: (name) => { if (name) store.d.name = name; store.d.onboarded = true; store.save(); render(); } });
 }
