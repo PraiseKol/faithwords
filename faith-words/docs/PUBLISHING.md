@@ -20,11 +20,11 @@ cd faithwords/faith-words
 
 ## 2. Add the native shells (once)
 ```
-npm run cap:init          # installs Capacitor + the notifications plugin, names the app "Faith Words" (com.faithwords.app)
+npm run cap:init          # installs Capacitor + the notifications plugin, names the app "Faith Words" (site.faithwords.app)
 npx cap add android
 npx cap add ios           # Mac only
 ```
-`com.faithwords.app` is the app's permanent ID. **Choose it now, you cannot change it after publishing.** If you want your own (e.g. `org.yourchurch.faithwords`), change it in `capacitor.config.json` before `cap add`.
+`site.faithwords.app` is the app's permanent ID. **Choose it now, you cannot change it after publishing.** If you want your own (e.g. `org.yourchurch.faithwords`), change it in `capacitor.config.json` before `cap add`.
 
 ## 3. Icons and splash screen
 Put a 1024×1024 PNG called `icon-only.png` (and optionally `splash.png`, 2732×2732) in a folder `assets/`, then
@@ -56,7 +56,7 @@ Faith Words collects: email address (account), display name, gameplay data (scor
 **Account deletion:** Apple and Google both require that an app with sign-in lets people delete their account (in the app *or* by a web form/email request that you honour). Tell me and I will add a "Delete my account" button to Settings.
 
 ## 7. iOS → App Store
-1. In Xcode, select the **App** target → **Signing & Capabilities** → choose your Team (your Apple Developer account); the bundle ID is `com.faithwords.app`.
+1. In Xcode, select the **App** target → **Signing & Capabilities** → choose your Team (your Apple Developer account); the bundle ID is `site.faithwords.app`.
 2. Set the version/build in **General**; set the Deployment Target (iOS 14+ is fine).
 3. In **appstoreconnect.apple.com → My Apps → +** create the app with the same bundle ID.
 4. In Xcode: **Product → Archive → Distribute App → App Store Connect → Upload**.
