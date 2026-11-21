@@ -4,7 +4,7 @@ import { CONFIG, EVENTS, EVENT_PUZZLES } from './config.js';
 import { specMain, specDaily, specEvent, specDrop, eventStatus, setRemoteContent, openDrops } from './puzzles.js';
 import { verseOfDay, localDate, remindersSupported, applyReminders } from './reminders.js';
 import { startChallenge, startChallengeReply, challengeLink, startGame, resumeGame, renderGame, leaveGame, hasActive, activeLabel, hasOnlineActive, startOnline, rejoinOnline, parkedGames, resumeParked, discardParked, _debug } from './game.js';
-import { initCloud, cloudEnabled, currentUser, signIn, signUp, signOut, leaderboard, A } from './cloud.js';
+import { initCloud, cloudEnabled, currentUser, signIn, signUp, signOut, deleteAccount, leaderboard, A } from './cloud.js';
 import { renderAdmin } from './admin.js';
 import { showHowTo } from './howto.js';
 import { sfx, syncMusic } from './audio.js';
@@ -401,11 +401,29 @@ function accountCard(user) {
     return h('div', { class: 'card' }, h('b', {}, 'Account'),
       h('button', { class: 'btn', onclick: () => startOnline() }, 'Play online'),
       h('button', { class: 'btn ghost', onclick: leaderboardModal }, 'Leaderboard'),
-      h('button', { class: 'btn ghost', onclick: async () => { await signOut(); render(); } }, 'Sign out'));
+      h('button', { class: 'btn ghost', onclick: async () => { await signOut(); render(); } }, 'Sign out'),
+      h('button', { class: 'btn ghost danger', 'data-act': 'delete-account', onclick: deleteAccountModal }, 'Delete my account'),
+      h('a', { class: 'privacy-link', href: 'privacy.html', target: '_blank', rel: 'noopener' }, 'Privacy policy'));
   }
   return h('div', { class: 'card' }, h('b', {}, 'Save your progress & play online'), h('small', { class: 'muted' }, 'Sign in to keep points, coins and levels on every device and to play live matches.'),
     h('button', { class: 'btn', onclick: authModal }, 'Sign in / Sign up'),
-    h('button', { class: 'btn ghost', onclick: leaderboardModal }, 'Leaderboard'));
+    h('button', { class: 'btn ghost', onclick: leaderboardModal }, 'Leaderboard'),
+    h('a', { class: 'privacy-link', href: 'privacy.html', target: '_blank', rel: 'noopener' }, 'Privacy policy'));
+}
+function deleteAccountModal() {
+  const box = h('input', { id: 'del-confirm', type: 'text', placeholder: 'Type DELETE', autocomplete: 'off', autocapitalize: 'characters' });
+  const msg = h('small', { class: 'err', role: 'alert' });
+  const go = h('button', { class: 'btn danger', disabled: true, 'data-act': 'delete-confirm' }, 'Delete everything');
+  box.addEventListener('input', () => { go.disabled = box.value.trim() !== 'DELETE'; });
+  const m = modal(h('div', { class: 'auth' }, h('h3', {}, 'Delete your account?'),
+    h('p', { class: 'muted' }, 'This permanently removes your account, progress, coins, verse album, groups you own and leaderboard entry from our servers. It cannot be undone.'),
+    box, msg, go,
+    h('button', { class: 'btn ghost', onclick: () => m.close() }, 'Keep my account')), { cls: 'sheet' });
+  go.addEventListener('click', async () => {
+    go.disabled = true; go.textContent = 'Deleting…'; msg.textContent = '';
+    try { await deleteAccount(); m.close(); toast('Your account was deleted', 3000); location.hash = '#/'; render(); }
+    catch (e) { msg.textContent = e.message || 'Something went wrong'; go.disabled = false; go.textContent = 'Delete everything'; }
+  });
 }
 function authModal() {
   const email = h('input', { id: 'auth-email', type: 'email', placeholder: 'Email', autocomplete: 'email' });
