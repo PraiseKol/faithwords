@@ -8,10 +8,12 @@
     "start": "npx serve . -l 8080",
     "test:gen": "node scripts/test-gen.mjs",
     "test:engine": "node scripts/test-engine.mjs",
-    "cap:init": "npm i @capacitor/core @capacitor/cli @capacitor/android @capacitor/ios @capacitor/local-notifications @capacitor/assets && npx cap init \"Faith Words\" com.faithwords.app --web-dir www",
+    "cap:init": "npm i @capacitor/core @capacitor/cli @capacitor/android @capacitor/ios @capacitor/local-notifications && npm i -D @capacitor/assets",
     "cap:sync": "node scripts/make-www.mjs && npx cap sync",
     "test:phase4": "node scripts/test-phase4.mjs",
     "make:drop": "node tools/make-drop.mjs",
-    "cap:assets": "npx capacitor-assets generate --iconBackgroundColor '#2f80ed' --splashBackgroundColor '#0c1429'"
+    "cap:assets": "npx capacitor-assets generate --iconBackgroundColor '#2f80ed' --splashBackgroundColor '#0c1429'",
+    "android:add": "node scripts/make-www.mjs && npx cap add android",
+    "android:open": "npm run cap:sync && npx cap open android"
   }
 }
