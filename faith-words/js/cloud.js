@@ -4,7 +4,7 @@ import { store } from './store.js';
 import { ENV } from './env.js';
 import { SERVER_KEYS } from './progress.js';
 
-let client = null, user = null;
+let client = null, user = null, recoveryPending = false, recoveryCb = null;
 const mock = () => (typeof window !== 'undefined' ? window.__fwMock : null); // test hook
 export const cloudEnabled = () => !!mock() || !!(ENV.SUPABASE_URL && ENV.SUPABASE_ANON_KEY);
 export const currentUser = () => (mock() ? mock().user : user);
@@ -15,23 +15,56 @@ export async function initCloud() {
   store.inGame = () => location.hash.startsWith('#/game');
   window.addEventListener('hashchange', () => { if (!store.inGame() && deferred) { store.applyServer(deferred); deferred = null; } });
   window.addEventListener('online', () => flush());
-  if (mock()) { await syncProgress(); return true; }
+  if (mock()) { if (mock().recovery) { recoveryPending = true; recoveryCb?.(); } await syncProgress(); return true; }
   if (!cloudEnabled()) return false;
   try {
     const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm');
     client = createClient(ENV.SUPABASE_URL, ENV.SUPABASE_ANON_KEY);
     const { data } = await client.auth.getSession();
     user = data.session?.user || null;
-    client.auth.onAuthStateChange((_e, session) => { user = session?.user || null; });
+    client.auth.onAuthStateChange((ev, session) => { user = session?.user || null; if (ev === 'PASSWORD_RECOVERY') { recoveryPending = true; recoveryCb?.(); } });
     if (user) { await pull(); await syncProgress(); }
     let t; store.onChange(() => { clearTimeout(t); t = setTimeout(push, 2500); });
     return true;
   } catch (e) { console.warn('Supabase unavailable', e); client = null; return false; }
 }
 
+/** Turns Supabase's technical messages into something a player understands. */
+export function friendlyAuthError(e) {
+  const m = String(e?.message || e || '').toLowerCase();
+  if (m.includes('invalid login')) return 'Wrong email or password. Try again, or tap “Forgot password?”.';
+  if (m.includes('email not confirmed')) return 'Please confirm your email first — check your inbox (and spam) for our message.';
+  if (m.includes('already registered') || m.includes('already exists')) return 'This email already has an account. Tap “Sign in” instead.';
+  if (m.includes('password') && (m.includes('least') || m.includes('weak') || m.includes('short'))) return 'Choose a stronger password (at least 6 characters).';
+  if (m.includes('valid email') || m.includes('invalid email') || m.includes('unable to validate email')) return 'That email address doesn’t look right.';
+  if (m.includes('rate limit') || m.includes('too many') || m.includes('seconds')) return 'Too many tries. Please wait a minute and try again.';
+  if (m.includes('fetch') || m.includes('network') || m.includes('failed to')) return 'No connection. Check your internet and try again.';
+  return e?.message || 'Something went wrong. Please try again.';
+}
+/** Email the player last used on this device, so sign-in is one tap. */
+export const rememberedEmail = () => { try { return localStorage.getItem('fw.lastEmail') || ''; } catch { return ''; } };
+export const rememberEmail = (v) => { try { v ? localStorage.setItem('fw.lastEmail', v) : localStorage.removeItem('fw.lastEmail'); } catch { /* private mode */ } };
+/** Sends the "reset your password" email. The link brings the player back here to choose a new one. */
+export async function requestReset(email) {
+  if (mock()?.requestReset) return mock().requestReset(email);
+  if (!client) throw new Error('No connection');
+  const { error } = await client.auth.resetPasswordForEmail(String(email || '').trim(), { redirectTo: location.origin + location.pathname });
+  if (error) throw error;
+}
+/** Called after the player opens the reset link and types a new password. */
+export async function setNewPassword(password) {
+  if (mock()?.setNewPassword) return mock().setNewPassword(password);
+  const { error } = await client.auth.updateUser({ password });
+  if (error) throw error;
+  recoveryPending = false;
+}
+/** Registers what to show when the app is opened from a password-reset link. */
+export function onRecovery(cb) { recoveryCb = cb; if (recoveryPending) cb(); }
+
 export async function signUp(email, password, name) {
   const { data, error } = await client.auth.signUp({ email, password, options: { data: { name } } });
   if (error) throw error;
+  if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) throw new Error('already registered');
   user = data.user;
   if (!data.session) { user = null; return { confirm: true }; } // project requires email confirmation
   if (name) store.d.name = name;

@@ -14,7 +14,8 @@ export const weekEnd = (weekStart) => Date.parse(weekStart + 'T00:00:00Z') + MS_
 export function companions(week, tier, bucket, n) {
   const r = mulberry32(hashSeed(`${week}:${tier}:${bucket}`)), out = [];
   for (let i = 0; i < n; i++) {
-    const name = BOT_NAMES[Math.floor(r() * BOT_NAMES.length)] + (r() < 0.5 ? '' : ' ' + (10 + Math.floor(r() * 80)));
+    const base = BOT_NAMES[Math.floor(r() * BOT_NAMES.length)], num = 10 + Math.floor(r() * 80), addNum = r() < 0.5;
+    const name = addNum && /^[A-Za-z]+$/.test(base) ? base + ' ' + num : base; // "Grace 42" for a bare first name, never "Sister Joy 42"
     const final = Math.round((60 + 90 * tier) * (0.25 + r() * 1.5));
     out.push({ id: `bot-${i}`, name, final, bot: true });
   }
