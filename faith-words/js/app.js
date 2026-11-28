@@ -4,7 +4,7 @@ import { CONFIG, EVENTS, EVENT_PUZZLES } from './config.js';
 import { specMain, specDaily, specEvent, specDrop, eventStatus, setRemoteContent, openDrops } from './puzzles.js';
 import { verseOfDay, localDate, remindersSupported, applyReminders } from './reminders.js';
 import { startChallenge, startChallengeReply, challengeLink, startGame, resumeGame, renderGame, leaveGame, hasActive, activeLabel, hasOnlineActive, startOnline, rejoinOnline, parkedGames, resumeParked, discardParked, _debug } from './game.js';
-import { initCloud, cloudEnabled, currentUser, signIn, signUp, signOut, deleteAccount, leaderboard, A } from './cloud.js';
+import { initCloud, cloudEnabled, currentUser, signIn, signUp, signOut, deleteAccount, friendlyAuthError, rememberedEmail, rememberEmail, requestReset, setNewPassword, onRecovery, leaderboard, A } from './cloud.js';
 import { renderAdmin } from './admin.js';
 import { showHowTo } from './howto.js';
 import { sfx, syncMusic } from './audio.js';
@@ -76,7 +76,7 @@ function home() {
   const vodCard = h('div', { class: 'card vod' }, h('small', { class: 'vod-k' }, '📖 Verse of the day'), h('p', { class: 'vod-t' }, '“' + vod.text + '”'), h('b', { class: 'vod-r' }, vod.ref));
 
   return h('div', { class: 'screen home' },
-    topBar(),
+    topBar(), signinCard(),
     h('div', { class: 'card hello' },
       h('div', { class: 'avatar' }, initial()),
       h('div', { class: 'hello-main' },
@@ -240,13 +240,13 @@ function meParts() {
 
 // ---------- Me: a hub of tiles; each opens its own page (#/me/<id>)
 const ME_SECTIONS = [
+  { id: 'account', icon: '👤', tone: 'mint', title: 'Account', parts: ['account'], sub: ({ user }) => (user ? 'Signed in' : 'Sign in & play online') },
   { id: 'checkin', icon: '🔥', tone: 'ember', title: 'Daily check-in', parts: ['checkin', 'streak'], sub: ({ ci }) => (ci.claimed ? 'Claimed today ✓' : `Claim +${ci.today} coins`), dot: ({ ci }) => !ci.claimed },
   { id: 'shop', icon: '🛍️', tone: 'gold', title: 'Shop', parts: ['shop'], sub: ({ d }) => `${d.inv.hint} hints · ${d.inv.word} words` },
   { id: 'album', icon: '📖', tone: 'parch', title: 'Verse Album', href: '#/album', sub: ({ d }) => `${Object.keys(d.album || {}).length}/${VERSES.length} collected` },
   { id: 'badges', icon: '🏅', tone: 'royal', title: 'Titles & badges', parts: ['badges'], sub: ({ d }) => `${earnedBadges(d).length}/${BADGES.length} earned` },
   { id: 'themes', icon: '🎨', tone: 'rose', title: 'Themes', parts: ['themes'], sub: () => 'Boards & tiles' },
   { id: 'stats', icon: '📊', tone: 'sky', title: 'Stats', parts: ['level', 'stats'], sub: ({ d }) => `${d.stats.wins} wins · best streak ${d.bestWinStreak}` },
-  { id: 'account', icon: '👤', tone: 'mint', title: 'Account', parts: ['account'], sub: ({ user }) => (user ? 'Signed in' : 'Sign in & play online') },
   { id: 'settings', icon: '⚙️', tone: 'slate', title: 'Settings', parts: ['settings'], sub: () => 'Sound, theme, help' },
 ];
 function me() {
@@ -254,7 +254,7 @@ function me() {
   const tile = (t) => h('a', { class: 'hub-tile tone-' + t.tone, href: t.href || '#/me/' + t.id, 'data-sec': t.id },
     h('span', { class: 'ht-ic' }, t.icon, t.dot && t.dot(M) ? h('i', { class: 'ht-dot' }) : null),
     h('b', {}, t.title), h('small', {}, t.sub(M)));
-  return h('div', { class: 'screen me' }, topBar(), P.prof,
+  return h('div', { class: 'screen me' }, topBar(), signinCard(), P.prof,
     h('div', { class: 'card lvl-mini' }, h('div', { class: 'row-between' }, h('b', {}, `Level ${M.lv.level}`), h('small', { class: 'muted' }, `${M.lv.need - M.lv.into} pts to Level ${M.lv.level + 1}`)),
       h('div', { class: 'bar' }, h('i', { style: { width: (M.lv.into / M.lv.need) * 100 + '%' } }))),
     h('div', { class: 'hub-grid' }, ME_SECTIONS.map(tile)), navBar('me'));
@@ -291,7 +291,7 @@ function together() {
   const screen = h('div', { class: 'screen together' }, topBar(), goalBox, leagueBox, groupBox, chalBox, navBar('together'));
   if (!user) {
     [goalBox, leagueBox, groupBox, chalBox].forEach((b) => { b.lastChild.remove(); b.append(soon('Sign in to take part.')); });
-    const s = h('button', { class: 'btn', onclick: authModal }, 'Sign in / Sign up'); leagueBox.append(s);
+    const s = h('button', { class: 'btn', onclick: () => authModal('in') }, 'Sign in / Sign up'); leagueBox.append(s);
     return screen;
   }
   const alive = () => app.contains(screen);
@@ -352,7 +352,7 @@ function challengeScreen(id) {
   const body = h('div', { class: 'card' }, soon('Loading…'));
   const screen = h('div', { class: 'screen' }, topBar(), body, navBar('together'));
   (async () => {
-    if (!currentUser()) { body.innerHTML = ''; body.append(h('b', {}, 'A friend challenged you!'), soon('Sign in to play and compare scores.'), h('button', { class: 'btn', onclick: authModal }, 'Sign in / Sign up')); return; }
+    if (!currentUser()) { body.innerHTML = ''; body.append(h('b', {}, 'A friend challenged you!'), soon('Sign in to play and compare scores.'), h('button', { class: 'btn', onclick: () => authModal('in') }, 'Sign in / Sign up')); return; }
     let c; try { c = await A.getChallenge(id); } catch { c = null; }
     body.innerHTML = '';
     if (!c) { body.append(h('b', {}, 'Challenge not found'), soon('The link may be mistyped.'), h('a', { class: 'btn', href: '#/together' }, 'Back')); return; }
@@ -393,6 +393,16 @@ function album() {
     h('div', { class: 'bar' }, h('i', { style: { width: (n / VERSES.length) * 100 + '%' } })), h('div', { class: 'al-grid' }, cards), navBar('me'));
 }
 
+/** A prominent sign-in / sign-up card, shown at the top of Home and Me while the player is a guest. */
+function signinCard() {
+  if (!cloudEnabled() || currentUser()) return null;
+  return h('div', { class: 'card signin-card', 'data-card': 'signin' },
+    h('div', { class: 'si-ic', html: crossSvg(26) }),
+    h('div', { class: 'si-txt' }, h('b', {}, 'Save your progress'), h('small', {}, 'Sign in to keep your coins and levels, and to play online.')),
+    h('div', { class: 'si-btns' },
+      h('button', { class: 'btn sm', 'data-act': 'si-in', onclick: () => authModal('in') }, 'Sign in'),
+      h('button', { class: 'btn ghost sm', 'data-act': 'si-up', onclick: () => authModal('up') }, 'Sign up')));
+}
 function accountCard(user) {
   if (!cloudEnabled()) {
     return h('div', { class: 'card' }, h('b', {}, 'Account & online play'), h('small', { class: 'muted' }, 'Cloud save and live matches switch on once Supabase is configured. You are playing as a guest.'));
@@ -406,7 +416,8 @@ function accountCard(user) {
       h('a', { class: 'privacy-link', href: 'privacy.html', target: '_blank', rel: 'noopener' }, 'Privacy policy'));
   }
   return h('div', { class: 'card' }, h('b', {}, 'Save your progress & play online'), h('small', { class: 'muted' }, 'Sign in to keep points, coins and levels on every device and to play live matches.'),
-    h('button', { class: 'btn', onclick: authModal }, 'Sign in / Sign up'),
+    h('button', { class: 'btn', onclick: () => authModal('in') }, 'Sign in'),
+    h('button', { class: 'btn ghost', onclick: () => authModal('up') }, 'Create account'),
     h('button', { class: 'btn ghost', onclick: leaderboardModal }, 'Leaderboard'),
     h('a', { class: 'privacy-link', href: 'privacy.html', target: '_blank', rel: 'noopener' }, 'Privacy policy'));
 }
@@ -425,14 +436,79 @@ function deleteAccountModal() {
     catch (e) { msg.textContent = e.message || 'Something went wrong'; go.disabled = false; go.textContent = 'Delete everything'; }
   });
 }
-function authModal() {
-  const email = h('input', { id: 'auth-email', type: 'email', placeholder: 'Email', autocomplete: 'email' });
-  const pass = h('input', { id: 'auth-pass', type: 'password', placeholder: 'Password (6+ characters)', autocomplete: 'current-password' });
+/** Sign in / create account / forgot password in one friendly sheet. */
+function authModal(start = 'in') {
+  let mode = start;                       // 'in' | 'up' | 'reset'
+  const saved = rememberedEmail();
+  const body = h('div', { class: 'auth' });
+  const m = modal(body, { cls: 'sheet' });
+  const field = (id, type, ph, ac, val = '') => { const el = h('input', { id, name: id, type, placeholder: ph, autocomplete: ac, autocapitalize: 'off', spellcheck: 'false' }); el.value = val; return el; };
+  const draw = () => {
+    body.innerHTML = '';
+    const msg = h('small', { class: 'err', role: 'alert' });
+    const ok = h('small', { class: 'ok', role: 'status' });
+    const email = field('auth-email', 'email', 'Email', 'username', saved);
+    email.setAttribute('inputmode', 'email');
+    body.append(h('div', { class: 'auth-head' }, h('div', { class: 'logo big', html: crossSvg(40) }), h('h3', {}, mode === 'reset' ? 'Reset your password' : mode === 'up' ? 'Join Faith Words' : 'Welcome back')));
+    if (mode !== 'reset') {
+      body.append(h('div', { class: 'auth-tabs', role: 'tablist' },
+        h('button', { type: 'button', class: mode === 'in' ? 'on' : '', 'data-tab': 'in', role: 'tab', onclick: () => { mode = 'in'; draw(); } }, 'Sign in'),
+        h('button', { type: 'button', class: mode === 'up' ? 'on' : '', 'data-tab': 'up', role: 'tab', onclick: () => { mode = 'up'; draw(); } }, 'Create account')));
+    }
+    const form = h('form', { class: 'auth-form', novalidate: true });
+    if (mode === 'reset') {
+      form.append(h('p', { class: 'muted' }, 'Enter your email and we’ll send you a link to choose a new password.'), email, msg, ok,
+        h('button', { class: 'btn', type: 'submit', 'data-act': 'send-reset' }, 'Send reset link'),
+        h('button', { class: 'btn ghost', type: 'button', onclick: () => { mode = 'in'; draw(); } }, 'Back to sign in'));
+    } else {
+      const name = mode === 'up' ? field('auth-name', 'text', 'Your name (shown to other players)', 'nickname', store.d.name && store.d.name !== 'Believer' ? store.d.name : '') : null;
+      if (name) name.maxLength = 20;
+      const pass = field('auth-pass', 'password', mode === 'up' ? 'Choose a password (6+ characters)' : 'Password', mode === 'up' ? 'new-password' : 'current-password');
+      const eye = h('button', { type: 'button', class: 'eye', 'aria-label': 'Show password', 'data-act': 'toggle-pass', onclick: () => { const on = pass.type === 'password'; pass.type = on ? 'text' : 'password'; eye.textContent = on ? 'Hide' : 'Show'; eye.setAttribute('aria-label', on ? 'Hide password' : 'Show password'); } }, 'Show');
+      const keep = h('label', { class: 'keep' }, h('input', { type: 'checkbox', id: 'auth-keep', checked: true }), h('span', {}, 'Remember my email on this device'));
+      form.append(...(name ? [name] : []), email, h('div', { class: 'pass-wrap' }, pass, eye),
+        mode === 'in' ? h('div', { class: 'auth-row' }, keep, h('button', { type: 'button', class: 'link', 'data-act': 'forgot', onclick: () => { mode = 'reset'; draw(); } }, 'Forgot password?')) : keep,
+        msg, h('button', { class: 'btn', type: 'submit', 'data-act': 'auth-go' }, mode === 'up' ? 'Create account' : 'Sign in'),
+        h('p', { class: 'auth-fine muted' }, mode === 'up' ? 'Free forever. Your progress is saved on every device.' : 'You’ll stay signed in on this device until you sign out.'));
+    }
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault(); msg.textContent = ''; ok.textContent = '';
+      const btn = form.querySelector('button[type=submit]'), label = btn.textContent;
+      const em = email.value.trim();
+      if (!/^\S+@\S+\.\S+$/.test(em)) { msg.textContent = 'Please enter a valid email address.'; email.focus(); return; }
+      try {
+        if (mode === 'reset') {
+          btn.disabled = true; btn.textContent = 'Sending…';
+          await requestReset(em);
+          ok.textContent = 'Done! If that email has an account, a reset link is on its way. Check your spam folder too.';
+          btn.textContent = 'Sent ✓'; return;
+        }
+        const pw = form.querySelector('#auth-pass').value;
+        if (pw.length < 6) { msg.textContent = 'Your password needs at least 6 characters.'; form.querySelector('#auth-pass').focus(); return; }
+        btn.disabled = true; btn.textContent = mode === 'up' ? 'Creating…' : 'Signing in…';
+        const r = mode === 'up' ? await signUp(em, pw, (form.querySelector('#auth-name')?.value || '').trim() || store.d.name) : await signIn(em, pw);
+        rememberEmail(form.querySelector('#auth-keep')?.checked ? em : '');
+        if (r?.confirm) { body.innerHTML = ''; body.append(h('div', { class: 'auth-head' }, h('div', { class: 'res-emoji' }, '📧'), h('h3', {}, 'Check your email'), h('p', { class: 'muted' }, `We sent a confirmation link to ${em}. Tap it, then come back and sign in.`), h('button', { class: 'btn', onclick: () => { mode = 'in'; draw(); } }, 'Go to sign in'))); return; }
+        m.close(); toast(mode === 'up' ? 'Welcome to Faith Words! 🙏' : 'Signed in', 1800); render();
+      } catch (err) { msg.textContent = friendlyAuthError(err); btn.disabled = false; btn.textContent = label; }
+    });
+    body.append(form);
+    (mode === 'up' ? form.querySelector('#auth-name') : saved && mode === 'in' ? form.querySelector('#auth-pass') : email)?.focus?.();
+  };
+  draw();
+}
+/** Opened when the player taps the link in the "reset password" email. */
+function newPasswordModal() {
+  const pass = h('input', { id: 'new-pass', type: 'password', placeholder: 'New password (6+ characters)', autocomplete: 'new-password' });
   const msg = h('small', { class: 'err', role: 'alert' });
-  const go = (fn) => async () => { try { msg.textContent = ''; const r = await fn(); m.close(); toast(r?.confirm ? 'Check your email to confirm your account, then sign in' : 'Signed in', r?.confirm ? 4500 : 1800); render(); } catch (e) { msg.textContent = e.message || 'Something went wrong'; } };
-  const m = modal(h('div', { class: 'auth' }, h('h3', {}, 'Faith Words account'), email, pass, msg,
-    h('button', { class: 'btn', onclick: go(() => signIn(email.value, pass.value)) }, 'Sign in'),
-    h('button', { class: 'btn ghost', onclick: go(() => signUp(email.value, pass.value, store.d.name)) }, 'Create account')), { cls: 'sheet' });
+  const form = h('form', { class: 'auth-form' }, pass, msg, h('button', { class: 'btn', type: 'submit', 'data-act': 'save-pass' }, 'Save new password'));
+  const m = modal(h('div', { class: 'auth' }, h('div', { class: 'auth-head' }, h('div', { class: 'res-emoji' }, '🔑'), h('h3', {}, 'Choose a new password')), form), { dismiss: false, cls: 'sheet' });
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault(); msg.textContent = '';
+    if (pass.value.length < 6) { msg.textContent = 'Your password needs at least 6 characters.'; return; }
+    try { await setNewPassword(pass.value); m.close(); history.replaceState(null, '', location.pathname + '#/'); toast('Password updated — you are signed in', 3000); render(); }
+    catch (err) { msg.textContent = friendlyAuthError(err); }
+  });
 }
 async function leaderboardModal() {
   const body = h('div', {}, h('p', { class: 'muted' }, 'Loading…'));
@@ -473,6 +549,7 @@ applyReminders(store.d.settings.remind || {}); // top up the next 30 days of ver
 if (!store.d.onboarded) {
   showHowTo({ first: true, name: store.d.name, onDone: (name) => { if (name) store.d.name = name; store.d.onboarded = true; store.save(); render(); } });
 }
+onRecovery(newPasswordModal);
 initCloud().then(async (ok) => {
   if (!ok) return;
   try { const c = await A.loadContent(); if (c) setRemoteContent(c); } catch { /* offline */ }
